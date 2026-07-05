@@ -144,6 +144,13 @@
   .day-goal{font-size:14px; color:#5a4a3a; margin-bottom:12px;}
   .hint2{font-size:12.5px; color:#a5673a; min-height:20px; font-weight:600; background:#fff5e9; border-radius:10px; padding:6px 10px; text-align:center;}
   .hidden{display:none!important;}
+  .nameLabel{display:block; font-size:13px; font-weight:700; color:#5a4a3a; margin-bottom:6px; text-align:left;}
+  .nameInput{width:100%; padding:12px 14px; border:2px solid #e0d3bf; border-radius:12px; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:16px; text-align:center; background:#fffdf9;}
+  .nameInput:focus{outline:none; border-color:var(--accent2); box-shadow:0 0 0 3px rgba(246,166,35,.25);}
+  #toasts{position:absolute; top:52px; left:50%; transform:translateX(-50%); z-index:85; display:flex; flex-direction:column; gap:5px; align-items:center; pointer-events:none;}
+  .toast{background:rgba(28,23,18,.92); color:#ffe4b8; font-weight:800; font-size:13px; padding:6px 12px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,.35); animation:toastIn .25s ease; white-space:nowrap;}
+  .toast.out{opacity:0; transform:translateY(-8px); transition:.3s;}
+  @keyframes toastIn{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
 
   .staffrow{display:flex; align-items:center; gap:12px; background:#faf6f0; border:2px solid #ece0d0; border-radius:14px; padding:12px; margin-bottom:10px; text-align:left;}
   .staffrow .st-emo{font-size:34px;}
@@ -228,7 +235,7 @@
 
       <div class="work">
         <div class="kcol" id="kmid">
-          <div class="section-title">Belegstation — Klick auf das Gericht legt das Fleisch rein 🥩</div>
+          <div class="section-title">Belegstation — Klick aufs Gericht legt das Fleisch rein 🥩</div>
           <div class="board-wrap"><div class="board-inner" id="board"><div class="bread-empty">👉 Wähle unten eine Basis…</div></div></div>
           <div class="section-title">Basis wählen</div>
           <div class="gn-row" id="baseRow"></div>
@@ -265,6 +272,7 @@
   </div>
 
   <div id="hand"></div>
+  <div id="toasts"></div>
 
   <!-- Start -->
   <div class="overlay" id="startOverlay"><div class="panel">
@@ -276,8 +284,10 @@
       <b>3.</b> 🥬 <b>Gemüse</b> & 🌶️ <b>Soße</b> mit der Zange ins Gericht ziehen (oder antippen).<br>
       <b>4.</b> 🧊 <b>Getränk</b> aus dem Kühlschrank antippen, falls gewünscht.<br>
       <b>5.</b> 🧾 <b>Zur Kasse</b> → einwickeln & Rückgeld geben.<br>
-      💡 <b>👔 Personal</b> oben einstellen nimmt dir Arbeit ab (kostet Tageslohn).
+      💡 <b>👔 Personal</b> oben einstellen – Mitarbeiter bedienen wartende Kunden <b>autonom</b> (kostet Tageslohn).
     </div>
+    <label class="nameLabel">Wie soll deine Bude heißen?</label>
+    <input id="shopName" class="nameInput" type="text" maxlength="22" placeholder="z. B. Kral Döner, Berlin Kebap …" value="Döner Haus">
     <button class="go" id="startBtn">Bude aufmachen! 🚀</button>
   </div></div>
 
@@ -325,21 +335,31 @@ const DRINKS=[{id:'ayran',name:'Ayran',emo:'🥛',price:150},{id:'uludag',name:'
 const AMOUNT={2:'wenig Fleisch',4:'normal',6:'viel Fleisch'};
 const vById=id=>VEG.find(v=>v.id===id), sById=id=>SAUCE.find(s=>s.id===id), dById=id=>DRINKS.find(d=>d.id===id);
 const FACES=['🙂','😀','😎','🧔','👩','👨','🧑','👵','👴','🧕','👱','👩‍🦰','🤠','🧓'];
-const NAMES=['Kunde Ali','Frau Schmidt','Herr Yılmaz','Lisa','Bratan','Chef','Oma Erna','Tourist','Stammgast','Student','Taxifahrer','Nachtschwärmer'];
+/* Kunden mit zum Namen passendem Gesicht */
+const CUSTOMERS=[
+  {name:'Ali',face:'🧔'},{name:'Frau Schmidt',face:'👩'},{name:'Herr Yılmaz',face:'👨'},
+  {name:'Lisa',face:'👧'},{name:'Bratan',face:'😎'},{name:'Chef Murat',face:'🧑‍💼'},
+  {name:'Oma Erna',face:'👵'},{name:'Opa Kurt',face:'👴'},{name:'Tourist',face:'🧑‍🦰'},
+  {name:'Stammgast',face:'🧔'},{name:'Student',face:'🧑‍🎓'},{name:'Taxifahrer',face:'🧑'},
+  {name:'Nachtschwärmer',face:'🥴'},{name:'Frau Kaya',face:'🧕'},{name:'Polizist',face:'👮'},
+  {name:'Bauarbeiter',face:'👷'},{name:'Influencerin',face:'💁‍♀️'},{name:'Rentnerin',face:'👵'},
+];
+/* Autonome Mitarbeiter: bedienen selbst wartende Kunden */
 const STAFF={
-  grill:{name:'Grill-Hilfe (Ahmet)',emo:'🧑‍🍳',wage:10,desc:'Schneidet das Fleisch schon passend vor – du klickst es nur noch ins Gericht.'},
-  prep:{name:'Vorbereiter (Mehmet)',emo:'🧑‍🔧',wage:8,desc:'Legt automatisch die richtige Basis (Döner/Teller/…) bereit.'},
-  kasse:{name:'Kassierer (Ayşe)',emo:'💁',wage:12,desc:'Zählt das Rückgeld automatisch passend ab – du bestätigst nur noch.'},
+  azubi:{name:'Azubi (Emre)',emo:'🧑‍🎓',wage:8,speed:7.0,err:0.18,desc:'Bedient selbstständig wartende Kunden – langsam und manchmal mit Patzern.'},
+  geselle:{name:'Geselle (Ahmet)',emo:'🧑‍🍳',wage:14,speed:5.0,err:0.08,desc:'Bedient wartende Kunden zuverlässig und in gutem Tempo.'},
+  meister:{name:'Dönermeister (Mustafa)',emo:'👨‍🍳',wage:22,speed:3.2,err:0.02,desc:'Bedient wartende Kunden blitzschnell und fast fehlerfrei.'},
 };
 const DENOMS=[1000,500,200,100,50];
 const eur=c=>(c/100).toFixed(2).replace('.',',')+' €';
 
 /* ===== State ===== */
 let state, currentMeat='kalb';
+function ordersForDay(day){return 6+(day-1)*3;}   // Tag1=6, Tag2=9, Tag3=12 … immer mehr Kunden
 function newGame(){ state={money:0,day:1,servedTotal:0,rep:5,dayEarn:0,dayServed:0,dayGoal:40,
-  ordersLeftToday:6,queueCount:5,customer:null,running:false,phase:'make',
+  ordersLeftToday:6,queueCount:5,customer:null,running:false,phase:'make',shopName:'Döner Haus',
   build:{base:null,meat:null,veg:[],sauce:[],drink:null},tray:0,trayType:'kalb',
-  staff:{grill:false,prep:false,kasse:false}}; }
+  staff:{azubi:false,geselle:false,meister:false},staffTimers:{azubi:0,geselle:0,meister:0}}; }
 
 /* ===== Sound ===== */
 let audioCtx=null,muted=false,noiseBuf=null;
@@ -469,13 +489,11 @@ function makeOrder(){const d=state.day;
   const drink=Math.random()<0.45?pick(DRINKS).id:null;
   return{base:pick(baseKeys),meat:{type:meatType,need},veg,sauce,drink};}
 function spawnCustomer(){
-  state.customer={face:pick(FACES),name:pick(NAMES),order:makeOrder()};
-  const o=state.customer.order;
+  const c=pick(CUSTOMERS);
+  state.customer={face:c.face,name:c.name,order:makeOrder()};
   state.build={base:null,meat:null,veg:[],sauce:[],drink:null};state.tray=0;state.phase='make';
-  if(state.staff.prep)state.build.base=o.base;
-  if(state.staff.grill&&o.meat.type!=='falafel'){state.trayType=o.meat.type;state.tray=o.meat.need;}
   renderTray();renderCustomer();renderBoard();
-  setHint(state.staff.prep?'Basis liegt bereit (Vorbereiter). Fleisch aufs Gericht klicken 🥩':'Neue Bestellung! Erst Basis wählen 👇');}
+  setHint('Neue Bestellung! Erst Basis wählen 👇');}
 
 /* ===== Render ===== */
 function renderTop(){el.money.textContent=state.money+' €';el.day.textContent='Tag '+state.day;el.served.textContent=state.servedTotal;
@@ -547,7 +565,6 @@ function toRegister(){
   const paid=[500,1000,2000,5000].find(n=>n>price)||price;
   state.phase='pay';
   reg={price,paid,changeDue:paid-price,perfect,okCount,given:0,tokens:[]};
-  if(state.staff.kasse){let rem=reg.changeDue;for(const dn of DENOMS){while(rem>=dn){reg.tokens.push(dn);reg.given+=dn;rem-=dn;}}}
   openRegister();
 }
 function openRegister(){
@@ -590,15 +607,41 @@ function renderStaff(){
     const row=document.createElement('div');row.className='staffrow';
     row.innerHTML=`<div class="st-emo">${s.emo}</div><div class="st-info"><b>${s.name}</b><div>${s.desc}</div></div><div class="st-wage">${s.wage} €/Tag</div>`;
     const btn=document.createElement('button');btn.className=hired?'st-fire':'st-hire';btn.textContent=hired?'Entlassen':'Einstellen';
-    btn.onclick=()=>{state.staff[k]=!state.staff[k];sfx.click();renderStaff();
-      if(state.staff[k]&&state.customer&&state.phase==='make'){
-        if(k==='prep'&&!state.build.base){state.build.base=state.customer.order.base;renderBoard();}
-        if(k==='grill'&&state.tray===0&&state.customer.order.meat.type!=='falafel'){state.trayType=state.customer.order.meat.type;state.tray=state.customer.order.meat.need;renderTray();}}};
+    btn.onclick=()=>{state.staff[k]=!state.staff[k];if(state.staff[k])state.staffTimers[k]=0;sfx.click();renderStaff();};
     row.appendChild(btn);list.appendChild(row);}
-  $('#wageInfo').textContent=`Aktuelle Lohnkosten: ${wageTotal()} € pro Tag`;
+  $('#wageInfo').innerHTML=`Aktuelle Lohnkosten: <b>${wageTotal()} €</b> pro Tag · Mitarbeiter bedienen wartende Kunden automatisch nebenbei.`;
 }
 $('#staffBtn').onclick=openStaff;
 $('#staffClose').onclick=()=>{$('#staffOverlay').classList.add('hidden');};
+
+/* ===== Autonome Mitarbeiter ===== */
+function priceOfOrder(o){let p=BASES[o.base].price+o.veg.length*50+Math.max(0,o.sauce.length-1)*50+(o.meat.need>=6?100:0)+(o.drink?dById(o.drink).price:0);return Math.round(p/50)*50;}
+function autoServe(k){
+  const w=STAFF[k], o=makeOrder(); let earn=priceOfOrder(o)/100, msg;
+  if(Math.random()<w.err){earn=Math.round(earn*0.5);changeRep(-0.2);msg=`${w.emo} Patzer –`;}
+  else{if(Math.random()<0.5)earn+=1+Math.floor(Math.random()*2);earn=Math.round(earn);msg=`${w.emo}`;}
+  state.money+=earn;state.dayEarn+=earn;state.servedTotal++;state.dayServed++;
+  state.ordersLeftToday--;state.queueCount=Math.max(0,state.ordersLeftToday-1);
+  renderTop();updateQueueFaces();toast(`${msg} +${earn} €`);
+}
+function updateQueueFaces(){const q=$('#queueFaces');if(q)q.textContent=state.queueCount>0?Array.from({length:Math.min(state.queueCount,5)},()=>pick(FACES)).join(''):'— (letzter)';}
+let toastTimer=0;
+function toast(t){const box=$('#toasts');const d=document.createElement('div');d.className='toast';d.textContent=t;box.appendChild(d);
+  setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),300);},1400);
+  while(box.children.length>4)box.removeChild(box.firstChild);}
+let _lastTs=0;
+function loop(ts){const dt=_lastTs?(ts-_lastTs)/1000:0;_lastTs=ts;
+  if(state&&state.running){
+    for(const k of Object.keys(STAFF)){
+      if(!state.staff[k]){state.staffTimers[k]=0;continue;}
+      if(state.ordersLeftToday>1){state.staffTimers[k]+=dt;
+        if(state.staffTimers[k]>=STAFF[k].speed){state.staffTimers[k]=0;autoServe(k);}}
+      else state.staffTimers[k]=0;
+    }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
 
 /* ===== Ablauf ===== */
 function nextCustomerOrEndDay(){state.phase='make';state.ordersLeftToday--;state.queueCount=Math.max(0,state.ordersLeftToday-1);
@@ -614,7 +657,7 @@ function endDay(){state.running=false;
   $('#nextGoal').textContent=met?`Nächstes Tagesziel: ${Math.round(state.dayGoal*1.4)} €`:'Weiter geht\'s – pass auf deinen Ruf auf! (👔 Personal kann helfen)';
   renderTop();$('#dayOverlay').classList.remove('hidden');}
 function nextDay(){$('#dayOverlay').classList.add('hidden');state.day++;state.dayGoal=Math.round(state.dayGoal*1.4);
-  state.dayEarn=0;state.dayServed=0;state.ordersLeftToday=6+Math.floor(state.day*0.9);state.queueCount=state.ordersLeftToday-1;state.running=true;spawnCustomer();}
+  state.dayEarn=0;state.dayServed=0;state.ordersLeftToday=ordersForDay(state.day);state.queueCount=state.ordersLeftToday-1;state.running=true;spawnCustomer();}
 function gameOver(){state.running=false;$('#overSummary').innerHTML=`Dein Ruf ist auf null. Du kamst bis <b>Tag ${state.day}</b> und hast <b>${state.money} €</b> verdient (${state.servedTotal} Kunden).`;$('#overOverlay').classList.remove('hidden');}
 
 /* ===== Helfer ===== */
@@ -629,7 +672,10 @@ function startGame(){newGame();buildStations();renderTop();renderTray();
   currentMeat='kalb';el.spit.className='spit';el.spitLabel.textContent=MEATS.kalb.name;
   [...$('#meatToggle').children].forEach((x,i)=>x.classList.toggle('on',i===0));
   ['startOverlay','overOverlay','dayOverlay','register','staffOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
-  state.running=true;state.ordersLeftToday=6;spawnCustomer();}
+  const nm=($('#shopName').value||'').trim();state.shopName=nm||'Döner Haus';
+  document.querySelector('.mb-sign').textContent='🥙 '+state.shopName.toUpperCase();
+  document.title='🥙 '+state.shopName;
+  state.running=true;state.ordersLeftToday=ordersForDay(1);state.queueCount=state.ordersLeftToday-1;spawnCustomer();}
 $('#startBtn').onclick=()=>{ensureAudio();startGame();};
 $('#restartBtn').onclick=startGame;
 $('#nextDayBtn').onclick=nextDay;
