@@ -237,13 +237,27 @@
   .load-bar{width:min(300px,72vw); height:12px; background:#2a2117; border-radius:8px; overflow:hidden; box-shadow:inset 0 2px 5px rgba(0,0,0,.6);}
   .load-fill{height:100%; width:0%; background:linear-gradient(90deg,#f6a623,#e8532b); border-radius:8px; transition:width 1.9s cubic-bezier(.4,.1,.3,1);}
   .load-tip{font-size:13px; color:#e8c9a0; font-weight:700; min-height:18px;}
-  /* Start-Hero */
-  #startOverlay .panel{background:radial-gradient(600px 300px at 50% 0%, #fff6e9, #fff);}
-  .starthero{display:flex; flex-direction:column; align-items:center; gap:4px; margin-bottom:10px;}
-  .starthero .sh-emo{font-size:56px; animation:bob 2.2s ease-in-out infinite; filter:drop-shadow(0 5px 6px rgba(0,0,0,.2));}
-  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-8px) rotate(4deg);}}
-  .starthero h1{font-size:28px; color:var(--accent); margin:0;}
-  .starthero .sh-tag{font-size:13px; color:var(--muted); font-weight:700;}
+  /* Vollseiten-Startbildschirm */
+  #startOverlay{background:radial-gradient(1100px 800px at 50% 12%, #402a18, #120b06); backdrop-filter:none; padding:0; align-items:stretch;}
+  .startscreen{width:100%; height:100%; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:14px; padding:26px 18px 14px;}
+  .ss-top{display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:auto;}
+  .starthero{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .starthero .sh-emo{font-size:64px; animation:bob 2.2s ease-in-out infinite; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-9px) rotate(4deg);}}
+  .starthero h1{font-size:34px; color:var(--accent2); margin:0; text-shadow:0 0 18px rgba(246,166,35,.45); letter-spacing:.5px;}
+  .starthero .sh-tag{font-size:14px; color:#e8c9a0; font-weight:700; text-align:center;}
+  #startOverlay .best{color:#ffd36a; font-size:14px; font-weight:800; margin:0;}
+  .ss-card{width:100%; max-width:440px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px; box-shadow:0 8px 22px rgba(0,0,0,.3);}
+  .ss-card .nameLabel{color:#e8dccb;} .ss-card .nameInput{margin-bottom:12px;}
+  .ss-h{font-size:12px; font-weight:800; color:#ffd9a8; text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; text-align:center;}
+  .ss-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .ss-actions .go{margin:0; flex:1 1 150px;}
+  .ss-settings{display:flex; gap:8px; flex-wrap:wrap; justify-content:center;}
+  .setbtn{background:#2f2419; color:#f4ead9; border:2px solid #4a3a28; border-radius:12px; padding:11px 14px; font-size:13px; font-weight:800; cursor:pointer; transition:transform .08s, background .12s;}
+  .setbtn:hover{background:#3d2f20;} .setbtn:active{transform:scale(.96);}
+  .setbtn.danger{border-color:#7a3030; color:#ffb3b3;} .setbtn.danger:hover{background:#3a2020;}
+  #startOverlay .rules{background:rgba(0,0,0,.25); color:#e6d8c6; border:1px solid rgba(255,255,255,.08);}
+  .ss-version{margin-top:auto; padding-top:8px; color:#9a8a76; font-size:12px; font-weight:700; letter-spacing:.5px;}
 
   @media (max-width:820px){
     html,body{height:auto; min-height:100%; overflow-y:auto; display:block;}
@@ -272,18 +286,18 @@
   <div id="topbar">
     <div class="tb-brand">🥙 Dönermann Simulator</div>
     <div class="tb-stats">
-      <div class="stat"><b id="money">0 €</b><span>Kasse</span></div>
-      <div class="stat"><b id="day">Tag 1</b><span>Schicht</span></div>
-      <div class="stat lvlstat"><b id="level">Lv 1</b><span>Level</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div></div>
-      <div class="stat"><b id="served">0</b><span>Bedient</span></div>
+      <div class="stat"><b id="money">0 €</b><span data-i18n="st_cash">Kasse</span></div>
+      <div class="stat"><b id="day">Tag 1</b><span data-i18n="st_shift">Schicht</span></div>
+      <div class="stat lvlstat"><b id="level">Lv 1</b><span data-i18n="st_level">Level</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div></div>
+      <div class="stat"><b id="served">0</b><span data-i18n="st_served">Bedient</span></div>
       <div class="combo" id="combo">🔥 x1</div>
       <div class="rep" id="rep"></div>
     </div>
     <div class="tb-btns">
-      <button class="iconBtn" id="shopBtn" title="Laden & Upgrades">🛒 Laden</button>
-      <button class="iconBtn" id="buyBtn" title="Einkaufsladen">🧺 Einkauf</button>
-      <button class="iconBtn" id="branchBtn" title="Filialen-Verwaltung">🏪 Filialen</button>
-      <button class="iconBtn" id="staffBtn" title="Personal">👔 Team</button>
+      <button class="iconBtn" id="shopBtn" data-i18n="btn_shop">🛒 Laden</button>
+      <button class="iconBtn" id="buyBtn" data-i18n="btn_buy">🧺 Einkauf</button>
+      <button class="iconBtn" id="branchBtn" data-i18n="btn_branch">🏪 Filialen</button>
+      <button class="iconBtn" id="staffBtn" data-i18n="btn_team">👔 Team</button>
       <button class="iconBtn" id="musicBtn" title="Musik an/aus">🎵</button>
       <button class="iconBtn" id="muteBtn" title="Ton an/aus">🔊</button>
     </div>
@@ -293,18 +307,18 @@
     <div id="counterCol">
       <div class="frontglass">
         <div class="signboard">
-          <div class="sign-row"><div class="mb-sign" id="mbSign">🥙 DÖNER HAUS</div><div class="mb-open">GEÖFFNET</div></div>
+          <div class="sign-row"><div class="mb-sign" id="mbSign">🥙 DÖNER HAUS</div><div class="mb-open" data-i18n="open">GEÖFFNET</div></div>
           <div class="eventchip hide" id="eventChip"></div>
         </div>
-        <div class="front-title">— Kunde an der Theke —</div>
+        <div class="front-title" data-i18n="front_title">— Kunde an der Theke —</div>
         <div id="customerCard">
           <div class="cust-face" id="custFace">🙂</div>
           <div class="bubble"><h4 id="custName">Kunde</h4><div class="custsay" id="custSay"></div><div class="order-list" id="orderList"></div></div>
-          <div class="waitline" id="waitline">wartet auf seine Bestellung…</div>
+          <div class="waitline" id="waitline" data-i18n="wait">wartet auf seine Bestellung…</div>
         </div>
-        <div class="queue"><span>Warteschlange:</span><span class="q-faces" id="queueFaces">—</span></div>
+        <div class="queue"><span data-i18n="queue">Warteschlange:</span><span class="q-faces" id="queueFaces">—</span></div>
       </div>
-      <div class="counter-edge">▬▬▬  T H E K E  ▬▬▬</div>
+      <div class="counter-edge" data-i18n="counter_edge">▬▬▬  T H E K E  ▬▬▬</div>
     </div>
 
     <div id="kitchen">
@@ -312,27 +326,27 @@
 
       <div class="work">
         <div class="kcol" id="kmid">
-          <div class="section-title">Belegstation — Klick aufs Gericht legt das Fleisch rein 🥩</div>
+          <div class="section-title" data-i18n="sec_build">Belegstation — Klick aufs Gericht legt das Fleisch rein 🥩</div>
           <div class="board-wrap"><div class="board-inner" id="board"><div class="bread-empty">👉 Wähle unten eine Basis…</div></div></div>
-          <div class="section-title">Basis wählen</div>
+          <div class="section-title" data-i18n="sec_base">Basis wählen</div>
           <div class="gn-row" id="baseRow"></div>
-          <div class="section-title">Salatbar — greifen & ins Gericht ziehen (oder antippen) 🤏</div>
+          <div class="section-title" data-i18n="sec_salad">Salatbar — greifen & ins Gericht ziehen (oder antippen) 🤏</div>
           <div class="saladbar"><div class="gn-row" id="vegRow"></div></div>
-          <div class="section-title">Soßen</div>
+          <div class="section-title" data-i18n="sec_sauce">Soßen</div>
           <div class="saladbar"><div class="gn-row" id="sauceRow"></div></div>
-          <div class="section-title">Kühlschrank — Getränk antippen 🧊</div>
+          <div class="section-title" data-i18n="sec_fridge">Kühlschrank — Getränk antippen 🧊</div>
           <div class="fridge"><div class="gn-row" id="drinkRow"></div></div>
-          <div class="section-title">Fritteuse & Beilagen — Pommes tippen → frittieren → nochmal tippen 🍟</div>
+          <div class="section-title" data-i18n="sec_fry">Fritteuse & Beilagen — Pommes tippen → frittieren → nochmal tippen 🍟</div>
           <div class="fryer"><div class="gn-row" id="sideRow"></div></div>
           <div class="hint2" id="hint"></div>
           <div id="actions">
-            <button class="btn serve" id="serveBtn">🧾 Fertig – zur Kasse</button>
-            <button class="btn trash" id="trashBtn">🗑️ Neu</button>
+            <button class="btn serve" id="serveBtn" data-i18n="btn_serve">🧾 Fertig – zur Kasse</button>
+            <button class="btn trash" id="trashBtn" data-i18n="btn_trash">🗑️ Neu</button>
           </div>
         </div>
 
         <div class="kcol" id="kright">
-          <div class="section-title">Dönergrill</div>
+          <div class="section-title" data-i18n="grill">Dönergrill</div>
           <div class="grillhead"></div>
           <div class="meat-toggle" id="meatToggle"></div>
           <div class="cut-station" id="cutStation">
@@ -341,7 +355,7 @@
             <div class="spit-label" id="spitLabel">↕ streichen</div><div class="knife" id="knife">🔪</div>
           </div>
           <div class="tray" id="tray" title="Klick aufs Gericht legt das Fleisch rein"><div class="pile" id="pile"></div><b id="sliceCount">0</b></div>
-          <div class="tray-cap">Fleisch-Schale</div>
+          <div class="tray-cap" data-i18n="traycap">Fleisch-Schale</div>
         </div>
       </div>
     </div>
@@ -355,74 +369,95 @@
     <div class="load-inner">
       <div class="load-spit">🥙</div>
       <div class="load-title">Dönermann Simulator</div>
-      <div class="load-sub">Deine Dönerbude wird vorbereitet…</div>
+      <div class="load-sub" data-i18n="load_sub">Deine Dönerbude wird vorbereitet…</div>
       <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
       <div class="load-tip" id="loadTip">Heize den Grill vor…</div>
     </div>
   </div>
 
   <!-- Start -->
-  <div class="overlay" id="startOverlay"><div class="panel">
-    <div class="starthero">
-      <div class="sh-emo">🥙</div>
-      <h1>Dönermann Simulator</h1>
-      <div class="sh-tag">Schneide, belege, kassiere – bau dein Döner-Imperium!</div>
+  <div class="overlay" id="startOverlay">
+    <div class="startscreen">
+      <div class="ss-top">
+        <div class="starthero">
+          <div class="sh-emo">🥙</div>
+          <h1>Dönermann Simulator</h1>
+          <div class="sh-tag" data-i18n="tagline">Schneide, belege, kassiere – bau dein Döner-Imperium!</div>
+        </div>
+        <div class="best" id="bestLine"></div>
+      </div>
+
+      <div class="ss-card">
+        <label class="nameLabel" data-i18n="name_label">Wie soll deine Bude heißen?</label>
+        <input id="shopName" class="nameInput" type="text" maxlength="22" data-i18n-ph="name_ph" placeholder="z. B. Kral Döner, Berlin Kebap …" value="Döner Haus">
+        <div class="ss-actions">
+          <button class="go" id="continueBtn" data-i18n="btn_continue">▶️ Weiter</button>
+          <button class="go" id="startBtn" data-i18n="btn_new">Neues Spiel 🚀</button>
+        </div>
+      </div>
+
+      <div class="ss-card">
+        <div class="ss-h" data-i18n="set_h">⚙️ Einstellungen</div>
+        <div class="ss-settings">
+          <button class="setbtn" id="setLang">🌐 Deutsch</button>
+          <button class="setbtn" id="setMusic">🎵 Musik: An</button>
+          <button class="setbtn" id="setSound">🔊 Sound: An</button>
+          <button class="setbtn" id="setHowto">❓ Anleitung</button>
+          <button class="setbtn danger" id="setReset">🗑️ Spielstand löschen</button>
+        </div>
+      </div>
+
+      <div class="ss-card hidden" id="howtoCard">
+        <div class="ss-h" data-i18n="howto_h">📖 So spielst du</div>
+        <div class="rules" data-i18n-html="rules"></div>
+      </div>
+
+      <div class="ss-version" id="ssVersion"></div>
     </div>
-    <div class="best" id="bestLine"></div>
-    <div class="rules">
-      🍽️ <b>Basis</b> wählen · 🔪 <b>Fleisch schneiden</b> & aufs Gericht klicken · 🥬 <b>Gemüse/Soße</b> ziehen · 🧊 <b>Getränk</b> antippen · 🧾 <b>Kasse</b> & Rückgeld.<br>
-      ⭐ <b>Level</b> = neue Zutaten · 🛒 <b>Laden</b>: Upgrades, 🍽️ <b>Sortiment</b> kaufen (Grillgemüse, Yufka …) & 🌟 <b>Franchise</b> für dauerhaften Ruhm-Bonus · 👔 <b>Team</b> bedient autonom · 🔥 <b>Combos</b> & 🎲 <b>Events</b> & 💎 VIPs.
-    </div>
-    <label class="nameLabel">Wie soll deine Bude heißen?</label>
-    <input id="shopName" class="nameInput" type="text" maxlength="22" placeholder="z. B. Kral Döner, Berlin Kebap …" value="Döner Haus">
-    <div>
-      <button class="go" id="continueBtn">▶️ Weiter</button>
-      <button class="go" id="startBtn">Neues Spiel 🚀</button>
-    </div>
-  </div></div>
+  </div>
 
   <!-- Shop -->
   <div class="overlay hidden" id="shopOverlay"><div class="panel">
-    <h2>🛒 Laden</h2>
+    <h2 data-i18n="shop_h">🛒 Laden</h2>
     <div class="best" id="shopMoney"></div>
-    <div class="subtab"><button id="tabUpg" class="on">🔧 Upgrades</button><button id="tabMenu">🍽️ Sortiment</button><button id="tabFame">🌟 Franchise</button><button id="tabAch">🏆 Erfolge</button></div>
+    <div class="subtab"><button id="tabUpg" class="on" data-i18n="tab_upg">🔧 Upgrades</button><button id="tabMenu" data-i18n="tab_menu">🍽️ Sortiment</button><button id="tabFame" data-i18n="tab_fame">🌟 Franchise</button><button id="tabAch" data-i18n="tab_ach">🏆 Erfolge</button></div>
     <div id="shopUpg"></div>
     <div id="shopMenu" class="hidden"></div>
     <div id="shopFame" class="hidden"></div>
     <div id="shopAch" class="hidden"><div class="achgrid" id="achGrid"></div></div>
-    <button class="go" id="shopClose">Zurück →</button>
+    <button class="go" id="shopClose" data-i18n="close_back">Zurück →</button>
   </div></div>
 
   <!-- Filialen-Verwaltung -->
   <div class="overlay hidden" id="branchOverlay"><div class="panel">
-    <h2>🏪 Filialen-Verwaltung</h2>
-    <p>Baue jede Filiale aus, um ihr passives Einkommen zu steigern.</p>
+    <h2 data-i18n="branch_h">🏪 Filialen-Verwaltung</h2>
+    <p data-i18n="branch_p">Baue jede Filiale aus, um ihr passives Einkommen zu steigern.</p>
     <div class="best" id="branchMoney"></div>
     <div id="branchList"></div>
     <button class="go" id="branchBuy">➕ Neue Filiale</button>
     <div class="day-goal" id="branchTotal"></div>
-    <button class="go ghost" id="branchClose">Schließen</button>
+    <button class="go ghost" id="branchClose" data-i18n="close">Schließen</button>
   </div></div>
 
   <!-- Einkaufsladen -->
   <div class="overlay hidden" id="buyOverlay"><div class="panel">
-    <h2>🧺 Einkaufsladen</h2>
-    <p>Jede Zutat reicht für 15 Portionen. Ist sie leer, hier Nachschub kaufen (Packung = +15). Dein Vorrat und der Team-Vorrat der Mitarbeiter sind getrennt.</p>
+    <h2 data-i18n="buy_h">🧺 Einkaufsladen</h2>
+    <p data-i18n="buy_p">Jede Zutat reicht für 15 Portionen. Ist sie leer, hier Nachschub kaufen (Packung = +15). Dein Vorrat und der Team-Vorrat der Mitarbeiter sind getrennt.</p>
     <div class="best" id="buyMoney"></div>
     <div id="buyList"></div>
-    <button class="go" id="buyAll">🛒 Deinen Vorrat auffüllen</button>
-    <button class="go" id="buyTeam">👥 Team-Vorrat auffüllen</button>
-    <button class="go ghost" id="buyClose">Schließen</button>
+    <button class="go" id="buyAll" data-i18n="buy_all">🛒 Deinen Vorrat auffüllen</button>
+    <button class="go" id="buyTeam" data-i18n="buy_team">👥 Team-Vorrat auffüllen</button>
+    <button class="go ghost" id="buyClose" data-i18n="close">Schließen</button>
   </div></div>
 
   <!-- Staff -->
   <div class="overlay hidden" id="staffOverlay"><div class="panel">
-    <h2>👔 Team</h2>
-    <p>Mitarbeiter bedienen wartende Kunden <b>autonom</b> – kosten aber Tageslohn.</p>
+    <h2 data-i18n="staff_h">👔 Team</h2>
+    <p data-i18n="staff_p">Mitarbeiter bedienen wartende Kunden <b>autonom</b> – kosten aber Tageslohn.</p>
     <div class="slotinfo" id="slotInfo"></div>
     <div id="staffList"></div>
     <div class="day-goal" id="wageInfo"></div>
-    <button class="go" id="staffClose">Weiter arbeiten →</button>
+    <button class="go" id="staffClose" data-i18n="staff_close">Weiter arbeiten →</button>
   </div></div>
 
   <!-- Register -->
@@ -430,11 +465,11 @@
     <div class="reg-top"><div class="reg-cust" id="regFace">🙂</div><div class="reg-say" id="regSay"></div></div>
     <div class="quality" id="regQuality"></div>
     <div class="display" id="regDisplay"></div>
-    <div class="drawer-label">Kassenlade — Rückgeld zusammenklicken:</div>
+    <div class="drawer-label" data-i18n="reg_dl1">Kassenlade — Rückgeld zusammenklicken:</div>
     <div class="cash-row" id="cashRow"></div>
-    <div class="drawer-label">Herausgegeben (Klick entfernt):</div>
+    <div class="drawer-label" data-i18n="reg_dl2">Herausgegeben (Klick entfernt):</div>
     <div class="given" id="givenBox"><span class="empty">noch nichts</span></div>
-    <div class="reg-actions"><button class="btn-reset" id="regReset">↺ Zurück</button><button class="btn-confirm" id="regConfirm">✅ Rückgeld geben</button></div>
+    <div class="reg-actions"><button class="btn-reset" id="regReset" data-i18n="reg_reset">↺ Zurück</button><button class="btn-confirm" id="regConfirm" data-i18n="reg_confirm">✅ Rückgeld geben</button></div>
   </div></div>
 
   <!-- Day -->
@@ -443,35 +478,38 @@
     <p id="daySummary"></p>
     <div class="eventbanner" id="nextEvent"></div>
     <div class="day-goal" id="nextGoal"></div>
-    <button class="go" id="nextDayBtn">Nächste Schicht →</button>
+    <button class="go" id="nextDayBtn" data-i18n="day_next">Nächste Schicht →</button>
   </div></div>
 
   <!-- Game over -->
   <div class="overlay hidden" id="overOverlay"><div class="panel">
-    <h2>Bude dicht! 😞</h2><div class="big">⭐</div><p id="overSummary"></p>
-    <button class="go" id="restartBtn">Neues Spiel</button>
+    <h2 data-i18n="over_h">Bude dicht! 😞</h2><div class="big">⭐</div><p id="overSummary"></p>
+    <button class="go" id="restartBtn" data-i18n="over_restart">Neues Spiel</button>
   </div></div>
 </div>
 
 <script>
 /* ===== Katalog (mit Freischalt-Level lvl) ===== */
-const MEATS={kalb:{name:'Kalbfleisch',emo:'🥩',lvl:1},haehnchen:{name:'Hähnchen',emo:'🍗',lvl:1},falafel:{name:'Falafel',emo:'🧆',lvl:1},lamm:{name:'Lamm',emo:'🍖',lvl:3},
-  adana:{name:'Adana',emo:'🌶️',buy:700},koefte:{name:'Köfte',emo:'🍡',buy:900}};
+const MEATS={kalb:{name:'Kalbfleisch',en:'Veal',emo:'🥩',lvl:1},haehnchen:{name:'Hähnchen',en:'Chicken',emo:'🍗',lvl:1},falafel:{name:'Falafel',emo:'🧆',lvl:1},lamm:{name:'Lamm',en:'Lamb',emo:'🍖',lvl:3},
+  adana:{name:'Adana',emo:'🌶️',buy:700},koefte:{name:'Köfte',en:'Kofta',emo:'🍡',buy:900}};
 const SPIT=['kalb','haehnchen','lamm','adana','koefte'];
 const BASES={fladen:{name:'Döner',emo:'🫓',price:500,wrap:'foil',lvl:1},duerum:{name:'Dürüm',emo:'🌯',price:600,wrap:'foil',lvl:1},
-  teller:{name:'Dönerteller',emo:'🍽️',price:800,wrap:'box',lvl:2},bowl:{name:'Dönerbowl',emo:'🥣',price:700,wrap:'box',lvl:3},
+  teller:{name:'Dönerteller',en:'Döner plate',emo:'🍽️',price:800,wrap:'box',lvl:2},bowl:{name:'Dönerbowl',en:'Döner bowl',emo:'🥣',price:700,wrap:'box',lvl:3},
   lahmacun:{name:'Lahmacun',emo:'🫓',price:650,wrap:'foil',lvl:5},
-  yufka:{name:'Yufka',emo:'🌯',price:700,wrap:'foil',buy:500},lavash:{name:'Lavaş',emo:'🫓',price:650,wrap:'foil',buy:700},boxbowl:{name:'XXL-Box',emo:'📦',price:1100,wrap:'box',buy:1200}};
-const VEG=[{id:'salat',name:'Salat',emo:'🥬',lvl:1},{id:'tomate',name:'Tomaten',emo:'🍅',lvl:1},{id:'zwiebel',name:'Zwiebeln',emo:'🧅',lvl:1},{id:'gurke',name:'Gurken',emo:'🥒',lvl:1},{id:'rotkohl',name:'Rotkohl',emo:'🟣',lvl:1},{id:'kaese',name:'Käse',emo:'🧀',lvl:1},{id:'peperoni',name:'Peperoni',emo:'🌶️',lvl:2},{id:'oliven',name:'Oliven',emo:'🫒',lvl:3},{id:'mais',name:'Mais',emo:'🌽',lvl:4},
-  {id:'grillgemuese',name:'Grillgemüse',emo:'🫑',buy:400},{id:'hirtenkaese',name:'Hirtenkäse',emo:'🧀',buy:350},{id:'jalapeno',name:'Jalapeños',emo:'🌶️',buy:300},{id:'rucola',name:'Rucola',emo:'🥬',buy:300},{id:'granatapfel',name:'Granatapfel',emo:'🔴',buy:450}];
-const SAUCE=[{id:'knoblauch',name:'Knoblauch',emo:'🧄',lvl:1},{id:'scharf',name:'Schaff',emo:'🌶️',lvl:1},{id:'kraeuter',name:'Kräuter',emo:'🌿',lvl:1},{id:'cocktail',name:'Cocktail',emo:'🍹',lvl:1},{id:'joghurt',name:'Joghurt',emo:'🥣',lvl:2},{id:'curry',name:'Curry',emo:'🍛',lvl:4},
-  {id:'sriracha',name:'Sriracha',emo:'🌶️',buy:350},{id:'mango',name:'Mango-Curry',emo:'🥭',buy:400},{id:'tahin',name:'Tahin',emo:'🥜',buy:400}];
-const DRINKS=[{id:'ayran',name:'Ayran',emo:'🥛',price:150,lvl:1},{id:'uludag',name:'Uludağ',emo:'🍋',price:200,lvl:1},{id:'cola',name:'Cola',emo:'🥤',price:200,lvl:1},{id:'wasser',name:'Wasser',emo:'💧',price:100,lvl:1},{id:'fanta',name:'Fanta',emo:'🍊',price:200,lvl:2},{id:'redbull',name:'Red Bull',emo:'🐂',price:300,lvl:4},
-  {id:'salgam',name:'Şalgam',emo:'🧃',price:200,buy:250},{id:'cay',name:'Çay',emo:'🍵',price:100,buy:200},{id:'granatsaft',name:'Granatapfelsaft',emo:'🧃',price:300,buy:400}];
-const SIDES=[{id:'pommes',name:'Pommes',emo:'🍟',price:250,lvl:1,cook:true},{id:'boerek',name:'Börek',emo:'🥟',price:200,lvl:2,cook:true},{id:'sucuk',name:'Sucuk',emo:'🌭',price:300,lvl:3,cook:true},{id:'salatbeil',name:'Salat',emo:'🥗',price:200,lvl:4,cook:false},
-  {id:'sigara',name:'Sigara Böreği',emo:'🥟',price:300,buy:400,cook:true},{id:'humus',name:'Humus',emo:'🫓',price:250,buy:350,cook:false},{id:'suesskart',name:'Süßkartoffel-Pommes',emo:'🍠',price:350,buy:450,cook:true}];
+  yufka:{name:'Yufka',emo:'🌯',price:700,wrap:'foil',buy:500},lavash:{name:'Lavaş',emo:'🫓',price:650,wrap:'foil',buy:700},boxbowl:{name:'XXL-Box',en:'XXL box',emo:'📦',price:1100,wrap:'box',buy:1200}};
+const VEG=[{id:'salat',name:'Salat',en:'Lettuce',emo:'🥬',lvl:1},{id:'tomate',name:'Tomaten',en:'Tomato',emo:'🍅',lvl:1},{id:'zwiebel',name:'Zwiebeln',en:'Onions',emo:'🧅',lvl:1},{id:'gurke',name:'Gurken',en:'Cucumber',emo:'🥒',lvl:1},{id:'rotkohl',name:'Rotkohl',en:'Red cabbage',emo:'🟣',lvl:1},{id:'kaese',name:'Käse',en:'Cheese',emo:'🧀',lvl:1},{id:'peperoni',name:'Peperoni',en:'Peperoni',emo:'🌶️',lvl:2},{id:'oliven',name:'Oliven',en:'Olives',emo:'🫒',lvl:3},{id:'mais',name:'Mais',en:'Corn',emo:'🌽',lvl:4},
+  {id:'grillgemuese',name:'Grillgemüse',en:'Grilled veg',emo:'🫑',buy:400},{id:'hirtenkaese',name:'Hirtenkäse',en:'Feta',emo:'🧀',buy:350},{id:'jalapeno',name:'Jalapeños',en:'Jalapeños',emo:'🌶️',buy:300},{id:'rucola',name:'Rucola',en:'Arugula',emo:'🥬',buy:300},{id:'granatapfel',name:'Granatapfel',en:'Pomegranate',emo:'🔴',buy:450}];
+const SAUCE=[{id:'knoblauch',name:'Knoblauch',en:'Garlic',emo:'🧄',lvl:1},{id:'scharf',name:'Schaff',en:'Spicy',emo:'🌶️',lvl:1},{id:'kraeuter',name:'Kräuter',en:'Herb',emo:'🌿',lvl:1},{id:'cocktail',name:'Cocktail',en:'Cocktail',emo:'🍹',lvl:1},{id:'joghurt',name:'Joghurt',en:'Yogurt',emo:'🥣',lvl:2},{id:'curry',name:'Curry',en:'Curry',emo:'🍛',lvl:4},
+  {id:'sriracha',name:'Sriracha',en:'Sriracha',emo:'🌶️',buy:350},{id:'mango',name:'Mango-Curry',en:'Mango curry',emo:'🥭',buy:400},{id:'tahin',name:'Tahin',en:'Tahini',emo:'🥜',buy:400}];
+const DRINKS=[{id:'ayran',name:'Ayran',emo:'🥛',price:150,lvl:1},{id:'uludag',name:'Uludağ',emo:'🍋',price:200,lvl:1},{id:'cola',name:'Cola',en:'Coke',emo:'🥤',price:200,lvl:1},{id:'wasser',name:'Wasser',en:'Water',emo:'💧',price:100,lvl:1},{id:'fanta',name:'Fanta',emo:'🍊',price:200,lvl:2},{id:'redbull',name:'Red Bull',emo:'🐂',price:300,lvl:4},
+  {id:'salgam',name:'Şalgam',emo:'🧃',price:200,buy:250},{id:'cay',name:'Çay',emo:'🍵',price:100,buy:200},{id:'granatsaft',name:'Granatapfelsaft',en:'Pomegranate juice',emo:'🧃',price:300,buy:400}];
+const SIDES=[{id:'pommes',name:'Pommes',en:'Fries',emo:'🍟',price:250,lvl:1,cook:true},{id:'boerek',name:'Börek',emo:'🥟',price:200,lvl:2,cook:true},{id:'sucuk',name:'Sucuk',emo:'🌭',price:300,lvl:3,cook:true},{id:'salatbeil',name:'Salat',en:'Salad',emo:'🥗',price:200,lvl:4,cook:false},
+  {id:'sigara',name:'Sigara Böreği',emo:'🥟',price:300,buy:400,cook:true},{id:'humus',name:'Humus',en:'Hummus',emo:'🫓',price:250,buy:350,cook:false},{id:'suesskart',name:'Süßkartoffel-Pommes',en:'Sweet potato fries',emo:'🍠',price:350,buy:450,cook:true}];
 const AMOUNT={2:'wenig Fleisch',4:'normal',6:'viel Fleisch'};
+const AMOUNT_EN={2:'less meat',4:'normal',6:'extra meat'};
+function amountTxt(n){return L(AMOUNT[n]||'normal',AMOUNT_EN[n]||'normal');}
 const vById=id=>VEG.find(v=>v.id===id), sById=id=>SAUCE.find(s=>s.id===id), dById=id=>DRINKS.find(d=>d.id===id), xById=id=>SIDES.find(s=>s.id===id);
+function nm(x){return (lang==='en'&&x&&x.en)?x.en:(x?x.name:'');}
 const FACES=['🙂','😀','😎','🧔','👩','👨','🧑','👵','👴','🧕','👱','🤠'];
 const CUSTOMERS=[
   {name:'Ali',face:'🧔'},{name:'Frau Schmidt',face:'👩'},{name:'Herr Yılmaz',face:'👨'},{name:'Lisa',face:'👧'},
@@ -480,48 +518,90 @@ const CUSTOMERS=[
   {name:'Nachtschwärmer',face:'🥴'},{name:'Frau Kaya',face:'🧕'},{name:'Polizist',face:'👮'},{name:'Bauarbeiter',face:'👷'},
   {name:'Influencerin',face:'💁‍♀️'},{name:'Rentnerin',face:'👵'},{name:'Fußballfan',face:'🧑‍🦱'},{name:'Kind',face:'🧒'}];
 const STAFF={
-  aushilfe:{name:'Aushilfe (Deniz)',emo:'🧍',wage:6,speed:8.5,err:0.22,desc:'Sehr günstig, aber langsam und fehleranfällig.'},
-  azubi:{name:'Azubi (Emre)',emo:'🧑‍🎓',wage:9,speed:6.5,err:0.15,desc:'Solide Nachwuchskraft, gelegentliche Patzer.'},
-  geselle:{name:'Geselle (Ahmet)',emo:'🧑‍🍳',wage:15,speed:4.8,err:0.07,desc:'Zuverlässig und in gutem Tempo.'},
-  meister:{name:'Dönermeister (Mustafa)',emo:'👨‍🍳',wage:24,speed:3.2,err:0.02,desc:'Schnell und fast fehlerfrei.'},
-  gott:{name:'Grill-Gott (Baba)',emo:'🧙',wage:40,speed:2.0,err:0.0,desc:'Legendär: blitzschnell, niemals ein Fehler.'}};
+  aushilfe:{name:'Aushilfe (Deniz)',nameEn:'Helper (Deniz)',emo:'🧍',wage:6,speed:8.5,err:0.22,desc:'Sehr günstig, aber langsam und fehleranfällig.',descEn:'Very cheap, but slow and error-prone.'},
+  azubi:{name:'Azubi (Emre)',nameEn:'Trainee (Emre)',emo:'🧑‍🎓',wage:9,speed:6.5,err:0.15,desc:'Solide Nachwuchskraft, gelegentliche Patzer.',descEn:'Solid rookie, occasional slip-ups.'},
+  geselle:{name:'Geselle (Ahmet)',nameEn:'Journeyman (Ahmet)',emo:'🧑‍🍳',wage:15,speed:4.8,err:0.07,desc:'Zuverlässig und in gutem Tempo.',descEn:'Reliable and at a good pace.'},
+  meister:{name:'Dönermeister (Mustafa)',nameEn:'Döner Master (Mustafa)',emo:'👨‍🍳',wage:24,speed:3.2,err:0.02,desc:'Schnell und fast fehlerfrei.',descEn:'Fast and almost error-free.'},
+  gott:{name:'Grill-Gott (Baba)',nameEn:'Grill God (Baba)',emo:'🧙',wage:40,speed:2.0,err:0.0,desc:'Legendär: blitzschnell, niemals ein Fehler.',descEn:'Legendary: lightning fast, never a mistake.'}};
 const UPG={
-  kasse:{emo:'🧾',name:'Digitale Kasse',desc:'+25% Trinkgeld pro Stufe',max:4,cost:l=>150*(l+1)},
-  marketing:{emo:'💡',name:'Leuchtreklame',desc:'+3 Kunden pro Tag',max:5,cost:l=>200*(l+1)},
-  slots:{emo:'🏢',name:'Personalbüro',desc:'+1 Mitarbeiter-Slot',max:5,cost:l=>260*(l+1)},
-  grill:{emo:'🔥',name:'Heißerer Grill',desc:'Team arbeitet 12% schneller',max:4,cost:l=>230*(l+1)},
-  auto:{emo:'📦',name:'Auto-Nachschub (Lieferdienst)',desc:'Kauft Zutaten für Laden & Team automatisch nach – nie mehr leer.',max:1,cost:l=>1200}};
+  kasse:{emo:'🧾',name:'Digitale Kasse',nameEn:'Digital register',desc:'+25% Trinkgeld pro Stufe',descEn:'+25% tips per level',max:4,cost:l=>150*(l+1)},
+  marketing:{emo:'💡',name:'Leuchtreklame',nameEn:'Neon sign',desc:'+3 Kunden pro Tag',descEn:'+3 customers per day',max:5,cost:l=>200*(l+1)},
+  slots:{emo:'🏢',name:'Personalbüro',nameEn:'HR office',desc:'+1 Mitarbeiter-Slot',descEn:'+1 staff slot',max:5,cost:l=>260*(l+1)},
+  grill:{emo:'🔥',name:'Heißerer Grill',nameEn:'Hotter grill',desc:'Team arbeitet 12% schneller',descEn:'Staff work 12% faster',max:4,cost:l=>230*(l+1)},
+  auto:{emo:'📦',name:'Auto-Nachschub (Lieferdienst)',nameEn:'Auto-restock (delivery)',desc:'Kauft Zutaten für Laden & Team automatisch nach – nie mehr leer.',descEn:'Auto-buys ingredients for shop & team – never empty.',max:1,cost:l=>1200}};
 const EVENTS=[
-  {id:'rush',name:'🏙️ Feierabend-Rush',desc:'Viele hungrige Kunden!',cust:1.6,tip:1},
-  {id:'match',name:'⚽ Spieltag',desc:'Volle Bude & Trinkgeld ×1,5!',cust:1.4,tip:1.5},
-  {id:'rain',name:'🌧️ Regentag',desc:'Weniger Kundschaft unterwegs.',cust:0.6,tip:1},
-  {id:'happy',name:'🎉 Happy Hour',desc:'Doppeltes Trinkgeld!',cust:1,tip:2},
-  {id:'critic',name:'📝 Restaurantkritiker',desc:'Perfekt = extra Ruf, Pfusch = doppelt schlecht.',cust:1,tip:1,critic:true},
-  {id:'tour',name:'🚌 Reisegruppe',desc:'Ein Bus voller Touristen!',cust:1.8,tip:1}];
+  {id:'rush',name:'🏙️ Feierabend-Rush',nameEn:'🏙️ Rush hour',cust:1.6,tip:1},
+  {id:'match',name:'⚽ Spieltag',nameEn:'⚽ Match day',cust:1.4,tip:1.5},
+  {id:'rain',name:'🌧️ Regentag',nameEn:'🌧️ Rainy day',cust:0.6,tip:1},
+  {id:'happy',name:'🎉 Happy Hour',nameEn:'🎉 Happy hour',cust:1,tip:2},
+  {id:'critic',name:'📝 Restaurantkritiker',nameEn:'📝 Food critic',cust:1,tip:1,critic:true},
+  {id:'tour',name:'🚌 Reisegruppe',nameEn:'🚌 Tour group',cust:1.8,tip:1}];
 const ACH=[
-  {id:'first',emo:'🥙',name:'Erster Döner',test:s=>s.servedTotal>=1},
-  {id:'s50',emo:'🧾',name:'50 Kunden',test:s=>s.servedTotal>=50},
-  {id:'s200',emo:'📈',name:'200 Kunden',test:s=>s.servedTotal>=200},
-  {id:'m500',emo:'💶',name:'500 € Kasse',test:s=>s.money>=500},
-  {id:'m2000',emo:'🤑',name:'2000 €',test:s=>s.money>=2000},
-  {id:'m5000',emo:'🏦',name:'5000 €',test:s=>s.money>=5000},
-  {id:'combo5',emo:'🔥',name:'Combo ×5',test:s=>s.maxCombo>=5},
-  {id:'combo10',emo:'🌋',name:'Combo ×10',test:s=>s.maxCombo>=10},
-  {id:'lvl5',emo:'⭐',name:'Level 5',test:s=>s.level>=5},
-  {id:'lvl8',emo:'🌟',name:'Level 8',test:s=>s.level>=8},
-  {id:'team',emo:'👥',name:'Volles Team',test:s=>s.workers.length>=staffSlots()&&staffSlots()>=4},
-  {id:'gott',emo:'🧙',name:'Grill-Gott im Team',test:s=>s.workers.some(w=>w.type==='gott')},
-  {id:'day7',emo:'📅',name:'Eine Woche',test:s=>s.day>=7},
-  {id:'day14',emo:'🗓️',name:'Zwei Wochen',test:s=>s.day>=14},
-  {id:'vip',emo:'💎',name:'VIP perfekt bedient',test:s=>s.vipServed>=1},
-  {id:'menu3',emo:'📖',name:'3 Rezepte gekauft',test:s=>s.owned.length>=3},
-  {id:'menu8',emo:'📚',name:'8 Rezepte gekauft',test:s=>s.owned.length>=8},
-  {id:'fame1',emo:'🌟',name:'Erstes Franchise',test:s=>s.prestige>=1},
-  {id:'fame3',emo:'🏙️',name:'Franchise-Imperium',test:s=>s.prestige>=3},
-  {id:'day30',emo:'📆',name:'30 Tage überstanden',test:s=>s.day>=30},
-  {id:'money20k',emo:'💰',name:'20.000 €',test:s=>s.money>=20000}];
+  {id:'first',emo:'🥙',name:'Erster Döner',en:'First döner',test:s=>s.servedTotal>=1},
+  {id:'s50',emo:'🧾',name:'50 Kunden',en:'50 customers',test:s=>s.servedTotal>=50},
+  {id:'s200',emo:'📈',name:'200 Kunden',en:'200 customers',test:s=>s.servedTotal>=200},
+  {id:'m500',emo:'💶',name:'500 € Kasse',en:'€500 in the till',test:s=>s.money>=500},
+  {id:'m2000',emo:'🤑',name:'2000 €',en:'€2000',test:s=>s.money>=2000},
+  {id:'m5000',emo:'🏦',name:'5000 €',en:'€5000',test:s=>s.money>=5000},
+  {id:'combo5',emo:'🔥',name:'Combo ×5',en:'Combo ×5',test:s=>s.maxCombo>=5},
+  {id:'combo10',emo:'🌋',name:'Combo ×10',en:'Combo ×10',test:s=>s.maxCombo>=10},
+  {id:'lvl5',emo:'⭐',name:'Level 5',en:'Level 5',test:s=>s.level>=5},
+  {id:'lvl8',emo:'🌟',name:'Level 8',en:'Level 8',test:s=>s.level>=8},
+  {id:'team',emo:'👥',name:'Volles Team',en:'Full team',test:s=>s.workers.length>=staffSlots()&&staffSlots()>=4},
+  {id:'gott',emo:'🧙',name:'Grill-Gott im Team',en:'Grill God on staff',test:s=>s.workers.some(w=>w.type==='gott')},
+  {id:'day7',emo:'📅',name:'Eine Woche',en:'One week',test:s=>s.day>=7},
+  {id:'day14',emo:'🗓️',name:'Zwei Wochen',en:'Two weeks',test:s=>s.day>=14},
+  {id:'vip',emo:'💎',name:'VIP perfekt bedient',en:'VIP served perfectly',test:s=>s.vipServed>=1},
+  {id:'menu3',emo:'📖',name:'3 Rezepte gekauft',en:'Bought 3 recipes',test:s=>s.owned.length>=3},
+  {id:'menu8',emo:'📚',name:'8 Rezepte gekauft',en:'Bought 8 recipes',test:s=>s.owned.length>=8},
+  {id:'fame1',emo:'🌟',name:'Erstes Franchise',en:'First franchise',test:s=>s.prestige>=1},
+  {id:'fame3',emo:'🏙️',name:'Franchise-Imperium',en:'Franchise empire',test:s=>s.prestige>=3},
+  {id:'day30',emo:'📆',name:'30 Tage überstanden',en:'Survived 30 days',test:s=>s.day>=30},
+  {id:'money20k',emo:'💰',name:'20.000 €',en:'€20,000',test:s=>s.money>=20000}];
+function achName(a){return L(a.name,a.en||a.name);}
 const DENOMS=[2000,1000,500,200,100,50];
+const VERSION='v2.7';
+let lang='de';
+function L(de,en){return lang==='en'?en:de;}
+const TXT={
+  st_cash:{de:'Kasse',en:'Cash'},st_shift:{de:'Schicht',en:'Shift'},st_level:{de:'Level',en:'Level'},st_served:{de:'Bedient',en:'Served'},
+  btn_shop:{de:'🛒 Laden',en:'🛒 Shop'},btn_buy:{de:'🧺 Einkauf',en:'🧺 Supplies'},btn_branch:{de:'🏪 Filialen',en:'🏪 Branches'},btn_team:{de:'👔 Team',en:'👔 Staff'},
+  open:{de:'GEÖFFNET',en:'OPEN'},front_title:{de:'— Kunde an der Theke —',en:'— Customer at the counter —'},queue:{de:'Warteschlange:',en:'Queue:'},
+  wait:{de:'wartet auf seine Bestellung…',en:'waiting for their order…'},counter_edge:{de:'▬▬▬  T H E K E  ▬▬▬',en:'▬▬▬  C O U N T E R  ▬▬▬'},
+  sec_build:{de:'Belegstation — Klick aufs Gericht legt das Fleisch rein 🥩',en:'Assembly — click the dish to drop in the meat 🥩'},
+  sec_base:{de:'Basis wählen',en:'Choose a base'},
+  sec_salad:{de:'Salatbar — greifen & ins Gericht ziehen (oder antippen) 🤏',en:'Salad bar — grab & drag into the dish (or tap) 🤏'},
+  sec_sauce:{de:'Soßen',en:'Sauces'},sec_fridge:{de:'Kühlschrank — Getränk antippen 🧊',en:'Fridge — tap a drink 🧊'},
+  sec_fry:{de:'Fritteuse & Beilagen — Pommes tippen → frittieren → nochmal tippen 🍟',en:'Fryer & sides — tap fries → fry → tap again 🍟'},
+  btn_serve:{de:'🧾 Fertig – zur Kasse',en:'🧾 Done – to the register'},btn_trash:{de:'🗑️ Neu',en:'🗑️ Reset'},
+  grill:{de:'Dönergrill',en:'Döner grill'},traycap:{de:'Fleisch-Schale',en:'Meat tray'},
+  tagline:{de:'Schneide, belege, kassiere – bau dein Döner-Imperium!',en:'Slice, top, cash out – build your döner empire!'},
+  name_label:{de:'Wie soll deine Bude heißen?',en:'What should your shop be called?'},
+  name_ph:{de:'z. B. Kral Döner, Berlin Kebap …',en:'e.g. Kral Döner, Berlin Kebab …'},
+  btn_continue:{de:'▶️ Weiter',en:'▶️ Continue'},btn_new:{de:'Neues Spiel 🚀',en:'New game 🚀'},
+  set_h:{de:'⚙️ Einstellungen',en:'⚙️ Settings'},howto_h:{de:'📖 So spielst du',en:'📖 How to play'},
+  rules:{de:'🍽️ <b>Basis</b> wählen · 🔪 <b>Fleisch schneiden</b> & aufs Gericht klicken · 🥬 <b>Gemüse/Soße</b> ziehen · 🧊 <b>Getränk</b> antippen · 🍟 <b>Pommes</b> frittieren · 🧾 <b>Kasse</b> & Rückgeld geben.<br><br>⭐ <b>Level</b> = neue Zutaten · 🛒 <b>Laden</b>: Upgrades, 🍽️ <b>Sortiment</b> (Grillgemüse, Yufka …) & 🌟 <b>Franchise</b> · 🧺 <b>Einkauf</b>: Vorräte · 👔 <b>Team</b> bedient autonom · 🏪 <b>Filialen</b> = passives Geld · 🔥 <b>Combos</b> & 🎲 <b>Events</b> & 💎 VIPs.',
+    en:'🍽️ Pick a <b>base</b> · 🔪 <b>slice meat</b> & click the dish · 🥬 drag <b>veg/sauce</b> · 🧊 tap a <b>drink</b> · 🍟 <b>fry</b> the fries · 🧾 <b>register</b> & give change.<br><br>⭐ <b>Level up</b> = new ingredients · 🛒 <b>Shop</b>: upgrades, 🍽️ <b>menu</b> (grilled veg, Yufka …) & 🌟 <b>franchise</b> · 🧺 <b>Supplies</b> · 👔 <b>Staff</b> serve on their own · 🏪 <b>Branches</b> = passive income · 🔥 <b>combos</b> & 🎲 <b>events</b> & 💎 VIPs.'},
+  shop_h:{de:'🛒 Laden',en:'🛒 Shop'},tab_upg:{de:'🔧 Upgrades',en:'🔧 Upgrades'},tab_menu:{de:'🍽️ Sortiment',en:'🍽️ Menu'},tab_fame:{de:'🌟 Franchise',en:'🌟 Franchise'},tab_ach:{de:'🏆 Erfolge',en:'🏆 Achievements'},
+  close_back:{de:'Zurück →',en:'Back →'},close:{de:'Schließen',en:'Close'},
+  branch_h:{de:'🏪 Filialen-Verwaltung',en:'🏪 Branch management'},branch_p:{de:'Baue jede Filiale aus, um ihr passives Einkommen zu steigern.',en:'Upgrade each branch to boost its passive income.'},branch_new:{de:'➕ Neue Filiale',en:'➕ New branch'},
+  buy_h:{de:'🧺 Einkaufsladen',en:'🧺 Supply store'},buy_p:{de:'Jede Zutat reicht für 15 Portionen. Ist sie leer, hier Nachschub kaufen (Packung = +15). Dein Vorrat und der Team-Vorrat sind getrennt.',en:'Each ingredient lasts 15 servings. When empty, restock here (pack = +15). Your stock and the team stock are separate.'},
+  buy_all:{de:'🛒 Deinen Vorrat auffüllen',en:'🛒 Refill your stock'},buy_team:{de:'👥 Team-Vorrat auffüllen',en:'👥 Refill team stock'},
+  staff_h:{de:'👔 Team',en:'👔 Staff'},staff_p:{de:'Mitarbeiter bedienen wartende Kunden autonom – kosten aber Tageslohn.',en:'Staff serve waiting customers autonomously – but cost a daily wage.'},staff_close:{de:'Weiter arbeiten →',en:'Keep working →'},
+  reg_reset:{de:'↺ Zurück',en:'↺ Reset'},reg_confirm:{de:'✅ Rückgeld geben',en:'✅ Give change'},reg_dl1:{de:'Kassenlade — Rückgeld zusammenklicken:',en:'Cash drawer — click to make change:'},reg_dl2:{de:'Herausgegeben (Klick entfernt):',en:'Given out (click to remove):'},
+  day_next:{de:'Nächste Schicht →',en:'Next shift →'},over_h:{de:'Bude dicht! 😞',en:'Shop closed! 😞'},over_restart:{de:'Neues Spiel',en:'New game'},
+  load_sub:{de:'Deine Dönerbude wird vorbereitet…',en:'Preparing your döner shop…'}
+};
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n')];if(v)e.textContent=v[lang];});
+  document.querySelectorAll('[data-i18n-html]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n-html')];if(v)e.innerHTML=v[lang];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n-ph')];if(v)e.placeholder=v[lang];});
+  document.documentElement.lang=lang;
+  if($('#setLang'))updateSettingLabels();
+}
 const PHRASES=['Anzeige ist raus!','Ups, war keine Absicht!','Passiert den Besten!','Sorry Chef!','War der Salat schuld!','Hab kurz nicht aufgepasst!','Das war die Zwiebel!','Mist, verschnitten!','Nächster wird besser!','Boah, sorry!','Nicht mein Tag heute…','Ey, das zählt nicht!'];
+const PHRASES_EN=['My bad!','Oops, not on purpose!','Happens to the best!','Sorry boss!','Blame the salad!','Wasn\'t paying attention!','It was the onion!','Dang, sliced wrong!','Next one\'s better!','Whoa, sorry!','Not my day today…','Hey, that doesn\'t count!'];
+function phrase(){return pick(lang==='en'?PHRASES_EN:PHRASES);}
 const BRANCH_CITIES=['Berlin','Hamburg','Köln','München','Frankfurt','Bremen','Essen','Dortmund','Hannover','Leipzig','Stuttgart','Nürnberg'];
 const STOCK_START=15, PACK=15;
 function ingInfo(id){return vById(id)||sById(id)||dById(id)||xById(id)||(id==='falafel'?{name:'Falafel',emo:'🧆'}:null);}
@@ -534,7 +614,7 @@ function takeStock(id){
   if(stockOf(id)<=0){ if(autoOn()&&state.money>=restockCost(id)){state.money-=restockCost(id);state.stock[id]=stockOf(id)+PACK;renderTop();} else return false; }
   state.stock[id]--;updateStockBadges();return true;}
 function giveStock(id){state.stock[id]=stockOf(id)+1;updateStockBadges();}
-function outOfStock(id){sfx.bad();const it=ingInfo(id);setHint(`🧺 ${it?it.emo+' '+it.name:'Zutat'} ist leer – im 🧺 Einkauf nachkaufen (oder 📦 Auto-Nachschub kaufen)!`);}
+function outOfStock(id){sfx.bad();const it=ingInfo(id);const label=it?it.emo+' '+nm(it):L('Zutat','ingredient');setHint(L(`🧺 ${label} ist leer – im 🧺 Einkauf nachkaufen (oder 📦 Auto-Nachschub kaufen)!`,`🧺 ${label} is empty – restock in 🧺 Supplies (or buy 📦 Auto-restock)!`));}
 function initStock(){[...VEG,...SAUCE,...DRINKS,...SIDES,{id:'falafel'}].forEach(x=>{if(state.stock[x.id]==null)state.stock[x.id]=STOCK_START;if(state.teamStock[x.id]==null)state.teamStock[x.id]=STOCK_START;});}
 /* Mitarbeiter verbrauchen ihren eigenen Team-Vorrat */
 function teamServe(o){
@@ -572,22 +652,22 @@ function availSAUCE(){return SAUCE.filter(s=>avOK(s.id,s));}
 function availDRINKS(){return DRINKS.filter(d=>avOK(d.id,d));}
 function availSIDES(){return SIDES.filter(s=>avOK(s.id,s));}
 function buyableList(){const out=[];
-  for(const k in BASES)if(BASES[k].buy)out.push({id:k,name:BASES[k].name,emo:BASES[k].emo,buy:BASES[k].buy,cat:'🍽️ Gericht'});
-  for(const k in MEATS)if(MEATS[k].buy)out.push({id:k,name:MEATS[k].name,emo:MEATS[k].emo,buy:MEATS[k].buy,cat:'🥩 Fleisch'});
-  for(const v of VEG)if(v.buy)out.push({id:v.id,name:v.name,emo:v.emo,buy:v.buy,cat:'🥬 Gemüse'});
-  for(const s of SAUCE)if(s.buy)out.push({id:s.id,name:s.name,emo:s.emo,buy:s.buy,cat:'🌶️ Soße'});
-  for(const d of DRINKS)if(d.buy)out.push({id:d.id,name:d.name,emo:d.emo,buy:d.buy,cat:'🧊 Getränk'});
-  for(const s of SIDES)if(s.buy)out.push({id:s.id,name:s.name,emo:s.emo,buy:s.buy,cat:'🍟 Beilage'});
+  for(const k in BASES)if(BASES[k].buy)out.push({id:k,name:BASES[k].name,en:BASES[k].en,emo:BASES[k].emo,buy:BASES[k].buy,cat:'🍽️ Gericht'});
+  for(const k in MEATS)if(MEATS[k].buy)out.push({id:k,name:MEATS[k].name,en:MEATS[k].en,emo:MEATS[k].emo,buy:MEATS[k].buy,cat:'🥩 Fleisch'});
+  for(const v of VEG)if(v.buy)out.push({id:v.id,name:v.name,en:v.en,emo:v.emo,buy:v.buy,cat:'🥬 Gemüse'});
+  for(const s of SAUCE)if(s.buy)out.push({id:s.id,name:s.name,en:s.en,emo:s.emo,buy:s.buy,cat:'🌶️ Soße'});
+  for(const d of DRINKS)if(d.buy)out.push({id:d.id,name:d.name,en:d.en,emo:d.emo,buy:d.buy,cat:'🧊 Getränk'});
+  for(const s of SIDES)if(s.buy)out.push({id:s.id,name:s.name,en:s.en,emo:s.emo,buy:s.buy,cat:'🍟 Beilage'});
   return out;}
 function recipeCost(id){for(const k in BASES)if(k===id&&BASES[k].buy)return BASES[k].buy;for(const k in MEATS)if(k===id&&MEATS[k].buy)return MEATS[k].buy;
   const a=[...VEG,...SAUCE,...DRINKS,...SIDES].find(x=>x.id===id);return a&&a.buy?a.buy:0;}
 function itemsAtLevel(lvl){const out=[];
-  for(const k in BASES)if(BASES[k].lvl===lvl)out.push(BASES[k].emo+' '+BASES[k].name);
-  for(const k in MEATS)if(MEATS[k].lvl===lvl)out.push(MEATS[k].emo+' '+MEATS[k].name);
-  for(const v of VEG)if(v.lvl===lvl)out.push(v.emo+' '+v.name);
-  for(const s of SAUCE)if(s.lvl===lvl)out.push(s.emo+' '+s.name);
-  for(const d of DRINKS)if(d.lvl===lvl)out.push(d.emo+' '+d.name);
-  for(const s of SIDES)if(s.lvl===lvl)out.push(s.emo+' '+s.name);
+  for(const k in BASES)if(BASES[k].lvl===lvl)out.push(BASES[k].emo+' '+nm(BASES[k]));
+  for(const k in MEATS)if(MEATS[k].lvl===lvl)out.push(MEATS[k].emo+' '+nm(MEATS[k]));
+  for(const v of VEG)if(v.lvl===lvl)out.push(v.emo+' '+nm(v));
+  for(const s of SAUCE)if(s.lvl===lvl)out.push(s.emo+' '+nm(s));
+  for(const d of DRINKS)if(d.lvl===lvl)out.push(d.emo+' '+nm(d));
+  for(const s of SIDES)if(s.lvl===lvl)out.push(s.emo+' '+nm(s));
   return out;}
 
 /* ===== Upgrade-Effekte ===== */
@@ -608,7 +688,7 @@ function gainXP(n){state.xp+=n;let leveled=false;
 function onLevelUp(){sfx.great();initStock();buildStations();buildMeatToggle();
   const items=itemsAtLevel(state.level);
   toast(`⭐ Level ${state.level}!`);
-  if(items.length)toast('🔓 Neu: '+items.join(', '));
+  if(items.length)toast(L('🔓 Neu: ','🔓 New: ')+items.join(', '));
   checkAch();}
 
 /* ===== Speichern ===== */
@@ -628,7 +708,7 @@ function persist(keepRun){const s=loadSave();
   writeSave(s);}
 
 /* ===== Sound ===== */
-let audioCtx=null,muted=false,noiseBuf=null;
+let audioCtx=null,muted=false,noiseBuf=null,musicWanted=true;
 function ensureAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
 function beep(f,d=.09,t='sine',v=.2){if(muted||!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d);}catch(e){}}
 function sliceSnd(){if(muted||!audioCtx)return;try{if(!noiseBuf){noiseBuf=audioCtx.createBuffer(1,audioCtx.sampleRate*.2,audioCtx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);}const s=audioCtx.createBufferSource();s.buffer=noiseBuf;const g=audioCtx.createGain(),f=audioCtx.createBiquadFilter();f.type='bandpass';f.frequency.value=3200;g.gain.value=.35;s.connect(f);f.connect(g);g.connect(audioCtx.destination);s.start();}catch(e){}}
@@ -670,21 +750,21 @@ function setHint(t){el.hint.textContent=t;}
 function buildStations(){
   el.baseRow.innerHTML='';el.vegRow.innerHTML='';el.sauceRow.innerHTML='';el.drinkRow.innerHTML='';
   for(const id of availBaseKeys()){const b=BASES[id],d=document.createElement('div');d.className='gn base';d.dataset.base=id;
-    d.innerHTML=`<div class="food">${b.emo}</div><div class="nm">${b.name}</div>`;d.onclick=()=>chooseBase(id);el.baseRow.appendChild(d);}
+    d.innerHTML=`<div class="food">${b.emo}</div><div class="nm">${nm(b)}</div>`;d.onclick=()=>chooseBase(id);el.baseRow.appendChild(d);}
   for(const v of availVEG()){const d=document.createElement('div');d.className='gn';d.dataset.id=v.id;d.dataset.kind='veg';
-    d.innerHTML=`<div class="stockb"></div><div class="food">${v.emo}${v.emo}</div><div class="nm">${v.name}</div>`;
+    d.innerHTML=`<div class="stockb"></div><div class="food">${v.emo}${v.emo}</div><div class="nm">${nm(v)}</div>`;
     d.addEventListener('pointerdown',e=>startGrab(e,'veg',v.id,v.emo));el.vegRow.appendChild(d);}
   for(const s of availSAUCE()){const d=document.createElement('div');d.className='gn sauce';d.dataset.id=s.id;d.dataset.kind='sauce';
-    d.innerHTML=`<div class="stockb"></div><div class="food">${s.emo}</div><div class="nm">${s.name}</div>`;
+    d.innerHTML=`<div class="stockb"></div><div class="food">${s.emo}</div><div class="nm">${nm(s)}</div>`;
     d.addEventListener('pointerdown',e=>startGrab(e,'sauce',s.id,s.emo));el.sauceRow.appendChild(d);}
   const f=document.createElement('div');f.className='gn';f.dataset.id='falafel';f.dataset.kind='falafel';
   f.innerHTML=`<div class="stockb"></div><div class="food">🧆🧆</div><div class="nm">Falafel</div>`;
   f.addEventListener('pointerdown',e=>startGrab(e,'falafel','falafel','🧆'));el.vegRow.appendChild(f);
   for(const dr of availDRINKS()){const d=document.createElement('div');d.className='gn drink';d.dataset.drink=dr.id;d.dataset.id=dr.id;d.dataset.kind='drink';
-    d.innerHTML=`<div class="stockb"></div><div class="food">${dr.emo}</div><div class="nm">${dr.name}</div>`;d.onclick=()=>chooseDrink(dr.id);el.drinkRow.appendChild(d);}
+    d.innerHTML=`<div class="stockb"></div><div class="food">${dr.emo}</div><div class="nm">${nm(dr)}</div>`;d.onclick=()=>chooseDrink(dr.id);el.drinkRow.appendChild(d);}
   el.sideRow.innerHTML='';
   for(const si of availSIDES()){const d=document.createElement('div');d.className='gn drink';d.dataset.side=si.id;d.dataset.id=si.id;d.dataset.kind='side';
-    d.innerHTML=`<div class="stockb"></div><div class="food">${si.emo}</div><div class="nm">${si.name}</div>`;d.onclick=()=>chooseSide(si.id);el.sideRow.appendChild(d);}
+    d.innerHTML=`<div class="stockb"></div><div class="food">${si.emo}</div><div class="nm">${nm(si)}</div>`;d.onclick=()=>chooseSide(si.id);el.sideRow.appendChild(d);}
   $('#mbSign').textContent='🥙 '+(state?state.shopName:'DÖNER HAUS').toUpperCase();
   if(state){markSelections();updateStockBadges();}
 }
@@ -695,14 +775,14 @@ function updateStockBadges(){
     c.classList.toggle('empty',n<=0&&!busy&&!canUse(id));});
 }
 function buildMeatToggle(){el.meatToggle.innerHTML='';
-  for(const k of availSpit()){const b=document.createElement('button');b.dataset.meat=k;b.textContent=MEATS[k].emo+' '+MEATS[k].name.split('fleisch')[0].slice(0,6);
+  for(const k of availSpit()){const b=document.createElement('button');b.dataset.meat=k;const t=(lang==='en'?nm(MEATS[k]):MEATS[k].name.split('fleisch')[0]);b.textContent=MEATS[k].emo+' '+t.slice(0,8);
     if(k===currentMeat)b.classList.add('on');el.meatToggle.appendChild(b);}}
 function markSelections(){
   [...el.baseRow.children].forEach(c=>c.classList.toggle('sel',c.dataset.base===state.build.base));
   [...el.drinkRow.children].forEach(c=>c.classList.toggle('sel',c.dataset.drink===state.build.drink));
   updateSideRow();updateStockBadges();
 }
-function chooseBase(id){if(!state.running||state.phase!=='make')return;state.build.base=id;sfx.click();renderBoard();setHint('Basis bereit! Fleisch schneiden 🔪 und aufs Gericht klicken.');}
+function chooseBase(id){if(!state.running||state.phase!=='make')return;state.build.base=id;sfx.click();renderBoard();setHint(L('Basis bereit! Fleisch schneiden 🔪 und aufs Gericht klicken.','Base ready! Slice meat 🔪 and click the dish.'));}
 function chooseDrink(id){if(!state.running||state.phase!=='make')return;
   if(state.build.drink===id){giveStock(id);state.build.drink=null;sfx.pop();renderBoard();return;}
   if(!canUse(id)){outOfStock(id);return;}
@@ -711,7 +791,7 @@ function chooseDrink(id){if(!state.running||state.phase!=='make')return;
 let frying=null; // {id, ready}
 function chooseSide(id){
   if(!state.running||state.phase!=='make')return;
-  if(!state.build.base){setHint('⚠️ Erst eine Basis wählen!');sfx.bad();return;}
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));sfx.bad();return;}
   const s=xById(id);
   if(!s.cook){ // Salat: direkt
     if(state.build.side===id){giveStock(id);state.build.side=null;sfx.click();renderBoard();return;}
@@ -722,23 +802,23 @@ function chooseSide(id){
   if(state.build.side===id){giveStock(id);state.build.side=null;sfx.click();renderBoard();return;} // schon im Gericht → raus
   if(frying&&frying.id===id&&frying.ready){ // fertig → rausnehmen & rein
     if(state.build.side)giveStock(state.build.side);
-    frying=null;state.build.side=id;sfx.good();renderBoard();setHint('🍟 In die Tüte! Lecker.');return;}
-  if(frying){setHint('Fritteuse ist besetzt – warte, bis sie fertig ist! 🛢️');sfx.bad();return;}
+    frying=null;state.build.side=id;sfx.good();renderBoard();setHint(L('🍟 In die Tüte! Lecker.','🍟 Into the bag! Yum.'));return;}
+  if(frying){setHint(L('Fritteuse ist besetzt – warte, bis sie fertig ist! 🛢️','Fryer is busy – wait until it\'s done! 🛢️'));sfx.bad();return;}
   if(!canUse(id)){outOfStock(id);return;}
   takeStock(id); // rohe Zutat verbraucht
-  frying={id,ready:false};sliceSnd();setHint(`${s.emo} brutzelt in der Fritteuse… gleich fertig!`);updateSideRow();
-  setTimeout(()=>{if(frying&&frying.id===id&&!frying.ready){frying.ready=true;sfx.good();updateSideRow();setHint('🍟 Fertig frittiert! Nochmal tippen zum Rausnehmen.');}},1800);
+  frying={id,ready:false};sliceSnd();setHint(L(`${s.emo} brutzelt in der Fritteuse… gleich fertig!`,`${s.emo} sizzling in the fryer… almost done!`));updateSideRow();
+  setTimeout(()=>{if(frying&&frying.id===id&&!frying.ready){frying.ready=true;sfx.good();updateSideRow();setHint(L('🍟 Fertig frittiert! Nochmal tippen zum Rausnehmen.','🍟 Fried and ready! Tap again to take it out.'));}},1800);
 }
 function updateSideRow(){
   if(!el.sideRow)return;
   [...el.sideRow.children].forEach(c=>{const id=c.dataset.side,s=xById(id);if(!s)return;
-    const food=c.querySelector('.food'),nm=c.querySelector('.nm');
+    const food=c.querySelector('.food'),nmEl=c.querySelector('.nm');
     const cooking=frying&&frying.id===id&&!frying.ready, ready=frying&&frying.id===id&&frying.ready;
     c.classList.toggle('cooking',!!cooking);c.classList.toggle('ready',!!ready);
     c.classList.toggle('sel',state.build.side===id);
-    if(food&&nm){if(cooking){food.textContent='🛢️';nm.textContent='brutzelt…';}
-      else if(ready){food.textContent='🍟';nm.textContent='fertig! ✔';}
-      else{food.textContent=s.emo;nm.textContent=s.name;}}
+    if(food&&nmEl){if(cooking){food.textContent='🛢️';nmEl.textContent=L('brutzelt…','frying…');}
+      else if(ready){food.textContent='🍟';nmEl.textContent=L('fertig! ✔','ready! ✔');}
+      else{food.textContent=s.emo;nmEl.textContent=nm(s);}}
   });
 }
 
@@ -747,8 +827,8 @@ let held=null;
 function startGrab(e,kind,id,emo){
   if(!state.running||state.phase!=='make')return;
   if(e.preventDefault)e.preventDefault();
-  if(!state.build.base){setHint('⚠️ Erst eine Basis wählen!');sfx.bad();return;}
-  if(kind==='meat'&&state.tray===0){setHint('Erst Fleisch am Grill schneiden 🔪');return;}
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));sfx.bad();return;}
+  if(kind==='meat'&&state.tray===0){setHint(L('Erst Fleisch am Grill schneiden 🔪','Slice meat at the grill first 🔪'));return;}
   if(kind==='veg'||kind==='sauce'||kind==='falafel'){const sid=kind==='falafel'?'falafel':id;if(!canUse(sid)){outOfStock(sid);return;}}
   held={kind,id,emo,sx:e.clientX,sy:e.clientY};sfx.grab();
   el.hand.style.display='block';el.hand.innerHTML=`🤏<span class="held">${emo}</span>`;moveHand(e);
@@ -765,7 +845,7 @@ function applyHeld(h){
     else state.build.meat={type:'falafel',slices:6};
   }
   else if(h.kind==='meat')putMeat();
-  sfx.drop();renderBoard();setHint('Drin! Noch was drauf? Sonst → 🧾 Zur Kasse.');
+  sfx.drop();renderBoard();setHint(L('Drin! Noch was drauf? Sonst → 🧾 Zur Kasse.','In it goes! Anything else? Otherwise → 🧾 register.'));
 }
 window.addEventListener('pointermove',e=>{if(held){moveHand(e);el.board.classList.toggle('droptarget',overBoard(e));}});
 window.addEventListener('pointerup',e=>{
@@ -783,9 +863,9 @@ function putMeat(){if(state.tray===0)return false;state.build.meat={type:state.t
 el.board.addEventListener('click',e=>{
   if(!state.running||state.phase!=='make')return;
   if(e.target.closest('.li'))return;
-  if(!state.build.base){setHint('⚠️ Erst eine Basis wählen!');sfx.bad();return;}
-  if(state.tray>0){putMeat();sfx.drop();renderBoard();setHint('Fleisch drin! Jetzt Gemüse & Soße 🤏');}
-  else setHint('Erst Fleisch am Grill schneiden 🔪 – dann hier klicken.');
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));sfx.bad();return;}
+  if(state.tray>0){putMeat();sfx.drop();renderBoard();setHint(L('Fleisch drin! Jetzt Gemüse & Soße 🤏','Meat is in! Now veg & sauce 🤏'));}
+  else setHint(L('Erst Fleisch am Grill schneiden 🔪 – dann hier klicken.','Slice meat at the grill first 🔪 – then click here.'));
 });
 
 /* ===== Spieß schneiden ===== */
@@ -796,8 +876,8 @@ el.cutStation.addEventListener('pointermove',e=>{knifeAt(e);if(!cutting||state.p
   const r=el.cutStation.getBoundingClientRect(),x=e.clientX-r.left;if(e.clientY-lastCutY>26&&x>r.width/2-42&&x<r.width/2+42){doSlice(e.clientX-r.left,e.clientY-r.top);lastCutY=e.clientY;}});
 function knifeAt(e){const r=el.cutStation.getBoundingClientRect();el.knife.style.left=(e.clientX-r.left)+'px';el.knife.style.top=(e.clientY-r.top)+'px';}
 function doSlice(x,y){
-  if(!state.build.base){setHint('⚠️ Erst eine Basis wählen!');return;}
-  if(state.tray>=6){setHint('Schale voll — klick aufs Gericht, um das Fleisch reinzulegen!');return;}
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));return;}
+  if(state.tray>=6){setHint(L('Schale voll — klick aufs Gericht, um das Fleisch reinzulegen!','Tray full — click the dish to drop the meat in!'));return;}
   sliceSnd();
   el.cutFlash.style.top=y+'px';el.cutFlash.style.opacity='1';setTimeout(()=>el.cutFlash.style.opacity='0',80);
   el.knife.style.transform='translate(-50%,-60%) rotate(55deg)';setTimeout(()=>el.knife.style.transform='translate(-50%,-60%) rotate(35deg)',70);
@@ -813,16 +893,16 @@ function doSlice(x,y){
     state.tray++;
   }
   renderTray();
-  if(state.tray>=1)setHint('Genug Fleisch? Dann aufs Gericht klicken 🥩');
+  if(state.tray>=1)setHint(L('Genug Fleisch? Dann aufs Gericht klicken 🥩','Enough meat? Then click the dish 🥩'));
 }
 function renderTray(){el.sliceCount.textContent=state.tray;el.pile.innerHTML='';
   for(let i=0;i<state.tray;i++){const s=document.createElement('div');s.className='sliver '+meatCls();el.pile.appendChild(s);}
   el.tray.classList.toggle('has',state.tray>0);}
-el.tray.addEventListener('pointerdown',e=>{if(state.tray>0)startGrab(e,'meat',null,MEATS[state.trayType].emo);else setHint('Erst Fleisch am Grill schneiden 🔪');});
+el.tray.addEventListener('pointerdown',e=>{if(state.tray>0)startGrab(e,'meat',null,MEATS[state.trayType].emo);else setHint(L('Erst Fleisch am Grill schneiden 🔪','Slice meat at the grill first 🔪'));});
 el.meatToggle.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;currentMeat=b.dataset.meat;
   [...el.meatToggle.children].forEach(x=>x.classList.toggle('on',x===b));
-  el.spit.className='spit'+(currentMeat==='haehnchen'?' haehnchen':'');el.spitLabel.textContent=MEATS[currentMeat].name;
-  if(state.tray>0&&state.trayType!==currentMeat){state.tray=0;renderTray();setHint('Anderes Fleisch – Schale geleert.');}});
+  el.spit.className='spit'+(currentMeat==='haehnchen'?' haehnchen':'');el.spitLabel.textContent=nm(MEATS[currentMeat]);
+  if(state.tray>0&&state.trayType!==currentMeat){state.tray=0;renderTray();setHint(L('Anderes Fleisch – Schale geleert.','Different meat – tray emptied.'));}});
 
 /* ===== Bestellung / Kunde ===== */
 function makeOrder(){
@@ -842,51 +922,51 @@ function spawnCustomer(){
   state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;state.phase='make';frying=null;
   el.card.classList.toggle('vip',vip);
   renderTray();renderCustomer();renderBoard();
-  setHint(vip?'💎 VIP-Kunde! Perfekt arbeiten = fettes Trinkgeld.':'Neue Bestellung! Erst Basis wählen 👇');}
+  setHint(vip?L('💎 VIP-Kunde! Perfekt arbeiten = fettes Trinkgeld.','💎 VIP customer! Perfect work = big tip.'):L('Neue Bestellung! Erst Basis wählen 👇','New order! Pick a base first 👇'));}
 
 /* ===== Render ===== */
 function renderTop(){el.money.textContent=state.money+' €';el.day.textContent='Tag '+state.day;el.served.textContent=state.servedTotal;
   el.level.textContent='Lv '+state.level;el.xpFill.style.width=Math.min(100,state.xp/xpNeed()*100)+'%';
   const f=Math.max(0,Math.round(state.rep));el.rep.innerHTML='★'.repeat(f)+'<span style="opacity:.25">'+'★'.repeat(5-f)+'</span>';renderCombo();}
 function renderCombo(){if(state.combo>1){el.combo.textContent='🔥 x'+state.combo;el.combo.classList.add('show');}else el.combo.classList.remove('show');}
-function renderEventChip(){if(state.event){el.eventChip.textContent=state.event.name;el.eventChip.classList.remove('hide');}else el.eventChip.classList.add('hide');}
+function renderEventChip(){if(state.event){el.eventChip.textContent=L(state.event.name,state.event.nameEn||state.event.name);el.eventChip.classList.remove('hide');}else el.eventChip.classList.add('hide');}
 function renderCustomer(){const c=state.customer;if(!c)return;el.face.textContent=c.face;el.name.textContent=c.name;const o=c.order;el.orderList.innerHTML='';
-  $('#custSay').textContent=o.vip?'„VIP – mach was Gutes!" 💎':(o.mitAlles?'„Einen Döner mit alles!"':'„Einmal, bitte:"');
-  addChip(BASES[o.base].emo,BASES[o.base].name);
-  addChip(MEATS[o.meat.type].emo,MEATS[o.meat.type].name+' ('+(AMOUNT[o.meat.need]||'normal')+')',true);
-  for(const[id,n]of countMap(o.veg))addChip(vById(id).emo,vById(id).name+(n>1?' ×'+n:''));
-  for(const[id,n]of countMap(o.sauce))addChip(sById(id).emo,sById(id).name+(n>1?' ×'+n:''));
-  if(o.drink)addChip(dById(o.drink).emo,dById(o.drink).name,false,true);
-  if(o.side)addChip(xById(o.side).emo,xById(o.side).name,false,true);
+  $('#custSay').textContent=o.vip?L('„VIP – mach was Gutes!" 💎','"VIP – make it good!" 💎'):(o.mitAlles?L('„Einen Döner mit alles!"','"One döner with everything!"'):L('„Einmal, bitte:"','"One, please:"'));
+  addChip(BASES[o.base].emo,nm(BASES[o.base]));
+  addChip(MEATS[o.meat.type].emo,nm(MEATS[o.meat.type])+' ('+amountTxt(o.meat.need)+')',true);
+  for(const[id,n]of countMap(o.veg))addChip(vById(id).emo,nm(vById(id))+(n>1?' ×'+n:''));
+  for(const[id,n]of countMap(o.sauce))addChip(sById(id).emo,nm(sById(id))+(n>1?' ×'+n:''));
+  if(o.drink)addChip(dById(o.drink).emo,nm(dById(o.drink)),false,true);
+  if(o.side)addChip(xById(o.side).emo,nm(xById(o.side)),false,true);
   updateQueueFaces();}
 function addChip(emo,txt,hl,drink){const c=document.createElement('div');c.className='chip'+(hl?' hl':'')+(drink?' drink':'');c.innerHTML=`<span>${emo}</span>${txt}`;el.orderList.appendChild(c);}
 function renderBoard(){const b=state.build;el.board.innerHTML='';
-  if(!b.base){el.board.innerHTML='<div class="bread-empty">👉 Wähle unten eine Basis…</div>';markSelections();return;}
+  if(!b.base){el.board.innerHTML=`<div class="bread-empty">${L('👉 Wähle unten eine Basis…','👉 Choose a base below…')}</div>`;markSelections();return;}
   const base=BASES[b.base];
   const head=document.createElement('div');head.className='bread-head';
-  head.innerHTML=`<span class="b-emo">${base.emo}</span>${base.name} <span style="color:#8a6b45;font-size:12px;font-weight:600">(vorbereiten)</span>`;
-  if(b.meat===null&&state.tray>0)head.innerHTML+=`<span class="meathint">👆 klick zum Fleisch reinlegen</span>`;
+  head.innerHTML=`<span class="b-emo">${base.emo}</span>${nm(base)} <span style="color:#8a6b45;font-size:12px;font-weight:600">${L('(vorbereiten)','(prepare)')}</span>`;
+  if(b.meat===null&&state.tray>0)head.innerHTML+=`<span class="meathint">${L('👆 klick zum Fleisch reinlegen','👆 click to add the meat')}</span>`;
   el.board.appendChild(head);
-  const ml=document.createElement('div');ml.className='layer';ml.innerHTML='<span class="lab">Fleisch</span>';
+  const ml=document.createElement('div');ml.className='layer';ml.innerHTML=`<span class="lab">${L('Fleisch','Meat')}</span>`;
   if(b.meat){const w=document.createElement('div');w.className='li';
     if(b.meat.type==='falafel')w.innerHTML='🧆 Falafel';
-    else w.innerHTML=`${MEATS[b.meat.type].emo} ${MEATS[b.meat.type].name} <div class="meatfill">${Array.from({length:b.meat.slices},()=>`<div class="sliver ${b.meat.type==='haehnchen'?'haehnchen':''}"></div>`).join('')}</div> ×${b.meat.slices}`;
-    w.title='Klick: entfernen';w.onclick=(ev)=>{ev.stopPropagation();if(state.build.meat&&state.build.meat.type==='falafel')giveStock('falafel');state.build.meat=null;sfx.click();renderBoard();};ml.appendChild(w);}
-  else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='— noch kein Fleisch —';ml.appendChild(e);}
+    else w.innerHTML=`${MEATS[b.meat.type].emo} ${nm(MEATS[b.meat.type])} <div class="meatfill">${Array.from({length:b.meat.slices},()=>`<div class="sliver ${b.meat.type==='haehnchen'?'haehnchen':''}"></div>`).join('')}</div> ×${b.meat.slices}`;
+    w.title=L('Klick: entfernen','Click to remove');w.onclick=(ev)=>{ev.stopPropagation();if(state.build.meat&&state.build.meat.type==='falafel')giveStock('falafel');state.build.meat=null;sfx.click();renderBoard();};ml.appendChild(w);}
+  else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent=L('— noch kein Fleisch —','— no meat yet —');ml.appendChild(e);}
   el.board.appendChild(ml);
-  el.board.appendChild(makeLayer('Gemüse',b.veg,vById,'veg'));
-  el.board.appendChild(makeLayer('Soße',b.sauce,sById,'sauce'));
-  const dl=document.createElement('div');dl.className='layer';dl.innerHTML='<span class="lab">Getränk</span>';
-  if(b.drink){const it=dById(b.drink),d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${it.name}`;d.title='Klick: entfernen';d.onclick=(ev)=>{ev.stopPropagation();giveStock(b.drink);state.build.drink=null;sfx.click();renderBoard();};dl.appendChild(d);}
+  el.board.appendChild(makeLayer(L('Gemüse','Veg'),b.veg,vById,'veg'));
+  el.board.appendChild(makeLayer(L('Soße','Sauce'),b.sauce,sById,'sauce'));
+  const dl=document.createElement('div');dl.className='layer';dl.innerHTML=`<span class="lab">${L('Getränk','Drink')}</span>`;
+  if(b.drink){const it=dById(b.drink),d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${nm(it)}`;d.title=L('Klick: entfernen','Click to remove');d.onclick=(ev)=>{ev.stopPropagation();giveStock(b.drink);state.build.drink=null;sfx.click();renderBoard();};dl.appendChild(d);}
   else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='—';dl.appendChild(e);}
   el.board.appendChild(dl);
-  const xl=document.createElement('div');xl.className='layer';xl.innerHTML='<span class="lab">Beilage</span>';
-  if(b.side){const it=xById(b.side),d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${it.name}`;d.title='Klick: entfernen';d.onclick=(ev)=>{ev.stopPropagation();giveStock(b.side);state.build.side=null;sfx.click();renderBoard();};xl.appendChild(d);}
+  const xl=document.createElement('div');xl.className='layer';xl.innerHTML=`<span class="lab">${L('Beilage','Side')}</span>`;
+  if(b.side){const it=xById(b.side),d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${nm(it)}`;d.title=L('Klick: entfernen','Click to remove');d.onclick=(ev)=>{ev.stopPropagation();giveStock(b.side);state.build.side=null;sfx.click();renderBoard();};xl.appendChild(d);}
   else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='—';xl.appendChild(e);}
   el.board.appendChild(xl);markSelections();}
 function makeLayer(label,arr,res,kind){const l=document.createElement('div');l.className='layer';l.innerHTML=`<span class="lab">${label}</span>`;
   if(arr.length===0){const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='—';l.appendChild(e);return l;}
-  for(const[id,n]of countMap(arr)){const it=res(id);const d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${it.name}${n>1?' ×'+n:''}`;d.title='Klick: entfernen';
+  for(const[id,n]of countMap(arr)){const it=res(id);const d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${nm(it)}${n>1?' ×'+n:''}`;d.title=L('Klick: entfernen','Click to remove');
     d.onclick=(ev)=>{ev.stopPropagation();const i=state.build[kind].lastIndexOf(id);if(i>=0){state.build[kind].splice(i,1);giveStock(id);sfx.click();renderBoard();}};l.appendChild(d);}
   return l;}
 
@@ -894,8 +974,8 @@ function makeLayer(label,arr,res,kind){const l=document.createElement('div');l.c
 function attemptCheckout(){
   if(!state.running||state.phase!=='make')return;
   const b=state.build;
-  if(!b.base){setHint('⚠️ Du hast noch keine Basis!');sfx.bad();return;}
-  if(!b.meat){setHint('⚠️ Es fehlt noch das Fleisch!');sfx.bad();return;}
+  if(!b.base){setHint(L('⚠️ Du hast noch keine Basis!','⚠️ You have no base yet!'));sfx.bad();return;}
+  if(!b.meat){setHint(L('⚠️ Es fehlt noch das Fleisch!','⚠️ The meat is still missing!'));sfx.bad();return;}
   state.phase='wrap';wrapDoener(()=>toRegister());
 }
 function wrapDoener(done){
@@ -926,20 +1006,20 @@ function toRegister(){
 }
 function openRegister(){
   $('#regFace').textContent=state.customer.face;
-  $('#regSay').textContent=reg.perfect?(reg.vip?'"Wow, genau richtig! 💎"':'"Sieht perfekt aus, danke!"'):'"Hm, das war nicht ganz meine Bestellung…"';
+  $('#regSay').textContent=reg.perfect?(reg.vip?L('"Wow, genau richtig! 💎"','"Wow, spot on! 💎"'):L('"Sieht perfekt aus, danke!"','"Looks perfect, thanks!"')):L('"Hm, das war nicht ganz meine Bestellung…"','"Hmm, that wasn\'t quite my order…"');
   const q=$('#regQuality');q.className='quality '+(reg.perfect?'good':'bad');
-  q.textContent=reg.perfect?'⭐ Perfekt zubereitet – Trinkgeld möglich!':`⚠️ ${reg.total-reg.okCount} Fehler – kein Trinkgeld, Ruf leidet.`;
-  $('#regDisplay').innerHTML=`<div class="line"><span>Gericht</span><span>${eur(reg.price)}</span></div>
-    <div class="line"><span>Kunde zahlt</span><span>${eur(reg.paid)}</span></div>
-    <div class="line change"><span>Rückgeld</span><span>${eur(reg.changeDue)}</span></div>
-    <div class="total">Noch offen: <span id="regRemain">${eur(reg.changeDue-reg.given)}</span></div>`;
+  q.textContent=reg.perfect?L('⭐ Perfekt zubereitet – Trinkgeld möglich!','⭐ Made perfectly – tip possible!'):L(`⚠️ ${reg.total-reg.okCount} Fehler – kein Trinkgeld, Ruf leidet.`,`⚠️ ${reg.total-reg.okCount} mistakes – no tip, reputation suffers.`);
+  $('#regDisplay').innerHTML=`<div class="line"><span>${L('Gericht','Dish')}</span><span>${eur(reg.price)}</span></div>
+    <div class="line"><span>${L('Kunde zahlt','Customer pays')}</span><span>${eur(reg.paid)}</span></div>
+    <div class="line change"><span>${L('Rückgeld','Change')}</span><span>${eur(reg.changeDue)}</span></div>
+    <div class="total">${L('Noch offen','Remaining')}: <span id="regRemain">${eur(reg.changeDue-reg.given)}</span></div>`;
   buildCashRow();renderGiven();$('#register').classList.remove('hidden');
 }
 function buildCashRow(){const row=$('#cashRow');row.innerHTML='';
   for(const d of DENOMS){const b=document.createElement('button');b.className='cash '+(d>=500?'note':'coin');
     b.textContent=eur(d);b.onclick=()=>{reg.given+=d;reg.tokens.push(d);sfx.click();renderGiven();};row.appendChild(b);}}
 function renderGiven(){const box=$('#givenBox');box.innerHTML='';
-  if(reg.tokens.length===0)box.innerHTML='<span class="empty">noch nichts</span>';
+  if(reg.tokens.length===0)box.innerHTML='<span class="empty">'+L('noch nichts','nothing yet')+'</span>';
   else reg.tokens.forEach((d,i)=>{const t=document.createElement('span');t.className='tok';t.textContent=eur(d);
     t.onclick=()=>{reg.given-=reg.tokens[i];reg.tokens.splice(i,1);sfx.click();renderGiven();};box.appendChild(t);});
   const r=$('#regRemain');if(r)r.textContent=eur(reg.changeDue-reg.given);}
@@ -958,10 +1038,10 @@ function finishSale(){
     gainXP(reg.vip?40:20);
   } else if(!changeOk){
     state.combo=0;const loss=Math.abs(diff);earn-=loss/100;changeRep(diff>0?-0.3:-0.5);sfx.bad();
-    msg=(diff>0?`Zu viel Rückgeld! −${eur(loss)}`:`Zu wenig Rückgeld!`);color=col('red');gainXP(4);
+    msg=(diff>0?L(`Zu viel Rückgeld! −${eur(loss)}`,`Too much change! −${eur(loss)}`):L('Zu wenig Rückgeld!','Not enough change!'));color=col('red');gainXP(4);
   } else {
     state.combo=0;changeRep(-0.4-(state.event&&state.event.critic?0.3:0));sfx.bad();
-    msg=`+${Math.round(earn)}€ (Pfusch)`;color=col('red');gainXP(6);
+    msg=`+${Math.round(earn)}€ `+L('(Pfusch)','(botched)');color=col('red');gainXP(6);
   }
   earn=Math.round(earn*prestigeMult());state.money+=earn;state.dayEarn+=earn;state.servedTotal++;state.dayServed++;
   sfx.cash();renderTop();$('#register').classList.add('hidden');floatText(msg,color);checkAch();nextCustomerOrEndDay();
@@ -970,7 +1050,7 @@ function finishSale(){
 /* ===== Autonome Mitarbeiter ===== */
 function autoServe(type){
   const w=STAFF[type], o=makeOrder();
-  if(!teamServe(o)){if(Math.random()<0.12)toast('🧺 Team-Vorrat leer – „👥 Team auffüllen" im 🧺 Einkauf!');return;}
+  if(!teamServe(o)){if(Math.random()<0.12)toast(L('🧺 Team-Vorrat leer – „👥 Team auffüllen" im 🧺 Einkauf!','🧺 Team stock empty – "👥 Refill team" in 🧺 Supplies!'));return;}
   let earn=priceOf(o.base,o.veg.length,o.sauce.length,o.meat.need>=6,o.drink,o.side)/100, patz=false;
   if(Math.random()<w.err){earn=Math.round(earn*0.5);changeRep(-0.2);patz=true;}
   else{let tip=Math.round((1+Math.floor(Math.random()*2))*eventTip());earn=Math.round(earn+tip);}
@@ -978,7 +1058,7 @@ function autoServe(type){
   state.money+=earn;state.dayEarn+=earn;state.servedTotal++;state.dayServed++;
   state.ordersLeftToday--;state.queueCount=Math.max(0,state.ordersLeftToday-1);
   gainXP(5);renderTop();updateQueueFaces();
-  if(patz)sayAvatar(type,pick(PHRASES)); else toast(`${w.emo} +${earn}€`);
+  if(patz)sayAvatar(type,phrase()); else toast(`${w.emo} +${earn}€`);
   checkAch();
 }
 function updateQueueFaces(){const q=el.queueFaces;if(q)q.textContent=state.queueCount>0?Array.from({length:Math.min(state.queueCount,5)},()=>pick(FACES)).join(''):'— (letzter)';}
@@ -997,25 +1077,25 @@ function loop(ts){const dt=_lastTs?(ts-_lastTs)/1000:0;_lastTs=ts;
       if(state.branchTimer>=4){state.branchTimer=0;let sum=0;
         for(const b of state.branches)sum+=b.lvl*3+Math.floor(Math.random()*(b.lvl*2+3));
         sum=Math.round(sum*prestigeMult());
-        state.money+=sum;state.dayEarn+=sum;state.servedTotal+=state.branches.length;renderTop();toast(`🏪 Filialen +${sum}€`);checkAch();}}
+        state.money+=sum;state.dayEarn+=sum;state.servedTotal+=state.branches.length;renderTop();toast(`🏪 ${L('Filialen','Branches')} +${sum}€`);checkAch();}}
   }
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
 /* ===== Erfolge ===== */
-function checkAch(){for(const a of ACH){if(!unlockedAch.has(a.id)&&a.test(state)){unlockedAch.add(a.id);toast(`🏆 Erfolg: ${a.emo} ${a.name}`);sfx.good();persist();}}}
+function checkAch(){for(const a of ACH){if(!unlockedAch.has(a.id)&&a.test(state)){unlockedAch.add(a.id);toast(`🏆 ${L('Erfolg','Achievement')}: ${a.emo} ${achName(a)}`);sfx.good();persist();}}}
 
 /* ===== Personal ===== */
 function wageTotal(){return state.workers.reduce((s,w)=>s+STAFF[w.type].wage,0);}
 function countType(t){return state.workers.filter(w=>w.type===t).length;}
 function openStaff(){renderStaff();$('#staffOverlay').classList.remove('hidden');}
 function renderStaff(){
-  $('#slotInfo').textContent=`Slots belegt: ${state.workers.length} / ${staffSlots()}  (mehr Slots im 🛒 Laden)`;
+  $('#slotInfo').textContent=L(`Slots belegt: ${state.workers.length} / ${staffSlots()}  (mehr Slots im 🛒 Laden)`,`Slots used: ${state.workers.length} / ${staffSlots()}  (more slots in 🛒 Shop)`);
   const list=$('#staffList');list.innerHTML='';
   for(const k of Object.keys(STAFF)){const s=STAFF[k],cnt=countType(k);
     const row=document.createElement('div');row.className='staffrow';
-    row.innerHTML=`<div class="st-emo">${s.emo}</div><div class="st-info"><b>${s.name}</b><div>${s.desc}</div></div><div style="text-align:right"><div class="st-wage" style="color:#b5651d;font-weight:800;font-size:13px">${s.wage}€/Tag</div></div>`;
+    row.innerHTML=`<div class="st-emo">${s.emo}</div><div class="st-info"><b>${L(s.name,s.nameEn)}</b><div>${L(s.desc,s.descEn)}</div></div><div style="text-align:right"><div class="st-wage" style="color:#b5651d;font-weight:800;font-size:13px">${s.wage}€/${L('Tag','day')}</div></div>`;
     const step=document.createElement('div');step.className='stepper';
     const minus=document.createElement('button');minus.textContent='−';minus.disabled=cnt===0;
     minus.onclick=()=>{const i=state.workers.map(w=>w.type).lastIndexOf(k);if(i>=0){state.workers.splice(i,1);sfx.click();renderStaff();renderTop();persist();}};
@@ -1023,7 +1103,7 @@ function renderStaff(){
     const plus=document.createElement('button');plus.textContent='+';plus.disabled=state.workers.length>=staffSlots();
     plus.onclick=()=>{if(state.workers.length<staffSlots()){state.workers.push({type:k,timer:0});sfx.click();renderStaff();renderTop();checkAch();persist();}};
     step.appendChild(minus);step.appendChild(c);step.appendChild(plus);row.appendChild(step);list.appendChild(row);}
-  $('#wageInfo').innerHTML=`Lohnkosten gesamt: <b>${wageTotal()} €/Tag</b> · werden am Tagesende abgezogen.`;
+  $('#wageInfo').innerHTML=L(`Lohnkosten gesamt: <b>${wageTotal()} €/Tag</b> · werden am Tagesende abgezogen.`,`Total wages: <b>${wageTotal()} €/day</b> · deducted at end of day.`);
   renderCrew();
 }
 function renderCrew(){
@@ -1051,26 +1131,27 @@ function showTab(t){
   if(t==='menu')renderMenuShop();if(t==='fame')renderFame();if(t==='ach')renderAch();}
 $('#tabUpg').onclick=()=>showTab('upg');$('#tabMenu').onclick=()=>showTab('menu');$('#tabFame').onclick=()=>showTab('fame');$('#tabAch').onclick=()=>showTab('ach');
 /* Sortiment: neue Zutaten & Gerichte kaufen */
-function renderMenuShop(){const box=$('#shopMenu');box.innerHTML=`<div class="best">Kasse: ${state.money} € · freischalten bleibt dauerhaft (auch nach Franchise!)</div>`;
+const CAT_EN={'🍽️ Gericht':'🍽️ Dish','🥩 Fleisch':'🥩 Meat','🥬 Gemüse':'🥬 Veg','🌶️ Soße':'🌶️ Sauce','🧊 Getränk':'🧊 Drink','🍟 Beilage':'🍟 Side'};
+function renderMenuShop(){const box=$('#shopMenu');box.innerHTML=`<div class="best">${L('Kasse','Cash')}: ${state.money} € · ${L('freischalten bleibt dauerhaft (auch nach Franchise!)','unlocks stay forever (even after franchise!)')}</div>`;
   let cat='';
   for(const it of buyableList()){
-    if(it.cat!==cat){cat=it.cat;const t=document.createElement('div');t.className='drawer-label';t.textContent=cat;box.appendChild(t);}
+    if(it.cat!==cat){cat=it.cat;const t=document.createElement('div');t.className='drawer-label';t.textContent=L(cat,CAT_EN[cat]||cat);box.appendChild(t);}
     const owned=state.owned.includes(it.id);
     const row=document.createElement('div');row.className='shoprow';
-    row.innerHTML=`<div class="sh-emo">${it.emo}</div><div class="sh-info"><b>${it.name}</b><div>${owned?'im Sortiment':'einmalig freischalten'}</div></div>`;
+    row.innerHTML=`<div class="sh-emo">${it.emo}</div><div class="sh-info"><b>${nm(it)}</b><div>${owned?L('im Sortiment','on the menu'):L('einmalig freischalten','one-time unlock')}</div></div>`;
     if(owned){const m=document.createElement('span');m.className='maxed';m.textContent='✓';row.appendChild(m);}
-    else{const btn=document.createElement('button');btn.className='buy';btn.textContent=`${it.buy} € kaufen`;btn.disabled=state.money<it.buy;btn.onclick=()=>buyRecipe(it.id,it.buy);row.appendChild(btn);}
+    else{const btn=document.createElement('button');btn.className='buy';btn.textContent=L(`${it.buy} € kaufen`,`Buy ${it.buy} €`);btn.disabled=state.money<it.buy;btn.onclick=()=>buyRecipe(it.id,it.buy);row.appendChild(btn);}
     box.appendChild(row);}
 }
-function buyRecipe(id,cost){if(state.owned.includes(id)||state.money<cost)return;state.money-=cost;state.owned.push(id);initStock();buildStations();buildMeatToggle();sfx.great();renderTop();renderMenuShop();toast(`🍽️ Neu im Sortiment: ${ingInfo(id)?ingInfo(id).emo:''} freigeschaltet!`);checkAch();persist();}
+function buyRecipe(id,cost){if(state.owned.includes(id)||state.money<cost)return;state.money-=cost;state.owned.push(id);initStock();buildStations();buildMeatToggle();sfx.great();renderTop();renderMenuShop();toast(L(`🍽️ Neu im Sortiment: ${ingInfo(id)?ingInfo(id).emo:''} freigeschaltet!`,`🍽️ Added to menu: ${ingInfo(id)?ingInfo(id).emo:''} unlocked!`));checkAch();persist();}
 /* Franchise / Prestige */
 function prestigeGain(){return Math.max(0,state.level-2);}
 function renderFame(){const box=$('#shopFame');const g=prestigeGain();const ok=state.level>=5;
-  box.innerHTML=`<div class="branchcard"><div class="bc-emo">🌟</div><div class="bc-info"><b>Ruhm: ${state.fame||0} ⭐</b><div class="sub">Aktueller Bonus: <b>+${Math.round(((prestigeMult()-1)*100))}%</b> auf alle Einnahmen · Franchises eröffnet: ${state.prestige||0}</div></div></div>
-    <p style="font-size:13px;color:#5a4a3a;margin:8px 0;">Beim <b>Franchise-Expandieren</b> startest du Tag&nbsp;1 mit Level&nbsp;1 neu – behältst aber dein <b>Sortiment</b>, deine Erfolge und sammelst dauerhaft <b>Ruhm</b> für mehr Einkommen. Ideal für lange Läufe!</p>`;
+  box.innerHTML=`<div class="branchcard"><div class="bc-emo">🌟</div><div class="bc-info"><b>${L('Ruhm','Fame')}: ${state.fame||0} ⭐</b><div class="sub">${L('Aktueller Bonus','Current bonus')}: <b>+${Math.round(((prestigeMult()-1)*100))}%</b> ${L('auf alle Einnahmen · Franchises eröffnet','on all income · Franchises opened')}: ${state.prestige||0}</div></div></div>
+    <p style="font-size:13px;color:#5a4a3a;margin:8px 0;">${L('Beim <b>Franchise-Expandieren</b> startest du Tag&nbsp;1 mit Level&nbsp;1 neu – behältst aber dein <b>Sortiment</b>, deine Erfolge und sammelst dauerhaft <b>Ruhm</b> für mehr Einkommen. Ideal für lange Läufe!','When you <b>expand your franchise</b> you restart at Day&nbsp;1, Level&nbsp;1 – but keep your <b>menu</b> and achievements and gain permanent <b>Fame</b> for more income. Great for long runs!')}</p>`;
   const btn=document.createElement('button');btn.className='go';btn.style.width='100%';
-  if(ok){btn.textContent=`🌟 Franchise expandieren (+${g} Ruhm)`;btn.onclick=doPrestige;}
-  else{btn.textContent=`Ab Level 5 möglich (aktuell Lv ${state.level})`;btn.disabled=true;btn.style.opacity=.6;}
+  if(ok){btn.textContent=L(`🌟 Franchise expandieren (+${g} Ruhm)`,`🌟 Expand franchise (+${g} Fame)`);btn.onclick=doPrestige;}
+  else{btn.textContent=L(`Ab Level 5 möglich (aktuell Lv ${state.level})`,`Available from Level 5 (currently Lv ${state.level})`);btn.disabled=true;btn.style.opacity=.6;}
   box.appendChild(btn);
 }
 function doPrestige(){const g=prestigeGain();if(state.level<5)return;
@@ -1079,7 +1160,7 @@ function doPrestige(){const g=prestigeGain();if(state.level<5)return;
   state.money=0;state.day=1;state.level=1;state.xp=0;state.combo=0;state.rep=5;
   state.upgrades={kasse:0,marketing:0,slots:0,grill:0,auto:0};state.workers=[];state.branches=[];state.stock={};state.teamStock={};
   $('#shopOverlay').classList.add('hidden');
-  toast(`🌟 Franchise Nr. ${state.prestige}! +${g} Ruhm · +${Math.round((prestigeMult()-1)*100)}% Einnahmen`);
+  toast(L(`🌟 Franchise Nr. ${state.prestige}! +${g} Ruhm · +${Math.round((prestigeMult()-1)*100)}% Einnahmen`,`🌟 Franchise #${state.prestige}! +${g} Fame · +${Math.round((prestigeMult()-1)*100)}% income`));
   persist();beginDay();
 }
 /* ===== Filialen-Verwaltung ===== */
@@ -1088,56 +1169,56 @@ function branchUpCost(b){return 600*b.lvl;}
 function branchIncomeAvg(b){return b.lvl*4+Math.round(b.lvl+1);}
 function openBranches(){renderBranches();$('#branchOverlay').classList.remove('hidden');}
 function renderBranches(){
-  $('#branchMoney').textContent=`Kasse: ${state.money} €`;
+  $('#branchMoney').textContent=`${L('Kasse','Cash')}: ${state.money} €`;
   const list=$('#branchList');list.innerHTML='';
   const main=document.createElement('div');main.className='branchcard';
-  main.innerHTML=`<div class="bc-emo">🏠</div><div class="bc-info"><b>${state.shopName}</b> <span style="color:#3fa350;font-weight:800">Hauptfiliale</span><div class="sub">Die bedienst du selbst an der Theke.</div></div>`;
+  main.innerHTML=`<div class="bc-emo">🏠</div><div class="bc-info"><b>${state.shopName}</b> <span style="color:#3fa350;font-weight:800">${L('Hauptfiliale','Main branch')}</span><div class="sub">${L('Die bedienst du selbst an der Theke.','You run this one yourself at the counter.')}</div></div>`;
   list.appendChild(main);
   state.branches.forEach((b,i)=>{const card=document.createElement('div');card.className='branchcard';
-    card.innerHTML=`<div class="bc-emo">🏪</div><div class="bc-info"><b>${b.name}</b> <span style="color:#b08a5a;font-weight:700">Stufe ${b.lvl}</span><div class="sub">Passives Einkommen: ca. ${branchIncomeAvg(b)} €/Runde</div></div>`;
-    const uc=branchUpCost(b);const btn=document.createElement('button');btn.className='buy';btn.textContent=`Ausbauen · ${uc} €`;btn.disabled=state.money<uc;
+    card.innerHTML=`<div class="bc-emo">🏪</div><div class="bc-info"><b>${b.name}</b> <span style="color:#b08a5a;font-weight:700">${L('Stufe','Lvl')} ${b.lvl}</span><div class="sub">${L('Passives Einkommen','Passive income')}: ~${branchIncomeAvg(b)} €/${L('Runde','round')}</div></div>`;
+    const uc=branchUpCost(b);const btn=document.createElement('button');btn.className='buy';btn.textContent=L(`Ausbauen · ${uc} €`,`Upgrade · ${uc} €`);btn.disabled=state.money<uc;
     btn.onclick=()=>upgradeBranch(i);card.appendChild(btn);list.appendChild(card);});
-  const cost=newBranchCost();const bb=$('#branchBuy');bb.textContent=`➕ Neue Filiale eröffnen – ${cost} €`;bb.disabled=state.money<cost;
+  const cost=newBranchCost();const bb=$('#branchBuy');bb.textContent=L(`➕ Neue Filiale eröffnen – ${cost} €`,`➕ Open new branch – ${cost} €`);bb.disabled=state.money<cost;
   const total=state.branches.reduce((s,b)=>s+branchIncomeAvg(b),0);
-  $('#branchTotal').textContent=state.branches.length?`Passives Einkommen gesamt: ca. ${total} € alle 4 Sek.`:'Noch keine Zweigstelle – eröffne deine erste Filiale!';
+  $('#branchTotal').textContent=state.branches.length?L(`Passives Einkommen gesamt: ca. ${total} € alle 4 Sek.`,`Total passive income: ~${total} € every 4 sec.`):L('Noch keine Zweigstelle – eröffne deine erste Filiale!','No branches yet – open your first one!');
 }
-function upgradeBranch(i){const b=state.branches[i];const c=branchUpCost(b);if(state.money<c)return;state.money-=c;b.lvl++;sfx.cash();renderTop();renderBranches();toast(`🏪 ${b.name} → Stufe ${b.lvl}!`);persist();}
-function buyBranch(){const c=newBranchCost();if(state.money<c)return;state.money-=c;const city=BRANCH_CITIES[state.branches.length%BRANCH_CITIES.length];state.branches.push({name:`Filiale ${city}`,lvl:1});sfx.cash();renderTop();renderBranches();toast(`🏪 Neue Filiale in ${city} eröffnet!`);checkAch();persist();}
+function upgradeBranch(i){const b=state.branches[i];const c=branchUpCost(b);if(state.money<c)return;state.money-=c;b.lvl++;sfx.cash();renderTop();renderBranches();toast(L(`🏪 ${b.name} → Stufe ${b.lvl}!`,`🏪 ${b.name} → Lvl ${b.lvl}!`));persist();}
+function buyBranch(){const c=newBranchCost();if(state.money<c)return;state.money-=c;const city=BRANCH_CITIES[state.branches.length%BRANCH_CITIES.length];state.branches.push({name:`${L('Filiale','Branch')} ${city}`,lvl:1});sfx.cash();renderTop();renderBranches();toast(L(`🏪 Neue Filiale in ${city} eröffnet!`,`🏪 New branch opened in ${city}!`));checkAch();persist();}
 $('#branchBtn').onclick=openBranches;$('#branchClose').onclick=()=>$('#branchOverlay').classList.add('hidden');$('#branchBuy').onclick=buyBranch;
 /* ===== Einkaufsladen ===== */
 function allIngIds(){return [...availVEG(),...availSAUCE(),...availDRINKS(),...availSIDES(),{id:'falafel'}].map(x=>x.id);}
 function openBuy(){renderBuy();$('#buyOverlay').classList.remove('hidden');}
-function renderBuy(){$('#buyMoney').innerHTML=`Kasse: ${state.money} €  ·  ${autoOn()?'📦 <b>Auto-Nachschub aktiv</b>':'📦 Auto-Nachschub: im 🛒 Laden erhältlich'}`;
+function renderBuy(){$('#buyMoney').innerHTML=`${L('Kasse','Cash')}: ${state.money} €  ·  ${autoOn()?L('📦 <b>Auto-Nachschub aktiv</b>','📦 <b>Auto-restock active</b>'):L('📦 Auto-Nachschub: im 🛒 Laden erhältlich','📦 Auto-restock: available in 🛒 Shop')}`;
   const box=$('#buyList');box.innerHTML='';
-  const groups=[['Gemüse & Käse',availVEG()],['Soßen',availSAUCE()],['Getränke',availDRINKS()],['Beilagen',availSIDES()],['Extra',[{id:'falafel',name:'Falafel',emo:'🧆'}]]];
+  const groups=[[L('Gemüse & Käse','Veg & cheese'),availVEG()],[L('Soßen','Sauces'),availSAUCE()],[L('Getränke','Drinks'),availDRINKS()],[L('Beilagen','Sides'),availSIDES()],[L('Extra','Extra'),[{id:'falafel',name:'Falafel',emo:'🧆'}]]];
   for(const g of groups){const t=document.createElement('div');t.className='drawer-label';t.textContent=g[0];box.appendChild(t);
     for(const it of g[1]){const id=it.id,cost=restockCost(id),n=stockOf(id),tn=teamStockOf(id);
       const row=document.createElement('div');row.className='shoprow';
-      row.innerHTML=`<div class="sh-emo">${it.emo}</div><div class="sh-info"><b>${it.name}</b><div>Dein Vorrat: ${n} · 👥 Team: ${tn}</div></div>`;
+      row.innerHTML=`<div class="sh-emo">${it.emo}</div><div class="sh-info"><b>${nm(it)}</b><div>${L('Dein Vorrat','Your stock')}: ${n} · 👥 ${L('Team','Team')}: ${tn}</div></div>`;
       const btn=document.createElement('button');btn.className='buy';btn.textContent=`+${PACK} · ${cost} €`;btn.disabled=state.money<cost;
       btn.onclick=()=>buyStock(id);row.appendChild(btn);box.appendChild(row);}}
 }
 function buyStock(id){const cost=restockCost(id);if(state.money<cost)return;state.money-=cost;state.stock[id]=stockOf(id)+PACK;sfx.cash();renderTop();renderBuy();updateStockBadges();persist();}
 function buyAll(){let spent=0;for(const id of allIngIds()){if(stockOf(id)<STOCK_START&&state.money>=restockCost(id)){state.money-=restockCost(id);state.stock[id]=stockOf(id)+PACK;spent+=restockCost(id);}}
-  sfx.cash();renderTop();renderBuy();updateStockBadges();persist();if(spent>0)toast(`🧺 Dein Vorrat aufgefüllt für ${spent} €`);}
+  sfx.cash();renderTop();renderBuy();updateStockBadges();persist();if(spent>0)toast(L(`🧺 Dein Vorrat aufgefüllt für ${spent} €`,`🧺 Your stock refilled for ${spent} €`));}
 function buyTeam(){let spent=0;for(const id of allIngIds()){if(teamStockOf(id)<STOCK_START&&state.money>=restockCost(id)){state.money-=restockCost(id);state.teamStock[id]=teamStockOf(id)+PACK;spent+=restockCost(id);}}
-  sfx.cash();renderTop();renderBuy();persist();if(spent>0)toast(`👥 Team-Vorrat aufgefüllt für ${spent} €`);}
+  sfx.cash();renderTop();renderBuy();persist();if(spent>0)toast(L(`👥 Team-Vorrat aufgefüllt für ${spent} €`,`👥 Team stock refilled for ${spent} €`));}
 $('#buyBtn').onclick=openBuy;$('#buyClose').onclick=()=>$('#buyOverlay').classList.add('hidden');$('#buyAll').onclick=buyAll;$('#buyTeam').onclick=buyTeam;
-function renderShop(){$('#shopMoney').textContent=`Kasse: ${state.money} €`;
+function renderShop(){$('#shopMoney').textContent=`${L('Kasse','Cash')}: ${state.money} €`;
   const box=$('#shopUpg');box.innerHTML='';
   for(const k of Object.keys(UPG)){const u=UPG[k],lvl=upg(k),maxed=lvl>=u.max,cost=u.cost(lvl);
     const row=document.createElement('div');row.className='shoprow';
-    row.innerHTML=`<div class="sh-emo">${u.emo}</div><div class="sh-info"><b>${u.name}</b> <span style="color:#b08a5a;font-weight:700">Stufe ${lvl}/${u.max}</span><div>${u.desc}</div></div>`;
+    row.innerHTML=`<div class="sh-emo">${u.emo}</div><div class="sh-info"><b>${L(u.name,u.nameEn)}</b> <span style="color:#b08a5a;font-weight:700">${L('Stufe','Lvl')} ${lvl}/${u.max}</span><div>${L(u.desc,u.descEn)}</div></div>`;
     if(maxed){const m=document.createElement('span');m.className='maxed';m.textContent='MAX';row.appendChild(m);}
-    else{const btn=document.createElement('button');btn.className='buy';btn.textContent=`${cost} € kaufen`;btn.disabled=state.money<cost;
+    else{const btn=document.createElement('button');btn.className='buy';btn.textContent=L(`${cost} € kaufen`,`Buy ${cost} €`);btn.disabled=state.money<cost;
       btn.onclick=()=>buyUpg(k);row.appendChild(btn);}
     box.appendChild(row);}
 }
 function buyUpg(k){const u=UPG[k],lvl=upg(k);if(lvl>=u.max)return;const cost=u.cost(lvl);if(state.money<cost)return;
-  state.money-=cost;state.upgrades[k]=lvl+1;sfx.cash();renderTop();renderShop();toast(`${u.emo} ${u.name} Stufe ${lvl+1}!`);persist();}
+  state.money-=cost;state.upgrades[k]=lvl+1;sfx.cash();renderTop();renderShop();toast(`${u.emo} ${L(u.name,u.nameEn)} ${L('Stufe','Lvl')} ${lvl+1}!`);persist();}
 function renderAch(){const g=$('#achGrid');g.innerHTML='';
   for(const a of ACH){const d=document.createElement('div');d.className='achitem'+(unlockedAch.has(a.id)?' on':'');
-    d.innerHTML=`<div class="ai-emo">${a.emo}</div>${a.name}`;g.appendChild(d);}}
+    d.innerHTML=`<div class="ai-emo">${a.emo}</div>${achName(a)}`;g.appendChild(d);}}
 $('#shopBtn').onclick=openShop;
 $('#shopClose').onclick=()=>$('#shopOverlay').classList.add('hidden');
 
@@ -1155,32 +1236,32 @@ function beginDay(){
   state.queueCount=state.ordersLeftToday-1;state.dayEarn=0;state.dayServed=0;state.combo=0;
   state.dayGoal=Math.round(40*Math.pow(1.35,state.day-1));
   state.running=true;initStock();buildStations();buildMeatToggle();
-  currentMeat='kalb';el.spit.className='spit';el.spitLabel.textContent=MEATS.kalb.name;
+  currentMeat='kalb';el.spit.className='spit';el.spitLabel.textContent=nm(MEATS.kalb);
   renderTop();renderEventChip();renderCrew();spawnCustomer();
 }
 function dayComment(net,day,rep){
   const bench=Math.round(40*Math.pow(1.35,day-1)); const r=bench>0?net/bench:1;
-  if(r>=1.6)return{t:'Wahnsinn! 🤩',s:'Beste Schicht aller Zeiten – die Bude brummt!'};
-  if(r>=1.2)return{t:'Sehr gut! ⭐',s:'Die Kasse klingelt, weiter so!'};
-  if(r>=0.9)return{t:'Gut gemacht! 👍',s:'Solide Arbeit an der Theke.'};
-  if(r>=0.6)return{t:'Ganz ordentlich 🙂',s:'Da geht bestimmt noch mehr.'};
-  if(net>0)  return{t:'Naja… 😅',s:'Zäher Tag. Morgen läuft es besser!'};
-  return{t:'Autsch 😬',s:'Roter Tag – vielleicht weniger Personal einplanen?'};
+  if(r>=1.6)return{t:L('Wahnsinn! 🤩','Amazing! 🤩'),s:L('Beste Schicht aller Zeiten – die Bude brummt!','Best shift ever – business is booming!')};
+  if(r>=1.2)return{t:L('Sehr gut! ⭐','Very good! ⭐'),s:L('Die Kasse klingelt, weiter so!','The till is ringing, keep it up!')};
+  if(r>=0.9)return{t:L('Gut gemacht! 👍','Well done! 👍'),s:L('Solide Arbeit an der Theke.','Solid work at the counter.')};
+  if(r>=0.6)return{t:L('Ganz ordentlich 🙂','Not bad 🙂'),s:L('Da geht bestimmt noch mehr.','There is surely more in it.')};
+  if(net>0)  return{t:L('Naja… 😅','Meh… 😅'),s:L('Zäher Tag. Morgen läuft es besser!','Tough day. Tomorrow will be better!')};
+  return{t:L('Autsch 😬','Ouch 😬'),s:L('Roter Tag – vielleicht weniger Personal einplanen?','A day in the red – maybe hire less staff?')};
 }
 function endDay(){state.running=false;
   const wages=wageTotal();state.money-=wages;const net=state.dayEarn-wages;
   const c=dayComment(net,state.day,state.rep);
-  $('#dayTitle').textContent=`Feierabend – Tag ${state.day} 🌙`;
+  $('#dayTitle').textContent=L(`Feierabend – Tag ${state.day} 🌙`,`End of day – Day ${state.day} 🌙`);
   $('#dayEarn').textContent=(net>=0?'+':'')+net+' €';
-  $('#daySummary').innerHTML=`Einnahmen: <b>+${state.dayEarn} €</b>${wages>0?` · Löhne: <b>−${wages} €</b>`:''}<br>${state.dayServed} Kunden · Ruf ${'★'.repeat(Math.round(state.rep))} · Level ${state.level}`;
+  $('#daySummary').innerHTML=L(`Einnahmen: <b>+${state.dayEarn} €</b>${wages>0?` · Löhne: <b>−${wages} €</b>`:''}<br>${state.dayServed} Kunden · Ruf ${'★'.repeat(Math.round(state.rep))} · Level ${state.level}`,`Revenue: <b>+${state.dayEarn} €</b>${wages>0?` · Wages: <b>−${wages} €</b>`:''}<br>${state.dayServed} customers · Rep ${'★'.repeat(Math.round(state.rep))} · Level ${state.level}`);
   persist();checkAch();
   $('#nextEvent').innerHTML=`<b>${c.t}</b><br>${c.s}`;
-  $('#nextGoal').textContent=`Bereit für Tag ${state.day+1}? 🛒 Laden & 👔 Team nicht vergessen!`;
+  $('#nextGoal').textContent=L(`Bereit für Tag ${state.day+1}? 🛒 Laden & 👔 Team nicht vergessen!`,`Ready for day ${state.day+1}? Don't forget 🛒 Shop & 👔 Staff!`);
   state.day++;
   $('#dayOverlay').classList.remove('hidden');}
 function nextDay(){$('#dayOverlay').classList.add('hidden');beginDay();}
 function gameOver(){state.running=false;persist(false);
-  $('#overSummary').innerHTML=`Dein Ruf ist auf null. Du kamst bis <b>Tag ${state.day}</b>, Level <b>${state.level}</b>, mit <b>${state.money} €</b> (${state.servedTotal} Kunden).`;
+  $('#overSummary').innerHTML=L(`Dein Ruf ist auf null. Du kamst bis <b>Tag ${state.day}</b>, Level <b>${state.level}</b>, mit <b>${state.money} €</b> (${state.servedTotal} Kunden).`,`Your reputation hit zero. You reached <b>Day ${state.day}</b>, Level <b>${state.level}</b>, with <b>${state.money} €</b> (${state.servedTotal} customers).`);
   $('#overOverlay').classList.remove('hidden');}
 
 /* ===== Helfer ===== */
@@ -1191,15 +1272,32 @@ function multisetEq(a,b){if(a.length!==b.length)return false;const m=countMap(a)
 function floatText(t,c){const f=document.createElement('div');f.className='float';f.textContent=t;f.style.color=c;f.style.left='26%';f.style.top='34%';el.game.appendChild(f);setTimeout(()=>f.remove(),1100);}
 
 /* ===== Start / Steuerung ===== */
+function saveSettings(){const s=loadSave();s.settings={music:musicWanted,sound:!muted,lang};writeSave(s);}
+function updateSettingLabels(){
+  $('#setLang').textContent='🌐 '+(lang==='en'?'English':'Deutsch');
+  $('#setMusic').textContent=L('🎵 Musik: ','🎵 Music: ')+(musicWanted?L('An','On'):L('Aus','Off'));
+  $('#setSound').textContent=muted?L('🔇 Sound: Aus','🔇 Sound: Off'):L('🔊 Sound: An','🔊 Sound: On');
+  $('#setHowto').textContent=L('❓ Anleitung','❓ How to play');
+  $('#setReset').textContent=L('🗑️ Spielstand löschen','🗑️ Delete save');
+}
 function initStart(){const s=loadSave();
   (s.ach||[]).forEach(a=>unlockedAch.add(a));
   if(s.lastName)$('#shopName').value=s.lastName;
+  if(s.settings){musicWanted=s.settings.music!==false;muted=s.settings.sound===false;if(s.settings.lang)lang=s.settings.lang;}
   const best=s.best||{money:0,day:0};
-  $('#bestLine').textContent=(best.money||best.day)?`🏆 Rekord: ${best.money||0} € · Tag ${best.day||0}`:'';
+  $('#bestLine').textContent=(best.money||best.day)?L(`🏆 Rekord: ${best.money||0} € · Tag ${best.day||0}`,`🏆 Best: ${best.money||0} € · Day ${best.day||0}`):L('Erstes Spiel – willkommen!','First game – welcome!');
   $('#continueBtn').style.display=s.run?'inline-block':'none';
+  $('#ssVersion').textContent=`LAK Games · ${VERSION}`;
+  $('#muteBtn').textContent=muted?'🔇':'🔊';
+  applyLang();
 }
+$('#setLang').onclick=()=>{lang=(lang==='en'?'de':'en');saveSettings();initStart();};
+$('#setMusic').onclick=()=>{musicWanted=!musicWanted;if(!musicWanted)stopMusic();else if(audioCtx)startMusic();$('#musicBtn').textContent=musicWanted?'🎵':'🔈';updateSettingLabels();saveSettings();};
+$('#setSound').onclick=()=>{muted=!muted;$('#muteBtn').textContent=muted?'🔇':'🔊';updateSettingLabels();saveSettings();};
+$('#setHowto').onclick=()=>{$('#howtoCard').classList.toggle('hidden');};
+$('#setReset').onclick=()=>{if(confirm(L('Wirklich den gesamten Spielstand und Rekord löschen?','Really delete all progress and best score?'))){try{localStorage.removeItem(SAVE_KEY);}catch(e){}unlockedAch.clear();musicWanted=true;muted=false;$('#shopName').value='Döner Haus';initStart();alert(L('Spielstand gelöscht.','Save deleted.'));}};
 function startNew(){newGame();
-  const nm=($('#shopName').value||'').trim();state.shopName=nm||'Döner Haus';
+  const nmv=($('#shopName').value||'').trim();state.shopName=nmv||'Döner Haus';
   document.title='🥙 '+state.shopName;
   ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
   beginDay();}
@@ -1212,18 +1310,18 @@ function continueRun(){const s=loadSave();if(!s.run)return startNew();newGame();
   document.title='🥙 '+state.shopName;
   ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
   beginDay();}
-$('#startBtn').onclick=()=>{ensureAudio();startMusic();$('#musicBtn').textContent='🎵';startNew();};
-$('#continueBtn').onclick=()=>{ensureAudio();startMusic();$('#musicBtn').textContent='🎵';continueRun();};
+$('#startBtn').onclick=()=>{ensureAudio();if(musicWanted){startMusic();$('#musicBtn').textContent='🎵';}else{$('#musicBtn').textContent='🔈';}startNew();};
+$('#continueBtn').onclick=()=>{ensureAudio();if(musicWanted){startMusic();$('#musicBtn').textContent='🎵';}else{$('#musicBtn').textContent='🔈';}continueRun();};
 $('#musicBtn').onclick=e=>{if(music.on){stopMusic();e.target.textContent='🔈';}else{startMusic();e.target.textContent='🎵';}};
 $('#restartBtn').onclick=()=>{$('#overOverlay').classList.add('hidden');$('#startOverlay').classList.remove('hidden');initStart();};
 $('#nextDayBtn').onclick=nextDay;
 $('#serveBtn').onclick=attemptCheckout;
 function refundBuild(){const b=state.build;b.veg.forEach(giveStock);b.sauce.forEach(giveStock);if(b.drink)giveStock(b.drink);if(b.side)giveStock(b.side);if(b.meat&&b.meat.type==='falafel')giveStock('falafel');if(frying)giveStock(frying.id);}
-$('#trashBtn').onclick=()=>{if(state&&state.running&&state.phase==='make'){refundBuild();state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;frying=null;renderTray();renderBoard();updateStockBadges();sfx.bad();setHint('Alles neu. Basis wählen 👇');}};
+$('#trashBtn').onclick=()=>{if(state&&state.running&&state.phase==='make'){refundBuild();state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;frying=null;renderTray();renderBoard();updateStockBadges();sfx.bad();setHint(L('Alles neu. Basis wählen 👇','Fresh start. Pick a base 👇'));}};
 $('#muteBtn').onclick=e=>{muted=!muted;e.target.textContent=muted?'🔇':'🔊';};
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(state&&state.phase==='make')attemptCheckout();else if(state&&state.phase==='pay')finishSale();}});
 function runLoading(){
-  const tips=['Heiz den Grill…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
+  const tips=lang==='en'?['Heating the grill…','Chopping the onions…','Polishing the counter…','Mixing the sauces…','Pouring the ayran…','Warming the flatbread…','Opening up…']:['Heize den Grill vor…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
   const tipEl=$('#loadTip'),fill=$('#loadFill'),L=$('#loading');let i=0;
   const iv=setInterval(()=>{i=(i+1)%tips.length;tipEl.textContent=tips[i];},430);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width='100%';}));
