@@ -1223,7 +1223,7 @@ $('#trashBtn').onclick=()=>{if(state&&state.running&&state.phase==='make'){refun
 $('#muteBtn').onclick=e=>{muted=!muted;e.target.textContent=muted?'🔇':'🔊';};
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(state&&state.phase==='make')attemptCheckout();else if(state&&state.phase==='pay')finishSale();}});
 function runLoading(){
-  const tips=['Heize den Grill vor…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
+  const tips=['Heiz den Grill…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
   const tipEl=$('#loadTip'),fill=$('#loadFill'),L=$('#loading');let i=0;
   const iv=setInterval(()=>{i=(i+1)%tips.length;tipEl.textContent=tips[i];},430);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width='100%';}));
