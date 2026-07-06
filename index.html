@@ -1287,7 +1287,7 @@ function initStart(){const s=loadSave();
   const best=s.best||{money:0,day:0};
   $('#bestLine').textContent=(best.money||best.day)?L(`🏆 Rekord: ${best.money||0} € · Tag ${best.day||0}`,`🏆 Best: ${best.money||0} € · Day ${best.day||0}`):L('Erstes Spiel – willkommen!','First game – welcome!');
   $('#continueBtn').style.display=s.run?'inline-block':'none';
-  $('#ssVersion').textContent=`LAK Games · ${VERSION}`;
+  $('#ssVersion').textContent=`Kempter Interactive · ${VERSION}`;
   $('#muteBtn').textContent=muted?'🔇':'🔊';
   applyLang();
 }
