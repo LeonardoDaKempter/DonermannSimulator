@@ -309,8 +309,8 @@
       <button class="iconBtn" id="buyBtn" data-i18n="btn_buy">🧺 Einkauf</button>
       <button class="iconBtn" id="branchBtn" data-i18n="btn_branch">🏪 Filialen</button>
       <button class="iconBtn" id="staffBtn" data-i18n="btn_team">👔 Team</button>
-      <button class="iconBtn" id="musicBtn" title="Musik an/aus">🎵</button>
-      <button class="iconBtn" id="muteBtn" title="Ton an/aus">🔊</button>
+      <button class="iconBtn" id="pauseBtn" data-i18n="btn_pause">⏸️ Stopp</button>
+      <button class="iconBtn" id="soundBtn">🔊 Ton</button>
     </div>
   </div>
 
@@ -416,8 +416,7 @@
         <div class="ss-h" data-i18n="set_h">⚙️ Einstellungen</div>
         <div class="ss-settings">
           <button class="setbtn" id="setLang">🌐 Deutsch</button>
-          <button class="setbtn" id="setMusic">🎵 Musik: An</button>
-          <button class="setbtn" id="setSound">🔊 Sound: An</button>
+          <button class="setbtn" id="setSound">🔊 Ton: An</button>
           <button class="setbtn" id="setHowto">❓ Anleitung</button>
           <button class="setbtn danger" id="setReset">🗑️ Spielstand löschen</button>
         </div>
@@ -501,6 +500,14 @@
   <div class="overlay hidden" id="overOverlay"><div class="panel">
     <h2 data-i18n="over_h">Bude dicht! 😞</h2><div class="big">⭐</div><p id="overSummary"></p>
     <button class="go" id="restartBtn" data-i18n="over_restart">Neues Spiel</button>
+  </div></div>
+
+  <!-- Pause -->
+  <div class="overlay hidden" id="pauseOverlay"><div class="panel">
+    <div class="big">⏸️</div>
+    <h2 data-i18n="pause_h">⏸️ Pausiert</h2>
+    <p data-i18n="pause_p">Die Zeit steht still. Mach weiter, wenn du bereit bist.</p>
+    <button class="go" id="resumeBtn" data-i18n="pause_go">▶️ Weiter</button>
   </div></div>
 </div>
 
@@ -608,7 +615,8 @@ const TXT={
   staff_h:{de:'👔 Team',en:'👔 Staff'},staff_p:{de:'Mitarbeiter bedienen wartende Kunden autonom – kosten aber Tageslohn.',en:'Staff serve waiting customers autonomously – but cost a daily wage.'},staff_close:{de:'Weiter arbeiten →',en:'Keep working →'},
   reg_reset:{de:'↺ Zurück',en:'↺ Reset'},reg_confirm:{de:'✅ Rückgeld geben',en:'✅ Give change'},reg_dl1:{de:'Kassenlade — Rückgeld zusammenklicken:',en:'Cash drawer — click to make change:'},reg_dl2:{de:'Herausgegeben (Klick entfernt):',en:'Given out (click to remove):'},
   day_next:{de:'Nächste Schicht →',en:'Next shift →'},over_h:{de:'Bude dicht! 😞',en:'Shop closed! 😞'},over_restart:{de:'Neues Spiel',en:'New game'},
-  load_sub:{de:'Deine Dönerbude wird vorbereitet…',en:'Preparing your döner shop…'}
+  load_sub:{de:'Deine Dönerbude wird vorbereitet…',en:'Preparing your döner shop…'},
+  btn_pause:{de:'⏸️ Stopp',en:'⏸️ Pause'},pause_h:{de:'⏸️ Pausiert',en:'⏸️ Paused'},pause_p:{de:'Die Zeit steht still. Mach weiter, wenn du bereit bist.',en:'Time is frozen. Continue when you\'re ready.'},pause_go:{de:'▶️ Weiter',en:'▶️ Resume'}
 };
 function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n')];if(v)e.textContent=v[lang];});
@@ -618,7 +626,7 @@ function applyLang(){
   if($('#setLang'))updateSettingLabels();
 }
 const PHRASES=['Anzeige ist raus!','Ups, war keine Absicht!','Passiert den Besten!','Sorry Chef!','War der Salat schuld!','Hab kurz nicht aufgepasst!','Das war die Zwiebel!','Mist, verschnitten!','Nächster wird besser!','Boah, sorry!','Nicht mein Tag heute…','Ey, das zählt nicht!'];
-const PHRASES_EN=['My bad!','Oops, not on purpose!','Happens to the best!','Sorry boss!','Blame the salad!','Wasn\'t paying attention!','It was the onion!','Dang, sliced wrong!','Next one\'s better!','Whoa, I'm sorry!','Not my day today…','Hey, that doesn\'t count!'];
+const PHRASES_EN=['My bad!','Oops, not on purpose!','Happens to the best!','Sorry boss!','Blame the salad!','Wasn\'t paying attention!','It was the onion!','Dang, sliced wrong!','Next one\'s better!','Whoa, sorry!','Not my day today…','Hey, that doesn\'t count!'];
 function phrase(){return pick(lang==='en'?PHRASES_EN:PHRASES);}
 const BRANCH_CITIES=['Berlin','Hamburg','Köln','München','Frankfurt','Bremen','Essen','Dortmund','Hannover','Leipzig','Stuttgart','Nürnberg'];
 const STOCK_START=15, PACK=15;
@@ -982,7 +990,7 @@ function renderWishes(){
   el.feedbackList.innerHTML='';
   state.feedback.slice(-3).forEach(f=>{const d=document.createElement('div');d.className='fb '+(f.k||'');d.textContent=f.t;el.feedbackList.appendChild(d);});
 }
-function paused(){return ['startOverlay','dayOverlay','overOverlay','register','shopOverlay','staffOverlay','buyOverlay','branchOverlay'].some(id=>{const e=$('#'+id);return e&&!e.classList.contains('hidden');});}
+function paused(){return ['startOverlay','dayOverlay','overOverlay','register','shopOverlay','staffOverlay','buyOverlay','branchOverlay','pauseOverlay'].some(id=>{const e=$('#'+id);return e&&!e.classList.contains('hidden');});}
 function renderCustomer(){const c=state.customer;if(!c)return;el.face.textContent=c.face;el.name.textContent=c.name;const o=c.order;el.orderList.innerHTML='';
   $('#custSay').textContent=o.vip?L('„VIP – mach was Gutes!" 💎','"VIP – make it good!" 💎'):(o.mitAlles?L('„Einen Döner mit alles!"','"One döner with everything!"'):L('„Einmal, bitte:"','"One, please:"'));
   addChip(BASES[o.base].emo,nm(BASES[o.base]));
@@ -1292,7 +1300,7 @@ function beginDay(){
   state.ordersLeftToday=Math.max(3,Math.round((ordersForDay(state.day)+customerBonus())*eventCust()));
   state.queueCount=state.ordersLeftToday-1;state.dayEarn=0;state.dayServed=0;state.combo=0;
   state.dayGoal=Math.round(40*Math.pow(1.35,state.day-1));
-  state.clockMin=0;state.minPerSec=SHIFT_MIN/(40+state.ordersLeftToday*8);state.closedRemaining=0;state.feedback=[];chooseTrend();
+  state.clockMin=0;state.minPerSec=SHIFT_MIN/((40+state.ordersLeftToday*8)*4);state.closedRemaining=0;state.feedback=[];chooseTrend();
   state.running=true;initStock();buildStations();buildMeatToggle();
   currentMeat='kalb';el.spit.className='spit';el.spitLabel.textContent=nm(MEATS.kalb);
   renderTop();renderEventChip();renderCrew();renderClock();renderWishes();spawnCustomer();
@@ -1332,12 +1340,15 @@ function floatText(t,c){const f=document.createElement('div');f.className='float
 
 /* ===== Start / Steuerung ===== */
 function saveSettings(){const s=loadSave();s.settings={music:musicWanted,sound:!muted,lang};writeSave(s);}
+function updateAudioBtns(){const on=!muted;
+  if($('#soundBtn'))$('#soundBtn').textContent=on?L('🔊 Ton','🔊 Sound'):L('🔇 Kein Ton','🔇 No sound');
+  if($('#setSound'))$('#setSound').textContent=on?L('🔊 Ton: An','🔊 Sound: On'):L('🔇 Ton: Aus','🔇 Sound: Off');}
+function setAudioAll(on){muted=!on;musicWanted=on;if(on){ensureAudio();startMusic();}else{stopMusic();}updateAudioBtns();saveSettings();}
 function updateSettingLabels(){
   $('#setLang').textContent='🌐 '+(lang==='en'?'English':'Deutsch');
-  $('#setMusic').textContent=L('🎵 Musik: ','🎵 Music: ')+(musicWanted?L('An','On'):L('Aus','Off'));
-  $('#setSound').textContent=muted?L('🔇 Sound: Aus','🔇 Sound: Off'):L('🔊 Sound: An','🔊 Sound: On');
   $('#setHowto').textContent=L('❓ Anleitung','❓ How to play');
   $('#setReset').textContent=L('🗑️ Spielstand löschen','🗑️ Delete save');
+  updateAudioBtns();
 }
 function initStart(){const s=loadSave();
   (s.ach||[]).forEach(a=>unlockedAch.add(a));
@@ -1347,18 +1358,19 @@ function initStart(){const s=loadSave();
   $('#bestLine').textContent=(best.money||best.day)?L(`🏆 Rekord: ${best.money||0} € · Tag ${best.day||0}`,`🏆 Best: ${best.money||0} € · Day ${best.day||0}`):L('Erstes Spiel – willkommen!','First game – welcome!');
   $('#continueBtn').style.display=s.run?'inline-block':'none';
   $('#ssVersion').textContent=`Kempter Interactive · ${VERSION}`;
-  $('#muteBtn').textContent=muted?'🔇':'🔊';
   applyLang();
 }
 $('#setLang').onclick=()=>{lang=(lang==='en'?'de':'en');saveSettings();initStart();};
-$('#setMusic').onclick=()=>{musicWanted=!musicWanted;if(!musicWanted)stopMusic();else if(audioCtx)startMusic();$('#musicBtn').textContent=musicWanted?'🎵':'🔈';updateSettingLabels();saveSettings();};
-$('#setSound').onclick=()=>{muted=!muted;$('#muteBtn').textContent=muted?'🔇':'🔊';updateSettingLabels();saveSettings();};
+$('#setSound').onclick=()=>setAudioAll(muted);
+$('#soundBtn').onclick=()=>setAudioAll(muted);
+$('#pauseBtn').onclick=()=>{if(state&&state.running)$('#pauseOverlay').classList.remove('hidden');};
+$('#resumeBtn').onclick=()=>{$('#pauseOverlay').classList.add('hidden');};
 $('#setHowto').onclick=()=>{$('#howtoCard').classList.toggle('hidden');};
 $('#setReset').onclick=()=>{if(confirm(L('Wirklich den gesamten Spielstand und Rekord löschen?','Really delete all progress and best score?'))){try{localStorage.removeItem(SAVE_KEY);}catch(e){}unlockedAch.clear();musicWanted=true;muted=false;$('#shopName').value='Döner Haus';initStart();alert(L('Spielstand gelöscht.','Save deleted.'));}};
 function startNew(){newGame();
   const nmv=($('#shopName').value||'').trim();state.shopName=nmv||'Döner Haus';
   document.title='🥙 '+state.shopName;
-  ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
+  ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay','pauseOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
   beginDay();}
 function continueRun(){const s=loadSave();if(!s.run)return startNew();newGame();
   const r=s.run;Object.assign(state,{money:r.money,day:r.day,shopName:r.shopName,xp:r.xp,level:r.level,rep:r.rep!=null?r.rep:5,
@@ -1367,17 +1379,15 @@ function continueRun(){const s=loadSave();if(!s.run)return startNew();newGame();
     owned:r.owned||[],fame:r.fame||0,prestige:r.prestige||0,upgrades:Object.assign(state.upgrades,r.upgrades||{}),
     workers:(r.workers||[]).map(t=>({type:t,timer:0}))});
   document.title='🥙 '+state.shopName;
-  ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
+  ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay','pauseOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
   beginDay();}
-$('#startBtn').onclick=()=>{ensureAudio();if(musicWanted){startMusic();$('#musicBtn').textContent='🎵';}else{$('#musicBtn').textContent='🔈';}startNew();};
-$('#continueBtn').onclick=()=>{ensureAudio();if(musicWanted){startMusic();$('#musicBtn').textContent='🎵';}else{$('#musicBtn').textContent='🔈';}continueRun();};
-$('#musicBtn').onclick=e=>{if(music.on){stopMusic();e.target.textContent='🔈';}else{startMusic();e.target.textContent='🎵';}};
+$('#startBtn').onclick=()=>{ensureAudio();if(musicWanted)startMusic();updateAudioBtns();startNew();};
+$('#continueBtn').onclick=()=>{ensureAudio();if(musicWanted)startMusic();updateAudioBtns();continueRun();};
 $('#restartBtn').onclick=()=>{$('#overOverlay').classList.add('hidden');$('#startOverlay').classList.remove('hidden');initStart();};
 $('#nextDayBtn').onclick=nextDay;
 $('#serveBtn').onclick=attemptCheckout;
 function refundBuild(){const b=state.build;b.veg.forEach(giveStock);b.sauce.forEach(giveStock);if(b.drink)giveStock(b.drink);if(b.side)giveStock(b.side);if(b.meat&&b.meat.type==='falafel')giveStock('falafel');if(frying)giveStock(frying.id);}
 $('#trashBtn').onclick=()=>{if(state&&state.running&&state.phase==='make'){refundBuild();state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;frying=null;renderTray();renderBoard();updateStockBadges();sfx.bad();setHint(L('Alles neu. Basis wählen 👇','Fresh start. Pick a base 👇'));}};
-$('#muteBtn').onclick=e=>{muted=!muted;e.target.textContent=muted?'🔇':'🔊';};
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(state&&state.phase==='make')attemptCheckout();else if(state&&state.phase==='pay')finishSale();}});
 function runLoading(){
   const tips=lang==='en'?['Heating the grill…','Chopping the onions…','Polishing the counter…','Mixing the sauces…','Pouring the ayran…','Warming the flatbread…','Opening up…']:['Heize den Grill vor…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
