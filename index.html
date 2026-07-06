@@ -14,7 +14,10 @@
   #game{width:100vw; height:100vh; position:relative; overflow:hidden;
     border-radius:0; display:flex; flex-direction:column; background:#12100e;}
 
-  #topbar{display:flex; align-items:center; gap:9px; padding:8px 12px; background:#1c1712; color:#f4ead9; border-bottom:2px solid #3a2c1f; z-index:6; flex-wrap:wrap;}
+  #topbar{display:flex; align-items:center; gap:12px; padding:8px 12px; background:#1c1712; color:#f4ead9; border-bottom:2px solid #3a2c1f; z-index:6;}
+  .tb-brand{font-weight:900; font-size:18px; color:var(--accent2); white-space:nowrap; letter-spacing:.3px;}
+  .tb-stats{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .tb-btns{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-left:auto;}
   .brand{font-weight:800; font-size:18px; color:var(--accent2); display:flex; align-items:center; gap:5px;}
   .stat{display:flex; flex-direction:column; align-items:flex-start; line-height:1.1; padding:2px 9px; border-radius:10px; background:#2a2117;}
   .stat b{font-size:15px; color:#fff;} .stat span{font-size:9px; color:#b3a08a; text-transform:uppercase; letter-spacing:.5px;}
@@ -61,8 +64,13 @@
     display:flex; align-items:center; gap:12px; padding:0 14px; box-shadow:0 6px 14px rgba(0,0,0,.35), inset 0 0 30px rgba(0,0,0,.5);}
   .mb-sign{font-weight:900; font-size:20px; color:#ffd36a; text-shadow:0 0 12px rgba(255,180,45,.6); letter-spacing:1px; white-space:nowrap;}
   .mb-open{font-weight:900; font-size:11px; color:#5dff8a; border:2px solid #5dff8a; border-radius:6px; padding:2px 6px; text-shadow:0 0 8px #5dff8a; box-shadow:0 0 10px #5dff8a55;}
-  .eventchip{font-size:12px; font-weight:800; color:#241610; background:linear-gradient(180deg,#ffe08a,#f6a623); border-radius:20px; padding:4px 12px; white-space:nowrap; margin-left:auto;}
+  .eventchip{font-size:12px; font-weight:800; color:#241610; background:linear-gradient(180deg,#ffe08a,#f6a623); border-radius:20px; padding:4px 12px; white-space:nowrap;}
   .eventchip.hide{display:none;}
+  /* Schild über dem Kunden */
+  .signboard{background:linear-gradient(180deg,#2a1a10,#160d08); border:3px solid #7a5327; border-radius:14px; padding:9px 12px; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 0 26px rgba(0,0,0,.55); position:relative;}
+  .signboard:before{content:""; position:absolute; top:-9px; left:50%; transform:translateX(-50%); width:6px; height:9px; background:#8a949b;}
+  .sign-row{display:flex; align-items:center; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .signboard .mb-sign{font-size:22px;}
 
   .work{flex:1; display:flex; gap:12px; min-height:0;}
   .kcol{display:flex; flex-direction:column; gap:7px; min-height:0;}
@@ -218,15 +226,38 @@
   .quality{font-size:13px; margin-bottom:8px; padding:6px 10px; border-radius:10px;}
   .quality.good{background:#eafae9; color:#2e7d32;} .quality.bad{background:#fdeaea; color:#c62828;}
 
+  /* Ladebildschirm */
+  #loading{position:fixed; inset:0; z-index:200; background:radial-gradient(900px 600px at 50% 32%, #3d2617, #130c07); display:flex; align-items:center; justify-content:center; transition:opacity .5s;}
+  #loading.gone{opacity:0; pointer-events:none;}
+  .load-inner{text-align:center; color:#f4ead9; display:flex; flex-direction:column; align-items:center; gap:12px; padding:20px;}
+  .load-spit{font-size:74px; animation:spin 1.5s linear infinite; filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));}
+  @keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+  .load-title{font-size:30px; font-weight:900; color:var(--accent2); text-shadow:0 0 16px rgba(246,166,35,.5); letter-spacing:.5px;}
+  .load-sub{font-size:14px; color:#c9b79f;}
+  .load-bar{width:min(300px,72vw); height:12px; background:#2a2117; border-radius:8px; overflow:hidden; box-shadow:inset 0 2px 5px rgba(0,0,0,.6);}
+  .load-fill{height:100%; width:0%; background:linear-gradient(90deg,#f6a623,#e8532b); border-radius:8px; transition:width 1.9s cubic-bezier(.4,.1,.3,1);}
+  .load-tip{font-size:13px; color:#e8c9a0; font-weight:700; min-height:18px;}
+  /* Start-Hero */
+  #startOverlay .panel{background:radial-gradient(600px 300px at 50% 0%, #fff6e9, #fff);}
+  .starthero{display:flex; flex-direction:column; align-items:center; gap:4px; margin-bottom:10px;}
+  .starthero .sh-emo{font-size:56px; animation:bob 2.2s ease-in-out infinite; filter:drop-shadow(0 5px 6px rgba(0,0,0,.2));}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-8px) rotate(4deg);}}
+  .starthero h1{font-size:28px; color:var(--accent); margin:0;}
+  .starthero .sh-tag{font-size:13px; color:var(--muted); font-weight:700;}
+
   @media (max-width:820px){
     html,body{height:auto; min-height:100%; overflow-y:auto; display:block;}
     #game{width:100%; height:auto; min-height:100vh; border-radius:0; box-shadow:none; overflow:visible;}
-    #topbar{position:sticky; top:0;}
+    #topbar{position:sticky; top:0; flex-direction:column; align-items:stretch; gap:6px; padding:8px 10px;}
+    .tb-brand{text-align:center; font-size:20px;}
+    .tb-stats{justify-content:center; gap:6px;}
+    .tb-btns{justify-content:center; margin-left:0; gap:6px;}
+    .tb-btns .iconBtn{font-size:12px; padding:8px 9px;}
     #scene{flex-direction:column;}
-    #counterCol{width:100%;} #counterCol:before{display:none;} .frontglass{padding:12px 12px 0;}
+    #counterCol{width:100%;} #counterCol:before{display:none;} .frontglass{padding:10px 12px 0;}
+    .signboard .mb-sign{font-size:20px;}
     .counter-edge{height:24px; font-size:10px;}
     #kitchen{width:100%; padding:10px;} #kmid{overflow:visible;}
-    .wall{height:auto;} .menuboard{flex-wrap:wrap; padding:8px 12px; gap:8px;} .mb-sign{font-size:18px;} .eventchip{margin-left:0;}
     .work{flex-direction:column;} #kright{width:100%;}
     .cut-station{width:100%; height:190px;} .knife{font-size:44px;} .board-inner{min-height:120px;}
     .gn{flex:1 1 84px; min-width:80px; padding:9px 4px;} .gn .food{font-size:23px;} .gn .nm{font-size:12px;}
@@ -239,25 +270,32 @@
 <body>
 <div id="game">
   <div id="topbar">
-    <div class="brand">🥙 Dönermann</div>
-    <div class="stat"><b id="money">0 €</b><span>Kasse</span></div>
-    <div class="stat"><b id="day">Tag 1</b><span>Schicht</span></div>
-    <div class="stat lvlstat"><b id="level">Lv 1</b><span>Level</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div></div>
-    <div class="stat"><b id="served">0</b><span>Bedient</span></div>
-    <div class="combo" id="combo">🔥 x1</div>
-    <div class="spacer"></div>
-    <div class="rep" id="rep"></div>
-    <button class="iconBtn" id="shopBtn" title="Laden & Upgrades">🛒 Laden</button>
-    <button class="iconBtn" id="buyBtn" title="Einkaufsladen">🧺 Einkauf</button>
-    <button class="iconBtn" id="branchBtn" title="Filialen-Verwaltung">🏪 Filialen</button>
-    <button class="iconBtn" id="staffBtn" title="Personal">👔 Team</button>
-    <button class="iconBtn" id="musicBtn" title="Musik an/aus">🎵</button>
-    <button class="iconBtn" id="muteBtn" title="Ton an/aus">🔊</button>
+    <div class="tb-brand">🥙 Dönermann Simulator</div>
+    <div class="tb-stats">
+      <div class="stat"><b id="money">0 €</b><span>Kasse</span></div>
+      <div class="stat"><b id="day">Tag 1</b><span>Schicht</span></div>
+      <div class="stat lvlstat"><b id="level">Lv 1</b><span>Level</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div></div>
+      <div class="stat"><b id="served">0</b><span>Bedient</span></div>
+      <div class="combo" id="combo">🔥 x1</div>
+      <div class="rep" id="rep"></div>
+    </div>
+    <div class="tb-btns">
+      <button class="iconBtn" id="shopBtn" title="Laden & Upgrades">🛒 Laden</button>
+      <button class="iconBtn" id="buyBtn" title="Einkaufsladen">🧺 Einkauf</button>
+      <button class="iconBtn" id="branchBtn" title="Filialen-Verwaltung">🏪 Filialen</button>
+      <button class="iconBtn" id="staffBtn" title="Personal">👔 Team</button>
+      <button class="iconBtn" id="musicBtn" title="Musik an/aus">🎵</button>
+      <button class="iconBtn" id="muteBtn" title="Ton an/aus">🔊</button>
+    </div>
   </div>
 
   <div id="scene">
     <div id="counterCol">
       <div class="frontglass">
+        <div class="signboard">
+          <div class="sign-row"><div class="mb-sign" id="mbSign">🥙 DÖNER HAUS</div><div class="mb-open">GEÖFFNET</div></div>
+          <div class="eventchip hide" id="eventChip"></div>
+        </div>
         <div class="front-title">— Kunde an der Theke —</div>
         <div id="customerCard">
           <div class="cust-face" id="custFace">🙂</div>
@@ -270,14 +308,6 @@
     </div>
 
     <div id="kitchen">
-      <div class="wall">
-        <div class="menuboard">
-          <div class="mb-sign" id="mbSign">🥙 DÖNER HAUS</div>
-          <div class="mb-open">GEÖFFNET</div>
-          <div class="eventchip hide" id="eventChip"></div>
-        </div>
-      </div>
-
       <div class="crew hide" id="crew"></div>
 
       <div class="work">
@@ -320,14 +350,28 @@
   <div id="hand"></div>
   <div id="toasts"></div>
 
+  <!-- Loading -->
+  <div id="loading">
+    <div class="load-inner">
+      <div class="load-spit">🥙</div>
+      <div class="load-title">Dönermann Simulator</div>
+      <div class="load-sub">Deine Dönerbude wird vorbereitet…</div>
+      <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
+      <div class="load-tip" id="loadTip">Heize den Grill vor…</div>
+    </div>
+  </div>
+
   <!-- Start -->
   <div class="overlay" id="startOverlay"><div class="panel">
-    <h1>🥙 Dönermann Simulator</h1>
-    <p>Hinter der Theke deiner Dönerbude – mach jedes Gericht von Hand, wachse zum Imperium!</p>
+    <div class="starthero">
+      <div class="sh-emo">🥙</div>
+      <h1>Dönermann Simulator</h1>
+      <div class="sh-tag">Schneide, belege, kassiere – bau dein Döner-Imperium!</div>
+    </div>
     <div class="best" id="bestLine"></div>
     <div class="rules">
       🍽️ <b>Basis</b> wählen · 🔪 <b>Fleisch schneiden</b> & aufs Gericht klicken · 🥬 <b>Gemüse/Soße</b> ziehen · 🧊 <b>Getränk</b> antippen · 🧾 <b>Kasse</b> & Rückgeld.<br>
-      ⭐ <b>Level</b> = neue Zutaten · 🛒 <b>Laden</b>: Upgrades, 🍽️ <b>Sortiment</b> kaufen (Grillgemüse, …) & 🌟 <b>Franchise</b> für dauerhaften Ruhm-Bonus · 👔 <b>Team</b> bedient autonom · 🔥 <b>Combos</b> & 🎲 <b>Events</b> & 💎 VIPs.
+      ⭐ <b>Level</b> = neue Zutaten · 🛒 <b>Laden</b>: Upgrades, 🍽️ <b>Sortiment</b> kaufen (Grillgemüse, Yufka …) & 🌟 <b>Franchise</b> für dauerhaften Ruhm-Bonus · 👔 <b>Team</b> bedient autonom · 🔥 <b>Combos</b> & 🎲 <b>Events</b> & 💎 VIPs.
     </div>
     <label class="nameLabel">Wie soll deine Bude heißen?</label>
     <input id="shopName" class="nameInput" type="text" maxlength="22" placeholder="z. B. Kral Döner, Berlin Kebap …" value="Döner Haus">
@@ -1178,7 +1222,15 @@ function refundBuild(){const b=state.build;b.veg.forEach(giveStock);b.sauce.forE
 $('#trashBtn').onclick=()=>{if(state&&state.running&&state.phase==='make'){refundBuild();state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;frying=null;renderTray();renderBoard();updateStockBadges();sfx.bad();setHint('Alles neu. Basis wählen 👇');}};
 $('#muteBtn').onclick=e=>{muted=!muted;e.target.textContent=muted?'🔇':'🔊';};
 document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(state&&state.phase==='make')attemptCheckout();else if(state&&state.phase==='pay')finishSale();}});
+function runLoading(){
+  const tips=['Heize den Grill vor…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
+  const tipEl=$('#loadTip'),fill=$('#loadFill'),L=$('#loading');let i=0;
+  const iv=setInterval(()=>{i=(i+1)%tips.length;tipEl.textContent=tips[i];},430);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width='100%';}));
+  setTimeout(()=>{clearInterval(iv);L.classList.add('gone');setTimeout(()=>{L.style.display='none';},600);},2100);
+}
 initStart();
+runLoading();
 </script>
 </body>
 </html>
