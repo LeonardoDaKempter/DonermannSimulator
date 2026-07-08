@@ -15,7 +15,8 @@
     border-radius:0; display:flex; flex-direction:column; background:#12100e;}
 
   #topbar{display:flex; align-items:center; gap:12px; padding:8px 12px; background:#1c1712; color:#f4ead9; border-bottom:2px solid #3a2c1f; z-index:6;}
-  .tb-brand{font-weight:900; font-size:18px; color:var(--accent2); white-space:nowrap; letter-spacing:.3px;}
+  .tb-brand{font-weight:900; font-size:18px; color:var(--accent2); white-space:nowrap; letter-spacing:.3px; cursor:pointer;}
+  .tb-brand:hover{filter:brightness(1.15);}
   .tb-stats{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .tb-btns{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-left:auto;}
   .brand{font-weight:800; font-size:18px; color:var(--accent2); display:flex; align-items:center; gap:5px;}
@@ -299,6 +300,14 @@
     .overlay{position:fixed;} .panel{max-width:96vw; padding:18px 16px;}
     .cash{min-width:56px; padding:14px 6px;} .reg-actions button{padding:15px;}
   }
+  /* Tablets im Querformat (iPad): Seite scrollbar machen, damit man ganz nach oben kommt */
+  @media (min-width:821px) and (pointer:coarse){
+    html,body{height:auto; min-height:100%; overflow-y:auto; display:block; -webkit-overflow-scrolling:touch;}
+    #game{width:100%; height:auto; min-height:100vh; border-radius:0; box-shadow:none; overflow:visible;}
+    #topbar{position:sticky; top:0;}
+    #scene{min-height:0;} #kmid{overflow:visible;}
+    .overlay{position:fixed;}
+  }
 </style>
 </head>
 <body>
@@ -426,6 +435,7 @@
         <div class="ss-settings">
           <button class="setbtn" id="setLang">🌐 Deutsch</button>
           <button class="setbtn" id="setSound">🔊 Ton: An</button>
+          <button class="setbtn" id="setTut">▶️ Tutorial</button>
           <button class="setbtn" id="setHowto">❓ Anleitung</button>
           <button class="setbtn danger" id="setReset">🗑️ Spielstand löschen</button>
         </div>
@@ -517,6 +527,7 @@
     <h2 data-i18n="pause_h">⏸️ Pausiert</h2>
     <p data-i18n="pause_p">Die Zeit steht still. Mach weiter, wenn du bereit bist.</p>
     <button class="go" id="resumeBtn" data-i18n="pause_go">▶️ Weiter</button>
+    <button class="go ghost" id="homeBtn" data-i18n="pause_home">🏠 Startbildschirm</button>
   </div></div>
 </div>
 
@@ -596,7 +607,7 @@ const ACH=[
   {id:'money20k',emo:'💰',name:'20.000 €',en:'€20,000',test:s=>s.money>=20000}];
 function achName(a){return L(a.name,a.en||a.name);}
 const DENOMS=[2000,1000,500,200,100,50];
-const VERSION='v2.9';
+const VERSION='v3.0';
 const SHIFT_MIN=780; // 11:00 → 00:00 (13 Stunden)
 let lang='de';
 function L(de,en){return lang==='en'?en:de;}
@@ -630,7 +641,7 @@ const TXT={
   day_next:{de:'Nächste Schicht →',en:'Next shift →'},over_h:{de:'Bude dicht! 😞',en:'Shop closed! 😞'},over_restart:{de:'Neues Spiel',en:'New game'},
   load_sub:{de:'Deine Dönerbude wird vorbereitet…',en:'Preparing your döner shop…'},
   slots_h:{de:'💾 Spielstände',en:'💾 Save slots'},
-  btn_pause:{de:'⏸️ Stopp',en:'⏸️ Pause'},pause_h:{de:'⏸️ Pausiert',en:'⏸️ Paused'},pause_p:{de:'Die Zeit steht still. Mach weiter, wenn du bereit bist.',en:'Time is frozen. Continue when you\'re ready.'},pause_go:{de:'▶️ Weiter',en:'▶️ Resume'}
+  btn_pause:{de:'⏸️ Stopp',en:'⏸️ Pause'},pause_h:{de:'⏸️ Pausiert',en:'⏸️ Paused'},pause_p:{de:'Die Zeit steht still. Mach weiter, wenn du bereit bist.',en:'Time is frozen. Continue when you\'re ready.'},pause_go:{de:'▶️ Weiter',en:'▶️ Resume'},pause_home:{de:'🏠 Startbildschirm',en:'🏠 Home screen'}
 };
 function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n')];if(v)e.textContent=v[lang];});
@@ -836,7 +847,7 @@ function markSelections(){
   [...el.drinkRow.children].forEach(c=>c.classList.toggle('sel',c.dataset.drink===state.build.drink));
   updateSideRow();updateStockBadges();
 }
-function chooseBase(id){if(!state.running||state.phase!=='make')return;state.build.base=id;sfx.click();renderBoard();setHint(L('Basis bereit! Fleisch schneiden 🔪 und aufs Gericht klicken.','Base ready! Slice meat 🔪 and click the dish.'));}
+function chooseBase(id){if(!state.running||state.phase!=='make')return;state.build.base=id;sfx.click();renderBoard();setHint(L('Basis bereit! Fleisch schneiden 🔪 und aufs Gericht klicken.','Base ready! Slice meat 🔪 and click the dish.'));tutStep(0);}
 function chooseDrink(id){if(!state.running||state.phase!=='make')return;
   if(state.build.drink===id){giveStock(id);state.build.drink=null;sfx.pop();renderBoard();return;}
   if(!canUse(id)){outOfStock(id);return;}
@@ -900,6 +911,7 @@ function applyHeld(h){
   }
   else if(h.kind==='meat')putMeat();
   sfx.drop();renderBoard();setHint(L('Drin! Noch was drauf? Sonst → 🧾 Zur Kasse.','In it goes! Anything else? Otherwise → 🧾 register.'));
+  if(h.kind==='veg')tutStep(3);else if(h.kind==='sauce')tutStep(4);
 }
 window.addEventListener('pointermove',e=>{if(held){moveHand(e);el.board.classList.toggle('droptarget',overBoard(e));}});
 window.addEventListener('pointerup',e=>{
@@ -913,7 +925,7 @@ window.addEventListener('pointerup',e=>{
 });
 
 /* ===== Fleisch ins Gericht ===== */
-function putMeat(){if(state.tray===0)return false;state.build.meat={type:state.trayType,slices:state.tray};state.tray=0;renderTray();return true;}
+function putMeat(){if(state.tray===0)return false;state.build.meat={type:state.trayType,slices:state.tray};state.tray=0;renderTray();tutStep(2);return true;}
 el.board.addEventListener('click',e=>{
   if(!state.running||state.phase!=='make')return;
   if(e.target.closest('.li'))return;
@@ -946,7 +958,7 @@ function doSlice(x,y){
     setTimeout(()=>fly.remove(),460);
     state.tray++;
   }
-  renderTray();
+  renderTray();tutStep(1);
   if(state.tray>=1)setHint(L('Genug Fleisch? Dann aufs Gericht klicken 🥩','Enough meat? Then click the dish 🥩'));
 }
 function renderTray(){el.sliceCount.textContent=state.tray;el.pile.innerHTML='';
@@ -1102,7 +1114,7 @@ function openRegister(){
     <div class="line"><span>${L('Kunde zahlt','Customer pays')}</span><span>${eur(reg.paid)}</span></div>
     <div class="line change"><span>${L('Rückgeld','Change')}</span><span>${eur(reg.changeDue)}</span></div>
     <div class="total">${L('Noch offen','Remaining')}: <span id="regRemain">${eur(reg.changeDue-reg.given)}</span></div>`;
-  buildCashRow();renderGiven();$('#register').classList.remove('hidden');
+  buildCashRow();renderGiven();$('#register').classList.remove('hidden');tutStep(5);
 }
 function buildCashRow(){const row=$('#cashRow');row.innerHTML='';
   for(const d of DENOMS){const b=document.createElement('button');b.className='cash '+(d>=500?'note':'coin');
@@ -1135,7 +1147,7 @@ function finishSale(){
     msg=`+${Math.round(earn)}€ `+L('(Pfusch)','(botched)');color=col('red');gainXP(6);addFeedback('neg');
   }
   earn=Math.round(earn);state.money+=earn;state.dayEarn+=earn;state.servedTotal++;state.dayServed++;
-  sfx.cash();renderTop();$('#register').classList.add('hidden');floatText(msg,color);checkAch();nextCustomerOrEndDay();
+  sfx.cash();renderTop();$('#register').classList.add('hidden');floatText(msg,color);checkAch();tutStep(6);nextCustomerOrEndDay();
 }
 
 /* ===== Autonome Mitarbeiter ===== */
@@ -1158,7 +1170,7 @@ function toast(t){const box=$('#toasts');const d=document.createElement('div');d
   while(box.children.length>4)box.removeChild(box.firstChild);}
 let _lastTs=0;
 function loop(ts){const dt=_lastTs?(ts-_lastTs)/1000:0;_lastTs=ts;
-  if(state&&state.running&&!paused()){
+  if(state&&state.running&&!paused()&&!tut.active){
     tickClock(dt);
     if(state.running)for(const wk of state.workers){
       if(state.ordersLeftToday>1){wk.timer+=dt;
@@ -1383,6 +1395,7 @@ function setAudioAll(on){muted=!on;musicWanted=on;if(on){ensureAudio();startMusi
 function updateSettingLabels(){
   $('#setLang').textContent='🌐 '+(lang==='en'?'English':'Deutsch');
   $('#setHowto').textContent=L('❓ Anleitung','❓ How to play');
+  $('#setTut').textContent=L('▶️ Tutorial','▶️ Tutorial');
   $('#setReset').textContent=L('🗑️ Spielstand löschen','🗑️ Delete save');
   updateAudioBtns();
 }
@@ -1423,6 +1436,14 @@ $('#soundBtn').onclick=()=>setAudioAll(muted);
 $('#pauseBtn').onclick=()=>{if(state&&state.running)$('#pauseOverlay').classList.remove('hidden');};
 $('#resumeBtn').onclick=()=>{$('#pauseOverlay').classList.add('hidden');};
 $('#setHowto').onclick=()=>{$('#howtoCard').classList.toggle('hidden');};
+$('#setTut').onclick=()=>{const i=firstEmptySlot();if(i<0){alert(L('Kein freier Slot – lösche zuerst einen Spielstand.','No free slot – delete a save first.'));return;}currentSlot=i;wantTutorial=true;ensureAudio();if(musicWanted)startMusic();updateAudioBtns();startNew();};
+function goHome(){if(!state){$('#startOverlay').classList.remove('hidden');return;}
+  if(state.running)persist();
+  state.running=false;tut.active=false;$('#coach').classList.add('hidden');
+  ['register','shopOverlay','staffOverlay','buyOverlay','branchOverlay','dayOverlay','overOverlay','pauseOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
+  $('#startOverlay').classList.remove('hidden');initStart();}
+document.querySelector('.tb-brand').onclick=goHome;
+$('#homeBtn').onclick=goHome;
 $('#setReset').onclick=()=>{if(confirm(L('Wirklich ALLE Spielstände und den Rekord löschen?','Really delete ALL saves and the best score?'))){try{localStorage.removeItem(SAVE_KEY);}catch(e){}unlockedAch.clear();currentSlot=0;musicWanted=true;muted=false;$('#shopName').value='Döner Haus';initStart();alert(L('Alle Spielstände gelöscht.','All saves deleted.'));}};
 let wantTutorial=false;
 function startNew(){newGame();
