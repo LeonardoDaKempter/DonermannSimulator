@@ -1335,7 +1335,7 @@ function renderSignature(){const box=$('#shopSig');
   intro.innerHTML=L('Erfinde deinen <b>eigenen Döner</b> – er kommt auf die Karte. Kunden bestellen ihn gezielt und geben extra Trinkgeld & Follower! 🚀','Invent your <b>own döner</b> – it goes on the menu. Customers order it specifically for extra tips & followers! 🚀');
   box.appendChild(intro);
   const nameWrap=document.createElement('div');nameWrap.innerHTML=`<div class="ss-h" style="text-align:left">${L('Name','Name')}</div>`;
-  const inp=document.createElement('input');inp.className='nameInput';inp.style.marginBottom='8px';inp.maxLength=20;inp.value=sigEdit.name;inp.placeholder=L('z. B. Kempter-Spezial','e.g. Kempter Special');inp.oninput=()=>{sigEdit.name=inp.value;};
+  const inp=document.createElement('input');inp.className='nameInput';inp.style.marginBottom='8px';inp.maxLength=20;inp.value=sigEdit.name;inp.placeholder=L('z. B. Big Baba Bubu','e.g. Big Baba Bubu');inp.oninput=()=>{sigEdit.name=inp.value;};
   nameWrap.appendChild(inp);box.appendChild(nameWrap);
   box.appendChild(sigChoiceRow(L('Basis','Base'),availBaseKeys().map(k=>({id:k,emo:BASES[k].emo,name:nm(BASES[k])})),sigEdit.base,id=>{sigEdit.base=id;renderSignature();}));
   box.appendChild(sigChoiceRow(L('Fleisch','Meat'),availMeatKeys().map(k=>({id:k,emo:MEATS[k].emo,name:nm(MEATS[k])})),sigEdit.meat,id=>{sigEdit.meat=id;renderSignature();}));
