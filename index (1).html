@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥙 Dönermann Simulator</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-user-select:none; user-select:none; }
+  :root{ --accent:#e8532b; --accent2:#f6a623; --green:#4caf50; --red:#e04545; --ink:#2a2018; --muted:#8a7d70; --line:#e6ded5; }
+  html,body{height:100%;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink);
+    background:radial-gradient(1200px 800px at 50% -10%, #241a12, #140d08); overflow:hidden;
+    display:flex; align-items:center; justify-content:center; height:100vh;}
+  #game{width:100vw; height:100vh; position:relative; overflow:hidden;
+    border-radius:0; display:flex; flex-direction:column; background:#12100e;}
+
+  #topbar{display:flex; align-items:center; gap:12px; padding:8px 12px; background:#1c1712; color:#f4ead9; border-bottom:2px solid #3a2c1f; z-index:6;}
+  .tb-brand{font-weight:900; font-size:18px; color:var(--accent2); white-space:nowrap; letter-spacing:.3px;}
+  .tb-stats{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .tb-btns{display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-left:auto;}
+  .brand{font-weight:800; font-size:18px; color:var(--accent2); display:flex; align-items:center; gap:5px;}
+  .stat{display:flex; flex-direction:column; align-items:flex-start; line-height:1.1; padding:2px 9px; border-radius:10px; background:#2a2117;}
+  .stat b{font-size:15px; color:#fff;} .stat span{font-size:9px; color:#b3a08a; text-transform:uppercase; letter-spacing:.5px;}
+  .lvlstat{min-width:78px;}
+  .xpbar{height:5px; width:100%; background:#3a2c1f; border-radius:3px; margin-top:3px; overflow:hidden;}
+  .xpfill{height:100%; width:0%; background:linear-gradient(90deg,#f6a623,#ffd76a); transition:width .3s;}
+  .combo{font-weight:800; font-size:14px; color:#ff7a3c; padding:2px 8px; border-radius:10px; background:#3a2216; display:none;}
+  .combo.show{display:block; animation:cpop .3s;}
+  @keyframes cpop{from{transform:scale(1.4);}to{transform:scale(1);}}
+  .spacer{flex:1;} .rep{font-size:14px; color:#ffd36a;}
+  .iconBtn{background:#2a2117;border:none;font-size:13px;cursor:pointer;padding:7px 9px;border-radius:10px;color:#fff;font-weight:700;}
+  .iconBtn:hover{background:#3a2c1f;}
+
+  #scene{flex:1; display:flex; min-height:0;}
+
+  #counterCol{width:30%; display:flex; flex-direction:column; min-height:0; position:relative;
+    background:linear-gradient(180deg,#20304a 0%,#2a3c58 45%,#3a2a1e 45%,#25190f 100%);}
+  #counterCol:before{content:"🌙  •  ✦   •  ✧"; position:absolute; top:8px; left:0; right:0; text-align:center; color:#ffffff33; font-size:12px; letter-spacing:6px;}
+  .frontglass{flex:1; padding:14px 14px 0; display:flex; flex-direction:column; gap:9px; min-height:0;}
+  .front-title{font-size:11px; font-weight:700; color:#ffd9a8; text-transform:uppercase; letter-spacing:.8px; text-align:center;}
+  #customerCard{background:linear-gradient(180deg,#fff,#fbf3e8); border-radius:16px; padding:13px; box-shadow:0 10px 26px rgba(0,0,0,.4); display:flex; flex-direction:column; gap:7px;}
+  #customerCard.vip{background:linear-gradient(180deg,#fff7dd,#ffe9b8); box-shadow:0 0 0 3px #ffd76a, 0 10px 26px rgba(0,0,0,.4);}
+  .cust-face{font-size:52px; text-align:center; filter:drop-shadow(0 4px 4px rgba(0,0,0,.2));}
+  .bubble{background:#f4f1ec; border-radius:14px; padding:9px 12px; position:relative; border:2px solid #e6ded5;}
+  .bubble:before{content:""; position:absolute; top:-10px; left:26px; border:8px solid transparent; border-bottom-color:#f4f1ec;}
+  .bubble h4{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+  .custsay{font-size:14px; font-weight:800; color:#3a2f24; margin-bottom:6px; line-height:1.25;}
+  .order-list{display:flex; flex-wrap:wrap; gap:5px;}
+  .chip{background:#fff; border:2px solid #e0d8cd; border-radius:20px; padding:3px 9px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px;}
+  .chip.hl{border-color:var(--accent2); background:#fff6e6;} .chip.drink{border-color:#5aa9e6; background:#eaf4fd;}
+  .waitline{font-size:11px; color:var(--muted); text-align:center;}
+  .queue{display:flex; gap:6px; align-items:center; justify-content:center; font-size:12px; color:#ffe4c4;}
+  .q-faces{font-size:22px; letter-spacing:-3px;}
+  .counter-edge{height:56px; margin-top:auto; background:linear-gradient(180deg,#e9edf0,#c3ccd3 40%,#9aa5ad 41%,#7d878f);
+    border-top:3px solid #fff; box-shadow:inset 0 3px 6px rgba(255,255,255,.6), 0 -4px 10px rgba(0,0,0,.3);
+    display:flex; align-items:center; justify-content:center; color:#41494f; font-size:12px; font-weight:700; letter-spacing:1px;}
+
+  #kitchen{flex:1; display:flex; flex-direction:column; min-height:0; padding:10px 12px; gap:8px;
+    background-color:#eef1f3;
+    background-image:linear-gradient(#dbe1e6 1px, transparent 1px), linear-gradient(90deg,#dbe1e6 1px, transparent 1px), linear-gradient(180deg, rgba(255,255,255,.5), rgba(0,0,0,.04));
+    background-size:40px 40px, 40px 40px, 100% 100%;}
+  .wall{display:flex; gap:10px; height:58px;}
+  .menuboard{flex:1; background:linear-gradient(180deg,#241610,#160d08); border:3px solid #6b4a2a; border-radius:12px;
+    display:flex; align-items:center; gap:12px; padding:0 14px; box-shadow:0 6px 14px rgba(0,0,0,.35), inset 0 0 30px rgba(0,0,0,.5);}
+  .mb-sign{font-weight:900; font-size:20px; color:#ffd36a; text-shadow:0 0 12px rgba(255,180,45,.6); letter-spacing:1px; white-space:nowrap;}
+  .mb-open{font-weight:900; font-size:11px; color:#5dff8a; border:2px solid #5dff8a; border-radius:6px; padding:2px 6px; text-shadow:0 0 8px #5dff8a; box-shadow:0 0 10px #5dff8a55;}
+  .eventchip{font-size:12px; font-weight:800; color:#241610; background:linear-gradient(180deg,#ffe08a,#f6a623); border-radius:20px; padding:4px 12px; white-space:nowrap;}
+  .eventchip.hide{display:none;}
+  /* Schild über dem Kunden */
+  .signboard{background:linear-gradient(180deg,#2a1a10,#160d08); border:3px solid #7a5327; border-radius:14px; padding:9px 12px; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 0 26px rgba(0,0,0,.55); position:relative;}
+  .signboard:before{content:""; position:absolute; top:-9px; left:50%; transform:translateX(-50%); width:6px; height:9px; background:#8a949b;}
+  .sign-row{display:flex; align-items:center; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .signboard .mb-sign{font-size:22px;}
+
+  .work{flex:1; display:flex; gap:12px; min-height:0;}
+  .kcol{display:flex; flex-direction:column; gap:7px; min-height:0;}
+  #kmid{flex:1; overflow-y:auto;} #kright{width:138px; align-items:center;}
+  .section-title{font-size:11px; font-weight:700; color:#6f7c86; text-transform:uppercase; letter-spacing:.6px;}
+
+  .board-wrap{background:linear-gradient(180deg,#e9edf0,#cfd7dd); border-radius:12px; padding:8px; box-shadow:0 4px 10px rgba(0,0,0,.15), inset 0 2px 4px rgba(255,255,255,.6);}
+  .board-inner{position:relative; min-height:108px; border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:6px; cursor:pointer;
+    background:linear-gradient(180deg,#e7c79a,#d8b483); box-shadow:inset 0 2px 6px rgba(0,0,0,.2); border:2px solid #c79a63;}
+  .board-inner.droptarget{outline:3px solid var(--green); outline-offset:2px; background:linear-gradient(180deg,#e9d6a8,#dcc38f);}
+  .bread-empty{color:#8a6b45; font-style:italic; text-align:center; margin:auto; font-weight:600;}
+  .bread-head{display:flex; align-items:center; gap:8px; font-weight:700; color:#4a341f; flex-wrap:wrap;}
+  .bread-head .b-emo{font-size:24px;}
+  .layer{display:flex; flex-wrap:wrap; gap:5px; align-items:center;}
+  .layer .lab{font-size:10px; color:#6b5637; width:52px; text-transform:uppercase; letter-spacing:.4px;}
+  .li{background:#fff8ee; border:2px solid #e6cfa8; border-radius:12px; padding:3px 8px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:4px; cursor:pointer; animation:pop .18s;}
+  @keyframes pop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .meatfill{display:flex; gap:2px;} .sliver{width:13px; height:6px; border-radius:3px; background:linear-gradient(90deg,#8a4f22,#b9743a);} .sliver.haehnchen{background:linear-gradient(90deg,#c79a55,#f0d492);}
+  .meathint{font-size:11px; color:#c0621f; font-weight:700; margin-left:auto;}
+
+  .foil{position:absolute; inset:0; border-radius:10px; z-index:8; overflow:hidden; transform:scaleX(0); transform-origin:left center; transition:transform .55s cubic-bezier(.5,0,.3,1);
+    background:repeating-linear-gradient(118deg,#b9bec1 0,#eef1f2 7px,#c9ccce 13px,#dfe3e5 20px,#aeb3b6 27px); box-shadow:inset 0 0 24px rgba(0,0,0,.28);
+    display:flex; align-items:center; justify-content:center; color:#4a4f52; font-weight:800; font-size:15px; gap:6px;}
+  .foil.on{transform:scaleX(1);}
+  .foil:after{content:""; position:absolute; top:0; bottom:0; width:40%; left:-40%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent); transform:skewX(-18deg);}
+  .foil.on:after{animation:shine .7s .2s ease;}
+  @keyframes shine{from{left:-40%;}to{left:120%;}}
+  .foil .wrapped-emo{font-size:32px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3));}
+
+  .saladbar{background:linear-gradient(180deg,#d5dde2,#aeb9c1); border-radius:12px; padding:7px; box-shadow:inset 0 3px 8px rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.12);}
+  .fridge{background:linear-gradient(180deg,#cfe6f5,#a9cfe6); border:2px solid #7fb0d0; border-radius:12px; padding:7px; box-shadow:inset 0 3px 8px rgba(255,255,255,.4), 0 4px 10px rgba(0,0,0,.12);}
+  .fryer{background:linear-gradient(180deg,#efe3c4,#d9c290); border:2px solid #c2a56a; border-radius:12px; padding:7px; box-shadow:inset 0 3px 8px rgba(0,0,0,.18), 0 4px 10px rgba(0,0,0,.12);}
+  .crew{display:flex; gap:8px; align-items:center; padding:5px 8px; background:linear-gradient(180deg,#241610,#160d08); border:2px solid #6b4a2a; border-radius:12px; overflow-x:auto;}
+  .crew .crew-lbl{font-size:10px; font-weight:800; color:#ffd9a8; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;}
+  .avatar{position:relative; display:flex; flex-direction:column; align-items:center; min-width:40px;}
+  .avatar .av-face{font-size:26px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));}
+  .avatar .av-nm{font-size:8px; color:#e8c9a0; font-weight:700; max-width:46px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .saybubble{position:absolute; z-index:88; transform:translate(-50%,-100%); background:#fff; color:#2a2018; font-weight:800; font-size:12px; padding:5px 10px; border-radius:12px; box-shadow:0 5px 14px rgba(0,0,0,.35); white-space:nowrap; pointer-events:none; border:2px solid #e0d3bf; animation:sayIn .2s ease;}
+  .saybubble:after{content:""; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#fff;}
+  .saybubble.out{opacity:0; transition:.3s;}
+  @keyframes sayIn{from{opacity:0; transform:translate(-50%,-88%);}to{opacity:1; transform:translate(-50%,-100%);}}
+  .branchcard{display:flex; align-items:center; gap:12px; background:#faf6f0; border:2px solid #ece0d0; border-radius:14px; padding:12px; margin-bottom:10px; text-align:left;}
+  .branchcard .bc-emo{font-size:32px;} .branchcard .bc-info{flex:1;} .branchcard b{font-size:15px;} .branchcard div.sub{font-size:12px; color:var(--muted); margin-top:2px;}
+  .gn-row{display:flex; gap:6px; flex-wrap:wrap;}
+  .gn{flex:1 1 64px; min-width:60px; background:linear-gradient(180deg,#f4f7f9,#dbe3e9 60%,#cdd6dd); border:2px solid #9aa7b0; border-radius:8px; padding:5px 4px 4px; text-align:center; cursor:grab; box-shadow:inset 0 5px 8px rgba(0,0,0,.18), inset 0 -2px 2px rgba(255,255,255,.5); transition:transform .08s; touch-action:none;}
+  .gn:hover{transform:translateY(-2px);} .gn:active{cursor:grabbing; transform:scale(.96);}
+  .gn .food{font-size:19px; line-height:1;} .gn .nm{font-size:10px; font-weight:700; color:#46525c; margin-top:2px;}
+  .gn.sauce{background:linear-gradient(180deg,#fff,#efe6d9); border-color:#cbb79a;}
+  .gn.base{background:linear-gradient(180deg,#fff,#f3e6d2); border-color:#d9b782; cursor:pointer;}
+  .gn.drink{background:linear-gradient(180deg,#fff,#e3f1fb); border-color:#8fc0dd; cursor:pointer;}
+  .gn.sel{outline:3px solid var(--accent2); outline-offset:1px;}
+  .gn{position:relative;}
+  .stockb{position:absolute; top:2px; right:3px; font-size:9px; font-weight:800; color:#fff; background:#7a8a96; border-radius:8px; min-width:15px; height:15px; line-height:15px; padding:0 3px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .gn.empty{opacity:.5; filter:grayscale(.75);} .gn.empty .stockb{background:var(--red);}
+  .gn.cooking{border-color:#e8a33c; background:linear-gradient(180deg,#fff2d8,#ffd89a); animation:sizzle .45s infinite alternate;}
+  @keyframes sizzle{from{box-shadow:inset 0 -3px 6px rgba(230,120,20,.35);}to{box-shadow:inset 0 -4px 12px rgba(230,120,20,.7);}}
+  .gn.ready{border-color:#3fa350; background:linear-gradient(180deg,#eafae9,#bfeeba);}
+
+  .grillhead{width:100%; height:12px; background:linear-gradient(180deg,#8b949b,#5c646b); border-radius:6px 6px 3px 3px; box-shadow:0 3px 6px rgba(0,0,0,.3);}
+  .cut-station{position:relative; background:linear-gradient(180deg,#3a2a20,#201510); border-radius:12px; padding:8px; height:258px; width:138px; overflow:hidden; box-shadow:inset 0 4px 14px rgba(0,0,0,.55); cursor:crosshair; touch-action:none; border:2px solid #5c646b;}
+  .heat{position:absolute; right:6px; top:14px; bottom:14px; width:14px; border-radius:8px; background:linear-gradient(180deg,#ff8a3c,#ff5a1f,#c62828); box-shadow:0 0 16px #ff6a2f88; opacity:.9;}
+  .skewer{position:absolute; left:50%; transform:translateX(-50%); width:8px; background:linear-gradient(90deg,#888,#eee,#888); border-radius:4px;}
+  .skewer.top{top:2px; height:12px;} .skewer.bot{bottom:2px; height:12px;}
+  .spit{position:absolute; left:50%; top:14px; transform:translateX(-50%); width:64px; height:230px; border-radius:32px / 22px; box-shadow:0 6px 18px rgba(0,0,0,.5);
+    background:linear-gradient(90deg, rgba(0,0,0,.5), rgba(0,0,0,0) 22%, rgba(255,240,220,.35) 50%, rgba(0,0,0,0) 78%, rgba(0,0,0,.5)), repeating-linear-gradient(90deg, #7a4a24, #a5642e 5px, #b9743a 9px, #8a4f22 14px);
+    background-size:100% 100%, 40px 100%; animation:rotate 1.4s linear infinite;}
+  .spit.haehnchen{background:linear-gradient(90deg, rgba(0,0,0,.4), rgba(0,0,0,0) 22%, rgba(255,255,240,.45) 50%, rgba(0,0,0,0) 78%, rgba(0,0,0,.4)), repeating-linear-gradient(90deg, #c79a55, #e6c07a 5px, #f0d492 9px, #c79a55 14px); background-size:100% 100%, 40px 100%; animation:rotate 1.4s linear infinite;}
+  @keyframes rotate{from{background-position:0 0, 0 0;} to{background-position:0 0, 40px 0;}}
+  .knife{position:absolute; font-size:36px; pointer-events:none; transform:translate(-50%,-60%) rotate(35deg); transition:transform .05s; filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)); z-index:4;}
+  .cut-flash{position:absolute; left:8px; right:8px; height:3px; background:#fff; box-shadow:0 0 8px #fff; pointer-events:none; opacity:0; z-index:3;}
+  .spit-label{position:absolute; bottom:3px; left:0; right:0; text-align:center; color:#ffd9a8; font-size:10px; font-weight:700; z-index:3; pointer-events:none;}
+  .meat-toggle{display:flex; gap:5px; width:100%; flex-wrap:wrap;}
+  .meat-toggle button{flex:1 1 40px; border:2px solid #b7c2cb; background:#fff; border-radius:9px; padding:5px 2px; font-size:11px; font-weight:700; cursor:pointer;}
+  .meat-toggle button.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .tray{width:100%; background:linear-gradient(180deg,#fff,#eef2f4); border-radius:12px; padding:6px 8px; box-shadow:0 4px 10px rgba(0,0,0,.15); display:flex; align-items:center; gap:6px; cursor:grab; border:2px solid #b7c2cb; touch-action:none;}
+  .tray:active{cursor:grabbing;} .tray.has{border-color:var(--accent2); animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 4px 10px rgba(0,0,0,.12);}50%{box-shadow:0 4px 16px rgba(246,166,35,.6);}}
+  .tray .pile{flex:1; display:flex; flex-wrap:wrap; gap:2px; min-height:20px; align-items:center;} .tray b{font-size:13px;}
+  .tray-cap{font-size:9px; color:#7a7166; width:100%; text-align:center; margin-top:-2px;}
+
+  #hand{position:absolute; z-index:80; pointer-events:none; font-size:30px; transform:translate(-50%,-50%); display:none; filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
+  #hand .held{font-size:20px; background:#fff; border:2px solid var(--accent2); border-radius:10px; padding:1px 6px; font-weight:700;}
+  .flying{position:absolute; width:15px; height:7px; border-radius:3px; z-index:40; pointer-events:none; transition:transform .45s cubic-bezier(.4,1.2,.6,1), opacity .45s;}
+
+  #actions{display:flex; gap:8px;}
+  .btn{flex:1; border:none; border-radius:14px; padding:12px; font-size:15px; font-weight:800; cursor:pointer; color:#fff; transition:transform .08s, filter .12s; box-shadow:0 4px 0 rgba(0,0,0,.2);}
+  .btn:active{transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.2);}
+  .btn.serve{background:linear-gradient(180deg,#3d8bd6,#2f6fb0);}
+  .btn.trash{background:linear-gradient(180deg,#e46a6a,#d24b4b); flex:0 0 100px;}
+
+  .float{position:absolute; font-weight:800; font-size:22px; pointer-events:none; animation:floatUp 1.1s ease forwards; z-index:90; text-shadow:0 2px 6px rgba(0,0,0,.4);}
+  @keyframes floatUp{from{transform:translateY(0);opacity:1;}to{transform:translateY(-70px);opacity:0;}}
+
+  #toasts{position:absolute; top:48px; left:50%; transform:translateX(-50%); z-index:85; display:flex; flex-direction:column; gap:5px; align-items:center; pointer-events:none;}
+  .toast{background:rgba(28,23,18,.92); color:#ffe4b8; font-weight:800; font-size:13px; padding:6px 12px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,.35); animation:toastIn .25s ease; white-space:nowrap;}
+  .toast.out{opacity:0; transform:translateY(-8px); transition:.3s;}
+  @keyframes toastIn{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
+
+  .overlay{position:absolute; inset:0; background:rgba(15,8,4,.85); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:60; padding:20px;}
+  .panel{background:#fff; border-radius:20px; padding:22px 26px; max-width:580px; width:100%; max-height:92%; overflow-y:auto; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .panel h1{font-size:27px; color:var(--accent); margin-bottom:6px;} .panel h2{font-size:22px; margin-bottom:10px;}
+  .panel p{color:var(--muted); margin-bottom:12px; line-height:1.5;} .panel .big{font-size:40px; margin:6px 0;}
+  .panel button.go{background:linear-gradient(180deg,#f6a623,#e8532b); color:#fff; border:none; padding:12px 26px; border-radius:14px; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.18); transition:transform .08s; margin:4px;}
+  .panel button.go:active{transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.18);}
+  .panel button.ghost{background:#eee; color:#555; box-shadow:0 5px 0 rgba(0,0,0,.1);}
+  .rules{text-align:left; background:#faf3ea; border-radius:12px; padding:13px; font-size:12.5px; color:#5a4a3a; margin-bottom:12px; line-height:1.6;}
+  .day-goal{font-size:14px; color:#5a4a3a; margin-bottom:12px;}
+  .hint2{font-size:12.5px; color:#a5673a; min-height:20px; font-weight:600; background:#fff5e9; border-radius:10px; padding:6px 10px; text-align:center;}
+  .hidden{display:none!important;} .hide{display:none!important;}
+  .nameLabel{display:block; font-size:13px; font-weight:700; color:#5a4a3a; margin-bottom:6px; text-align:left;}
+  .nameInput{width:100%; padding:11px 14px; border:2px solid #e0d3bf; border-radius:12px; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:14px; text-align:center; background:#fffdf9;}
+  .nameInput:focus{outline:none; border-color:var(--accent2); box-shadow:0 0 0 3px rgba(246,166,35,.25);}
+  .best{font-size:13px; color:#8a6b45; font-weight:700; margin-bottom:10px;}
+  .eventbanner{background:linear-gradient(180deg,#fff3d6,#ffe1a6); border:2px solid #f0c46a; border-radius:14px; padding:12px; margin-bottom:12px; font-size:15px; color:#6a4a1a;}
+  .eventbanner b{font-size:17px;}
+
+  .shoprow, .staffrow{display:flex; align-items:center; gap:10px; background:#faf6f0; border:2px solid #ece0d0; border-radius:14px; padding:10px 12px; margin-bottom:9px; text-align:left;}
+  .shoprow .sh-emo, .staffrow .st-emo{font-size:30px;}
+  .shoprow .sh-info, .staffrow .st-info{flex:1;} .shoprow b, .staffrow b{font-size:14px;}
+  .shoprow .sh-info div, .staffrow .st-info div{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .lvltag{display:inline-block; font-size:10px; font-weight:800; color:#fff; background:#b08; border-radius:6px; padding:1px 5px; margin-left:4px;}
+  .shoprow button, .staffrow button{border:none; border-radius:10px; padding:8px 12px; font-weight:800; cursor:pointer; font-size:13px; box-shadow:0 3px 0 rgba(0,0,0,.15);}
+  .buy{background:linear-gradient(180deg,#f6a623,#e8532b); color:#fff;} .buy:disabled{background:#ddd; color:#999; box-shadow:none; cursor:default;}
+  .maxed{font-size:12px; font-weight:800; color:#3fa350;}
+  .stepper{display:flex; align-items:center; gap:6px;}
+  .stepper button{background:#eee; color:#333; width:30px; padding:6px 0;} .stepper .cnt{font-weight:800; min-width:20px; text-align:center;}
+  .slotinfo{font-weight:800; color:#b5651d; font-size:13px; margin:4px 0 12px;}
+  .achgrid{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:6px;}
+  .achitem{width:70px; font-size:11px; text-align:center; opacity:.35; filter:grayscale(1);}
+  .achitem.on{opacity:1; filter:none;}
+  .achitem .ai-emo{font-size:26px;}
+  .subtab{display:flex; gap:6px; margin-bottom:12px; justify-content:center;}
+  .subtab button{border:2px solid #e0d3bf; background:#fff; border-radius:10px; padding:7px 14px; font-weight:800; cursor:pointer; font-size:13px;}
+  .subtab button.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+
+  #register .panel{max-width:540px; background:linear-gradient(180deg,#fff,#f4f6f8);}
+  .reg-top{display:flex; align-items:center; gap:14px; margin-bottom:10px;}
+  .reg-cust{font-size:42px;} .reg-say{flex:1; text-align:left; background:#f4f1ec; border-radius:12px; padding:9px 12px; font-size:14px; color:#4a3f34;}
+  .display{background:#0e1b12; color:#7CFC9A; font-family:"SF Mono",Menlo,monospace; border-radius:12px; padding:11px 16px; margin-bottom:10px; text-align:right; box-shadow:inset 0 2px 8px rgba(0,0,0,.6);}
+  .display .line{display:flex; justify-content:space-between; font-size:14px; opacity:.85;}
+  .display .total{font-size:22px; font-weight:800; margin-top:4px;} .display .change{color:#ffd76a; font-size:19px; font-weight:800;}
+  .drawer-label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin:5px 0 5px; text-align:left;}
+  .cash-row{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:9px;}
+  .cash{border:none; border-radius:10px; padding:11px 6px; font-weight:800; cursor:pointer; min-width:58px; box-shadow:0 3px 0 rgba(0,0,0,.2); transition:transform .08s;}
+  .cash:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.2);}
+  .cash.coin{background:linear-gradient(180deg,#ffe08a,#e6b53c); color:#5a4300;} .cash.note{background:linear-gradient(180deg,#bfe3c2,#7bc07f); color:#123d16;}
+  .given{background:#fff; border:2px dashed #cbb; border-radius:12px; padding:7px; min-height:42px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:center; margin-bottom:6px;}
+  .given .tok{background:#faf3ea; border:2px solid #e0d3bf; border-radius:8px; padding:3px 8px; font-weight:700; font-size:13px; cursor:pointer;} .given .empty{color:#bbb; font-style:italic; font-size:13px;}
+  .reg-actions{display:flex; gap:10px; margin-top:8px;}
+  .reg-actions button{flex:1; border:none; border-radius:12px; padding:11px; font-weight:800; font-size:15px; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.15); transition:transform .08s;}
+  .reg-actions button:active{transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.15);}
+  .btn-reset{background:#eee; color:#555;} .btn-confirm{background:linear-gradient(180deg,#57c266,#3fa350); color:#fff;}
+  .quality{font-size:13px; margin-bottom:8px; padding:6px 10px; border-radius:10px;}
+  .quality.good{background:#eafae9; color:#2e7d32;} .quality.bad{background:#fdeaea; color:#c62828;}
+
+  /* Ladebildschirm */
+  #loading{position:fixed; inset:0; z-index:200; background:radial-gradient(900px 600px at 50% 32%, #3d2617, #130c07); display:flex; align-items:center; justify-content:center; transition:opacity .5s;}
+  #loading.gone{opacity:0; pointer-events:none;}
+  .load-inner{text-align:center; color:#f4ead9; display:flex; flex-direction:column; align-items:center; gap:12px; padding:20px;}
+  .load-spit{font-size:74px; animation:spin 1.5s linear infinite; filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));}
+  @keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+  .load-title{font-size:30px; font-weight:900; color:var(--accent2); text-shadow:0 0 16px rgba(246,166,35,.5); letter-spacing:.5px;}
+  .load-sub{font-size:14px; color:#c9b79f;}
+  .load-bar{width:min(300px,72vw); height:12px; background:#2a2117; border-radius:8px; overflow:hidden; box-shadow:inset 0 2px 5px rgba(0,0,0,.6);}
+  .load-fill{height:100%; width:0%; background:linear-gradient(90deg,#f6a623,#e8532b); border-radius:8px; transition:width 1.9s cubic-bezier(.4,.1,.3,1);}
+  .load-tip{font-size:13px; color:#e8c9a0; font-weight:700; min-height:18px;}
+  /* Vollseiten-Startbildschirm */
+  #startOverlay{background:radial-gradient(1100px 800px at 50% 12%, #402a18, #120b06); backdrop-filter:none; padding:0; align-items:stretch;}
+  .startscreen{width:100%; height:100%; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:14px; padding:26px 18px 14px;}
+  .ss-top{display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:auto;}
+  .starthero{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .starthero .sh-emo{font-size:64px; animation:bob 2.2s ease-in-out infinite; filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-9px) rotate(4deg);}}
+  .starthero h1{font-size:34px; color:var(--accent2); margin:0; text-shadow:0 0 18px rgba(246,166,35,.45); letter-spacing:.5px;}
+  .starthero .sh-tag{font-size:14px; color:#e8c9a0; font-weight:700; text-align:center;}
+  #startOverlay .best{color:#ffd36a; font-size:14px; font-weight:800; margin:0;}
+  .ss-card{width:100%; max-width:440px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:16px; box-shadow:0 8px 22px rgba(0,0,0,.3);}
+  .ss-card .nameLabel{color:#e8dccb;} .ss-card .nameInput{margin-bottom:12px;}
+  .ss-h{font-size:12px; font-weight:800; color:#ffd9a8; text-transform:uppercase; letter-spacing:.6px; margin-bottom:10px; text-align:center;}
+  .ss-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .ss-actions .go{margin:0; flex:1 1 150px;}
+  .ss-settings{display:flex; gap:8px; flex-wrap:wrap; justify-content:center;}
+  .setbtn{background:#2f2419; color:#f4ead9; border:2px solid #4a3a28; border-radius:12px; padding:11px 14px; font-size:13px; font-weight:800; cursor:pointer; transition:transform .08s, background .12s;}
+  .setbtn:hover{background:#3d2f20;} .setbtn:active{transform:scale(.96);}
+  .setbtn.danger{border-color:#7a3030; color:#ffb3b3;} .setbtn.danger:hover{background:#3a2020;}
+  #startOverlay .rules{background:rgba(0,0,0,.25); color:#e6d8c6; border:1px solid rgba(255,255,255,.08);}
+  .ss-version{margin-top:auto; padding-top:8px; color:#9a8a76; font-size:12px; font-weight:700; letter-spacing:.5px;}
+
+  @media (max-width:820px){
+    html,body{height:auto; min-height:100%; overflow-y:auto; display:block;}
+    #game{width:100%; height:auto; min-height:100vh; border-radius:0; box-shadow:none; overflow:visible;}
+    #topbar{position:sticky; top:0; flex-direction:column; align-items:stretch; gap:6px; padding:8px 10px;}
+    .tb-brand{text-align:center; font-size:20px;}
+    .tb-stats{justify-content:center; gap:6px;}
+    .tb-btns{justify-content:center; margin-left:0; gap:6px;}
+    .tb-btns .iconBtn{font-size:12px; padding:8px 9px;}
+    #scene{flex-direction:column;}
+    #counterCol{width:100%;} #counterCol:before{display:none;} .frontglass{padding:10px 12px 0;}
+    .signboard .mb-sign{font-size:20px;}
+    .counter-edge{height:24px; font-size:10px;}
+    #kitchen{width:100%; padding:10px;} #kmid{overflow:visible;}
+    .work{flex-direction:column;} #kright{width:100%;}
+    .cut-station{width:100%; height:190px;} .knife{font-size:44px;} .board-inner{min-height:120px;}
+    .gn{flex:1 1 84px; min-width:80px; padding:9px 4px;} .gn .food{font-size:23px;} .gn .nm{font-size:12px;}
+    .btn{padding:16px; font-size:16px;} .btn.trash{flex:0 0 120px;} .hint2{font-size:13.5px;}
+    .overlay{position:fixed;} .panel{max-width:96vw; padding:18px 16px;}
+    .cash{min-width:56px; padding:14px 6px;} .reg-actions button{padding:15px;}
+  }
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="topbar">
+    <div class="tb-brand">🥙 Dönermann Simulator</div>
+    <div class="tb-stats">
+      <div class="stat"><b id="money">0 €</b><span data-i18n="st_cash">Kasse</span></div>
+      <div class="stat"><b id="day">Tag 1</b><span data-i18n="st_shift">Schicht</span></div>
+      <div class="stat lvlstat"><b id="level">Lv 1</b><span data-i18n="st_level">Level</span><div class="xpbar"><div class="xpfill" id="xpFill"></div></div></div>
+      <div class="stat"><b id="served">0</b><span data-i18n="st_served">Bedient</span></div>
+      <div class="combo" id="combo">🔥 x1</div>
+      <div class="rep" id="rep"></div>
+    </div>
+    <div class="tb-btns">
+      <button class="iconBtn" id="shopBtn" data-i18n="btn_shop">🛒 Laden</button>
+      <button class="iconBtn" id="buyBtn" data-i18n="btn_buy">🧺 Einkauf</button>
+      <button class="iconBtn" id="branchBtn" data-i18n="btn_branch">🏪 Filialen</button>
+      <button class="iconBtn" id="staffBtn" data-i18n="btn_team">👔 Team</button>
+      <button class="iconBtn" id="musicBtn" title="Musik an/aus">🎵</button>
+      <button class="iconBtn" id="muteBtn" title="Ton an/aus">🔊</button>
+    </div>
+  </div>
+
+  <div id="scene">
+    <div id="counterCol">
+      <div class="frontglass">
+        <div class="signboard">
+          <div class="sign-row"><div class="mb-sign" id="mbSign">🥙 DÖNER HAUS</div><div class="mb-open" data-i18n="open">GEÖFFNET</div></div>
+          <div class="eventchip hide" id="eventChip"></div>
+        </div>
+        <div class="front-title" data-i18n="front_title">— Kunde an der Theke —</div>
+        <div id="customerCard">
+          <div class="cust-face" id="custFace">🙂</div>
+          <div class="bubble"><h4 id="custName">Kunde</h4><div class="custsay" id="custSay"></div><div class="order-list" id="orderList"></div></div>
+          <div class="waitline" id="waitline" data-i18n="wait">wartet auf seine Bestellung…</div>
+        </div>
+        <div class="queue"><span data-i18n="queue">Warteschlange:</span><span class="q-faces" id="queueFaces">—</span></div>
+      </div>
+      <div class="counter-edge" data-i18n="counter_edge">▬▬▬  T H E K E  ▬▬▬</div>
+    </div>
+
+    <div id="kitchen">
+      <div class="crew hide" id="crew"></div>
+
+      <div class="work">
+        <div class="kcol" id="kmid">
+          <div class="section-title" data-i18n="sec_build">Belegstation — Klick aufs Gericht legt das Fleisch rein 🥩</div>
+          <div class="board-wrap"><div class="board-inner" id="board"><div class="bread-empty">👉 Wähle unten eine Basis…</div></div></div>
+          <div class="section-title" data-i18n="sec_base">Basis wählen</div>
+          <div class="gn-row" id="baseRow"></div>
+          <div class="section-title" data-i18n="sec_salad">Salatbar — greifen & ins Gericht ziehen (oder antippen) 🤏</div>
+          <div class="saladbar"><div class="gn-row" id="vegRow"></div></div>
+          <div class="section-title" data-i18n="sec_sauce">Soßen</div>
+          <div class="saladbar"><div class="gn-row" id="sauceRow"></div></div>
+          <div class="section-title" data-i18n="sec_fridge">Kühlschrank — Getränk antippen 🧊</div>
+          <div class="fridge"><div class="gn-row" id="drinkRow"></div></div>
+          <div class="section-title" data-i18n="sec_fry">Fritteuse & Beilagen — Pommes tippen → frittieren → nochmal tippen 🍟</div>
+          <div class="fryer"><div class="gn-row" id="sideRow"></div></div>
+          <div class="hint2" id="hint"></div>
+          <div id="actions">
+            <button class="btn serve" id="serveBtn" data-i18n="btn_serve">🧾 Fertig – zur Kasse</button>
+            <button class="btn trash" id="trashBtn" data-i18n="btn_trash">🗑️ Neu</button>
+          </div>
+        </div>
+
+        <div class="kcol" id="kright">
+          <div class="section-title" data-i18n="grill">Dönergrill</div>
+          <div class="grillhead"></div>
+          <div class="meat-toggle" id="meatToggle"></div>
+          <div class="cut-station" id="cutStation">
+            <div class="heat"></div><div class="skewer top"></div><div class="skewer bot"></div>
+            <div class="spit" id="spit"></div><div class="cut-flash" id="cutFlash"></div>
+            <div class="spit-label" id="spitLabel">↕ streichen</div><div class="knife" id="knife">🔪</div>
+          </div>
+          <div class="tray" id="tray" title="Klick aufs Gericht legt das Fleisch rein"><div class="pile" id="pile"></div><b id="sliceCount">0</b></div>
+          <div class="tray-cap" data-i18n="traycap">Fleisch-Schale</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hand"></div>
+  <div id="toasts"></div>
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="load-inner">
+      <div class="load-spit">🥙</div>
+      <div class="load-title">Dönermann Simulator</div>
+      <div class="load-sub" data-i18n="load_sub">Deine Dönerbude wird vorbereitet…</div>
+      <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
+      <div class="load-tip" id="loadTip">Heize den Grill vor…</div>
+    </div>
+  </div>
+
+  <!-- Start -->
+  <div class="overlay" id="startOverlay">
+    <div class="startscreen">
+      <div class="ss-top">
+        <div class="starthero">
+          <div class="sh-emo">🥙</div>
+          <h1>Dönermann Simulator</h1>
+          <div class="sh-tag" data-i18n="tagline">Schneide, belege, kassiere – bau dein Döner-Imperium!</div>
+        </div>
+        <div class="best" id="bestLine"></div>
+      </div>
+
+      <div class="ss-card">
+        <label class="nameLabel" data-i18n="name_label">Wie soll deine Bude heißen?</label>
+        <input id="shopName" class="nameInput" type="text" maxlength="22" data-i18n-ph="name_ph" placeholder="z. B. Kral Döner, Berlin Kebap …" value="Döner Haus">
+        <div class="ss-actions">
+          <button class="go" id="continueBtn" data-i18n="btn_continue">▶️ Weiter</button>
+          <button class="go" id="startBtn" data-i18n="btn_new">Neues Spiel 🚀</button>
+        </div>
+      </div>
+
+      <div class="ss-card">
+        <div class="ss-h" data-i18n="set_h">⚙️ Einstellungen</div>
+        <div class="ss-settings">
+          <button class="setbtn" id="setLang">🌐 Deutsch</button>
+          <button class="setbtn" id="setMusic">🎵 Musik: An</button>
+          <button class="setbtn" id="setSound">🔊 Sound: An</button>
+          <button class="setbtn" id="setHowto">❓ Anleitung</button>
+          <button class="setbtn danger" id="setReset">🗑️ Spielstand löschen</button>
+        </div>
+      </div>
+
+      <div class="ss-card hidden" id="howtoCard">
+        <div class="ss-h" data-i18n="howto_h">📖 So spielst du</div>
+        <div class="rules" data-i18n-html="rules"></div>
+      </div>
+
+      <div class="ss-version" id="ssVersion"></div>
+    </div>
+  </div>
+
+  <!-- Shop -->
+  <div class="overlay hidden" id="shopOverlay"><div class="panel">
+    <h2 data-i18n="shop_h">🛒 Laden</h2>
+    <div class="best" id="shopMoney"></div>
+    <div class="subtab"><button id="tabUpg" class="on" data-i18n="tab_upg">🔧 Upgrades</button><button id="tabMenu" data-i18n="tab_menu">🍽️ Sortiment</button><button id="tabFame" data-i18n="tab_fame">🌟 Franchise</button><button id="tabAch" data-i18n="tab_ach">🏆 Erfolge</button></div>
+    <div id="shopUpg"></div>
+    <div id="shopMenu" class="hidden"></div>
+    <div id="shopFame" class="hidden"></div>
+    <div id="shopAch" class="hidden"><div class="achgrid" id="achGrid"></div></div>
+    <button class="go" id="shopClose" data-i18n="close_back">Zurück →</button>
+  </div></div>
+
+  <!-- Filialen-Verwaltung -->
+  <div class="overlay hidden" id="branchOverlay"><div class="panel">
+    <h2 data-i18n="branch_h">🏪 Filialen-Verwaltung</h2>
+    <p data-i18n="branch_p">Baue jede Filiale aus, um ihr passives Einkommen zu steigern.</p>
+    <div class="best" id="branchMoney"></div>
+    <div id="branchList"></div>
+    <button class="go" id="branchBuy">➕ Neue Filiale</button>
+    <div class="day-goal" id="branchTotal"></div>
+    <button class="go ghost" id="branchClose" data-i18n="close">Schließen</button>
+  </div></div>
+
+  <!-- Einkaufsladen -->
+  <div class="overlay hidden" id="buyOverlay"><div class="panel">
+    <h2 data-i18n="buy_h">🧺 Einkaufsladen</h2>
+    <p data-i18n="buy_p">Jede Zutat reicht für 15 Portionen. Ist sie leer, hier Nachschub kaufen (Packung = +15). Dein Vorrat und der Team-Vorrat der Mitarbeiter sind getrennt.</p>
+    <div class="best" id="buyMoney"></div>
+    <div id="buyList"></div>
+    <button class="go" id="buyAll" data-i18n="buy_all">🛒 Deinen Vorrat auffüllen</button>
+    <button class="go" id="buyTeam" data-i18n="buy_team">👥 Team-Vorrat auffüllen</button>
+    <button class="go ghost" id="buyClose" data-i18n="close">Schließen</button>
+  </div></div>
+
+  <!-- Staff -->
+  <div class="overlay hidden" id="staffOverlay"><div class="panel">
+    <h2 data-i18n="staff_h">👔 Team</h2>
+    <p data-i18n="staff_p">Mitarbeiter bedienen wartende Kunden <b>autonom</b> – kosten aber Tageslohn.</p>
+    <div class="slotinfo" id="slotInfo"></div>
+    <div id="staffList"></div>
+    <div class="day-goal" id="wageInfo"></div>
+    <button class="go" id="staffClose" data-i18n="staff_close">Weiter arbeiten →</button>
+  </div></div>
+
+  <!-- Register -->
+  <div class="overlay hidden" id="register"><div class="panel">
+    <div class="reg-top"><div class="reg-cust" id="regFace">🙂</div><div class="reg-say" id="regSay"></div></div>
+    <div class="quality" id="regQuality"></div>
+    <div class="display" id="regDisplay"></div>
+    <div class="drawer-label" data-i18n="reg_dl1">Kassenlade — Rückgeld zusammenklicken:</div>
+    <div class="cash-row" id="cashRow"></div>
+    <div class="drawer-label" data-i18n="reg_dl2">Herausgegeben (Klick entfernt):</div>
+    <div class="given" id="givenBox"><span class="empty">noch nichts</span></div>
+    <div class="reg-actions"><button class="btn-reset" id="regReset" data-i18n="reg_reset">↺ Zurück</button><button class="btn-confirm" id="regConfirm" data-i18n="reg_confirm">✅ Rückgeld geben</button></div>
+  </div></div>
+
+  <!-- Day -->
+  <div class="overlay hidden" id="dayOverlay"><div class="panel">
+    <h2 id="dayTitle">Feierabend! 🎉</h2><div class="big" id="dayEarn">+0 €</div>
+    <p id="daySummary"></p>
+    <div class="eventbanner" id="nextEvent"></div>
+    <div class="day-goal" id="nextGoal"></div>
+    <button class="go" id="nextDayBtn" data-i18n="day_next">Nächste Schicht →</button>
+  </div></div>
+
+  <!-- Game over -->
+  <div class="overlay hidden" id="overOverlay"><div class="panel">
+    <h2 data-i18n="over_h">Bude dicht! 😞</h2><div class="big">⭐</div><p id="overSummary"></p>
+    <button class="go" id="restartBtn" data-i18n="over_restart">Neues Spiel</button>
+  </div></div>
+</div>
+
+<script>
+/* ===== Katalog (mit Freischalt-Level lvl) ===== */
+const MEATS={kalb:{name:'Kalbfleisch',en:'Veal',emo:'🥩',lvl:1},haehnchen:{name:'Hähnchen',en:'Chicken',emo:'🍗',lvl:1},falafel:{name:'Falafel',emo:'🧆',lvl:1},lamm:{name:'Lamm',en:'Lamb',emo:'🍖',lvl:3},
+  adana:{name:'Adana',emo:'🌶️',buy:700},koefte:{name:'Köfte',en:'Kofta',emo:'🍡',buy:900}};
+const SPIT=['kalb','haehnchen','lamm','adana','koefte'];
+const BASES={fladen:{name:'Döner',emo:'🫓',price:500,wrap:'foil',lvl:1},duerum:{name:'Dürüm',emo:'🌯',price:600,wrap:'foil',lvl:1},
+  teller:{name:'Dönerteller',en:'Döner plate',emo:'🍽️',price:800,wrap:'box',lvl:2},bowl:{name:'Dönerbowl',en:'Döner bowl',emo:'🥣',price:700,wrap:'box',lvl:3},
+  lahmacun:{name:'Lahmacun',emo:'🫓',price:650,wrap:'foil',lvl:5},
+  yufka:{name:'Yufka',emo:'🌯',price:700,wrap:'foil',buy:500},lavash:{name:'Lavaş',emo:'🫓',price:650,wrap:'foil',buy:700},boxbowl:{name:'XXL-Box',en:'XXL box',emo:'📦',price:1100,wrap:'box',buy:1200}};
+const VEG=[{id:'salat',name:'Salat',en:'Lettuce',emo:'🥬',lvl:1},{id:'tomate',name:'Tomaten',en:'Tomato',emo:'🍅',lvl:1},{id:'zwiebel',name:'Zwiebeln',en:'Onions',emo:'🧅',lvl:1},{id:'gurke',name:'Gurken',en:'Cucumber',emo:'🥒',lvl:1},{id:'rotkohl',name:'Rotkohl',en:'Red cabbage',emo:'🟣',lvl:1},{id:'kaese',name:'Käse',en:'Cheese',emo:'🧀',lvl:1},{id:'peperoni',name:'Peperoni',en:'Peperoni',emo:'🌶️',lvl:2},{id:'oliven',name:'Oliven',en:'Olives',emo:'🫒',lvl:3},{id:'mais',name:'Mais',en:'Corn',emo:'🌽',lvl:4},
+  {id:'grillgemuese',name:'Grillgemüse',en:'Grilled veg',emo:'🫑',buy:400},{id:'hirtenkaese',name:'Hirtenkäse',en:'Feta',emo:'🧀',buy:350},{id:'jalapeno',name:'Jalapeños',en:'Jalapeños',emo:'🌶️',buy:300},{id:'rucola',name:'Rucola',en:'Arugula',emo:'🥬',buy:300},{id:'granatapfel',name:'Granatapfel',en:'Pomegranate',emo:'🔴',buy:450}];
+const SAUCE=[{id:'knoblauch',name:'Knoblauch',en:'Garlic',emo:'🧄',lvl:1},{id:'scharf',name:'Schaff',en:'Spicy',emo:'🌶️',lvl:1},{id:'kraeuter',name:'Kräuter',en:'Herb',emo:'🌿',lvl:1},{id:'cocktail',name:'Cocktail',en:'Cocktail',emo:'🍹',lvl:1},{id:'joghurt',name:'Joghurt',en:'Yogurt',emo:'🥣',lvl:2},{id:'curry',name:'Curry',en:'Curry',emo:'🍛',lvl:4},
+  {id:'sriracha',name:'Sriracha',en:'Sriracha',emo:'🌶️',buy:350},{id:'mango',name:'Mango-Curry',en:'Mango curry',emo:'🥭',buy:400},{id:'tahin',name:'Tahin',en:'Tahini',emo:'🥜',buy:400}];
+const DRINKS=[{id:'ayran',name:'Ayran',emo:'🥛',price:150,lvl:1},{id:'uludag',name:'Uludağ',emo:'🍋',price:200,lvl:1},{id:'cola',name:'Cola',en:'Coke',emo:'🥤',price:200,lvl:1},{id:'wasser',name:'Wasser',en:'Water',emo:'💧',price:100,lvl:1},{id:'fanta',name:'Fanta',emo:'🍊',price:200,lvl:2},{id:'redbull',name:'Red Bull',emo:'🐂',price:300,lvl:4},
+  {id:'salgam',name:'Şalgam',emo:'🧃',price:200,buy:250},{id:'cay',name:'Çay',emo:'🍵',price:100,buy:200},{id:'granatsaft',name:'Granatapfelsaft',en:'Pomegranate juice',emo:'🧃',price:300,buy:400}];
+const SIDES=[{id:'pommes',name:'Pommes',en:'Fries',emo:'🍟',price:250,lvl:1,cook:true},{id:'boerek',name:'Börek',emo:'🥟',price:200,lvl:2,cook:true},{id:'sucuk',name:'Sucuk',emo:'🌭',price:300,lvl:3,cook:true},{id:'salatbeil',name:'Salat',en:'Salad',emo:'🥗',price:200,lvl:4,cook:false},
+  {id:'sigara',name:'Sigara Böreği',emo:'🥟',price:300,buy:400,cook:true},{id:'humus',name:'Humus',en:'Hummus',emo:'🫓',price:250,buy:350,cook:false},{id:'suesskart',name:'Süßkartoffel-Pommes',en:'Sweet potato fries',emo:'🍠',price:350,buy:450,cook:true}];
+const AMOUNT={2:'wenig Fleisch',4:'normal',6:'viel Fleisch'};
+const AMOUNT_EN={2:'less meat',4:'normal',6:'extra meat'};
+function amountTxt(n){return L(AMOUNT[n]||'normal',AMOUNT_EN[n]||'normal');}
+const vById=id=>VEG.find(v=>v.id===id), sById=id=>SAUCE.find(s=>s.id===id), dById=id=>DRINKS.find(d=>d.id===id), xById=id=>SIDES.find(s=>s.id===id);
+function nm(x){return (lang==='en'&&x&&x.en)?x.en:(x?x.name:'');}
+const FACES=['🙂','😀','😎','🧔','👩','👨','🧑','👵','👴','🧕','👱','🤠'];
+const CUSTOMERS=[
+  {name:'Ali',face:'🧔'},{name:'Frau Schmidt',face:'👩'},{name:'Herr Yılmaz',face:'👨'},{name:'Lisa',face:'👧'},
+  {name:'Bratan',face:'😎'},{name:'Chef Murat',face:'🧑‍💼'},{name:'Oma Erna',face:'👵'},{name:'Opa Kurt',face:'👴'},
+  {name:'Tourist',face:'🧑‍🦰'},{name:'Stammgast',face:'🧔'},{name:'Student',face:'🧑‍🎓'},{name:'Taxifahrer',face:'🧑'},
+  {name:'Nachtschwärmer',face:'🥴'},{name:'Frau Kaya',face:'🧕'},{name:'Polizist',face:'👮'},{name:'Bauarbeiter',face:'👷'},
+  {name:'Influencerin',face:'💁‍♀️'},{name:'Rentnerin',face:'👵'},{name:'Fußballfan',face:'🧑‍🦱'},{name:'Kind',face:'🧒'}];
+const STAFF={
+  aushilfe:{name:'Aushilfe (Deniz)',nameEn:'Helper (Deniz)',emo:'🧍',wage:6,speed:8.5,err:0.22,desc:'Sehr günstig, aber langsam und fehleranfällig.',descEn:'Very cheap, but slow and error-prone.'},
+  azubi:{name:'Azubi (Emre)',nameEn:'Trainee (Emre)',emo:'🧑‍🎓',wage:9,speed:6.5,err:0.15,desc:'Solide Nachwuchskraft, gelegentliche Patzer.',descEn:'Solid rookie, occasional slip-ups.'},
+  geselle:{name:'Geselle (Ahmet)',nameEn:'Journeyman (Ahmet)',emo:'🧑‍🍳',wage:15,speed:4.8,err:0.07,desc:'Zuverlässig und in gutem Tempo.',descEn:'Reliable and at a good pace.'},
+  meister:{name:'Dönermeister (Mustafa)',nameEn:'Döner Master (Mustafa)',emo:'👨‍🍳',wage:24,speed:3.2,err:0.02,desc:'Schnell und fast fehlerfrei.',descEn:'Fast and almost error-free.'},
+  gott:{name:'Grill-Gott (Baba)',nameEn:'Grill God (Baba)',emo:'🧙',wage:40,speed:2.0,err:0.0,desc:'Legendär: blitzschnell, niemals ein Fehler.',descEn:'Legendary: lightning fast, never a mistake.'}};
+const UPG={
+  kasse:{emo:'🧾',name:'Digitale Kasse',nameEn:'Digital register',desc:'+25% Trinkgeld pro Stufe',descEn:'+25% tips per level',max:4,cost:l=>150*(l+1)},
+  marketing:{emo:'💡',name:'Leuchtreklame',nameEn:'Neon sign',desc:'+3 Kunden pro Tag',descEn:'+3 customers per day',max:5,cost:l=>200*(l+1)},
+  slots:{emo:'🏢',name:'Personalbüro',nameEn:'HR office',desc:'+1 Mitarbeiter-Slot',descEn:'+1 staff slot',max:5,cost:l=>260*(l+1)},
+  grill:{emo:'🔥',name:'Heißerer Grill',nameEn:'Hotter grill',desc:'Team arbeitet 12% schneller',descEn:'Staff work 12% faster',max:4,cost:l=>230*(l+1)},
+  auto:{emo:'📦',name:'Auto-Nachschub (Lieferdienst)',nameEn:'Auto-restock (delivery)',desc:'Kauft Zutaten für Laden & Team automatisch nach – nie mehr leer.',descEn:'Auto-buys ingredients for shop & team – never empty.',max:1,cost:l=>1200}};
+const EVENTS=[
+  {id:'rush',name:'🏙️ Feierabend-Rush',nameEn:'🏙️ Rush hour',cust:1.6,tip:1},
+  {id:'match',name:'⚽ Spieltag',nameEn:'⚽ Match day',cust:1.4,tip:1.5},
+  {id:'rain',name:'🌧️ Regentag',nameEn:'🌧️ Rainy day',cust:0.6,tip:1},
+  {id:'happy',name:'🎉 Happy Hour',nameEn:'🎉 Happy hour',cust:1,tip:2},
+  {id:'critic',name:'📝 Restaurantkritiker',nameEn:'📝 Food critic',cust:1,tip:1,critic:true},
+  {id:'tour',name:'🚌 Reisegruppe',nameEn:'🚌 Tour group',cust:1.8,tip:1}];
+const ACH=[
+  {id:'first',emo:'🥙',name:'Erster Döner',en:'First döner',test:s=>s.servedTotal>=1},
+  {id:'s50',emo:'🧾',name:'50 Kunden',en:'50 customers',test:s=>s.servedTotal>=50},
+  {id:'s200',emo:'📈',name:'200 Kunden',en:'200 customers',test:s=>s.servedTotal>=200},
+  {id:'m500',emo:'💶',name:'500 € Kasse',en:'€500 in the till',test:s=>s.money>=500},
+  {id:'m2000',emo:'🤑',name:'2000 €',en:'€2000',test:s=>s.money>=2000},
+  {id:'m5000',emo:'🏦',name:'5000 €',en:'€5000',test:s=>s.money>=5000},
+  {id:'combo5',emo:'🔥',name:'Combo ×5',en:'Combo ×5',test:s=>s.maxCombo>=5},
+  {id:'combo10',emo:'🌋',name:'Combo ×10',en:'Combo ×10',test:s=>s.maxCombo>=10},
+  {id:'lvl5',emo:'⭐',name:'Level 5',en:'Level 5',test:s=>s.level>=5},
+  {id:'lvl8',emo:'🌟',name:'Level 8',en:'Level 8',test:s=>s.level>=8},
+  {id:'team',emo:'👥',name:'Volles Team',en:'Full team',test:s=>s.workers.length>=staffSlots()&&staffSlots()>=4},
+  {id:'gott',emo:'🧙',name:'Grill-Gott im Team',en:'Grill God on staff',test:s=>s.workers.some(w=>w.type==='gott')},
+  {id:'day7',emo:'📅',name:'Eine Woche',en:'One week',test:s=>s.day>=7},
+  {id:'day14',emo:'🗓️',name:'Zwei Wochen',en:'Two weeks',test:s=>s.day>=14},
+  {id:'vip',emo:'💎',name:'VIP perfekt bedient',en:'VIP served perfectly',test:s=>s.vipServed>=1},
+  {id:'menu3',emo:'📖',name:'3 Rezepte gekauft',en:'Bought 3 recipes',test:s=>s.owned.length>=3},
+  {id:'menu8',emo:'📚',name:'8 Rezepte gekauft',en:'Bought 8 recipes',test:s=>s.owned.length>=8},
+  {id:'fame1',emo:'🌟',name:'Erstes Franchise',en:'First franchise',test:s=>s.prestige>=1},
+  {id:'fame3',emo:'🏙️',name:'Franchise-Imperium',en:'Franchise empire',test:s=>s.prestige>=3},
+  {id:'day30',emo:'📆',name:'30 Tage überstanden',en:'Survived 30 days',test:s=>s.day>=30},
+  {id:'money20k',emo:'💰',name:'20.000 €',en:'€20,000',test:s=>s.money>=20000}];
+function achName(a){return L(a.name,a.en||a.name);}
+const DENOMS=[2000,1000,500,200,100,50];
+const VERSION='v2.7';
+let lang='de';
+function L(de,en){return lang==='en'?en:de;}
+const TXT={
+  st_cash:{de:'Kasse',en:'Cash'},st_shift:{de:'Schicht',en:'Shift'},st_level:{de:'Level',en:'Level'},st_served:{de:'Bedient',en:'Served'},
+  btn_shop:{de:'🛒 Laden',en:'🛒 Shop'},btn_buy:{de:'🧺 Einkauf',en:'🧺 Supplies'},btn_branch:{de:'🏪 Filialen',en:'🏪 Branches'},btn_team:{de:'👔 Team',en:'👔 Staff'},
+  open:{de:'GEÖFFNET',en:'OPEN'},front_title:{de:'— Kunde an der Theke —',en:'— Customer at the counter —'},queue:{de:'Warteschlange:',en:'Queue:'},
+  wait:{de:'wartet auf seine Bestellung…',en:'waiting for their order…'},counter_edge:{de:'▬▬▬  T H E K E  ▬▬▬',en:'▬▬▬  C O U N T E R  ▬▬▬'},
+  sec_build:{de:'Belegstation — Klick aufs Gericht legt das Fleisch rein 🥩',en:'Assembly — click the dish to drop in the meat 🥩'},
+  sec_base:{de:'Basis wählen',en:'Choose a base'},
+  sec_salad:{de:'Salatbar — greifen & ins Gericht ziehen (oder antippen) 🤏',en:'Salad bar — grab & drag into the dish (or tap) 🤏'},
+  sec_sauce:{de:'Soßen',en:'Sauces'},sec_fridge:{de:'Kühlschrank — Getränk antippen 🧊',en:'Fridge — tap a drink 🧊'},
+  sec_fry:{de:'Fritteuse & Beilagen — Pommes tippen → frittieren → nochmal tippen 🍟',en:'Fryer & sides — tap fries → fry → tap again 🍟'},
+  btn_serve:{de:'🧾 Fertig – zur Kasse',en:'🧾 Done – to the register'},btn_trash:{de:'🗑️ Neu',en:'🗑️ Reset'},
+  grill:{de:'Dönergrill',en:'Döner grill'},traycap:{de:'Fleisch-Schale',en:'Meat tray'},
+  tagline:{de:'Schneide, belege, kassiere – bau dein Döner-Imperium!',en:'Slice, top, cash out – build your döner empire!'},
+  name_label:{de:'Wie soll deine Bude heißen?',en:'What should your shop be called?'},
+  name_ph:{de:'z. B. Kral Döner, Berlin Kebap …',en:'e.g. Kral Döner, Berlin Kebab …'},
+  btn_continue:{de:'▶️ Weiter',en:'▶️ Continue'},btn_new:{de:'Neues Spiel 🚀',en:'New game 🚀'},
+  set_h:{de:'⚙️ Einstellungen',en:'⚙️ Settings'},howto_h:{de:'📖 So spielst du',en:'📖 How to play'},
+  rules:{de:'🍽️ <b>Basis</b> wählen · 🔪 <b>Fleisch schneiden</b> & aufs Gericht klicken · 🥬 <b>Gemüse/Soße</b> ziehen · 🧊 <b>Getränk</b> antippen · 🍟 <b>Pommes</b> frittieren · 🧾 <b>Kasse</b> & Rückgeld geben.<br><br>⭐ <b>Level</b> = neue Zutaten · 🛒 <b>Laden</b>: Upgrades, 🍽️ <b>Sortiment</b> (Grillgemüse, Yufka …) & 🌟 <b>Franchise</b> · 🧺 <b>Einkauf</b>: Vorräte · 👔 <b>Team</b> bedient autonom · 🏪 <b>Filialen</b> = passives Geld · 🔥 <b>Combos</b> & 🎲 <b>Events</b> & 💎 VIPs.',
+    en:'🍽️ Pick a <b>base</b> · 🔪 <b>slice meat</b> & click the dish · 🥬 drag <b>veg/sauce</b> · 🧊 tap a <b>drink</b> · 🍟 <b>fry</b> the fries · 🧾 <b>register</b> & give change.<br><br>⭐ <b>Level up</b> = new ingredients · 🛒 <b>Shop</b>: upgrades, 🍽️ <b>menu</b> (grilled veg, Yufka …) & 🌟 <b>franchise</b> · 🧺 <b>Supplies</b> · 👔 <b>Staff</b> serve on their own · 🏪 <b>Branches</b> = passive income · 🔥 <b>combos</b> & 🎲 <b>events</b> & 💎 VIPs.'},
+  shop_h:{de:'🛒 Laden',en:'🛒 Shop'},tab_upg:{de:'🔧 Upgrades',en:'🔧 Upgrades'},tab_menu:{de:'🍽️ Sortiment',en:'🍽️ Menu'},tab_fame:{de:'🌟 Franchise',en:'🌟 Franchise'},tab_ach:{de:'🏆 Erfolge',en:'🏆 Achievements'},
+  close_back:{de:'Zurück →',en:'Back →'},close:{de:'Schließen',en:'Close'},
+  branch_h:{de:'🏪 Filialen-Verwaltung',en:'🏪 Branch management'},branch_p:{de:'Baue jede Filiale aus, um ihr passives Einkommen zu steigern.',en:'Upgrade each branch to boost its passive income.'},branch_new:{de:'➕ Neue Filiale',en:'➕ New branch'},
+  buy_h:{de:'🧺 Einkaufsladen',en:'🧺 Supply store'},buy_p:{de:'Jede Zutat reicht für 15 Portionen. Ist sie leer, hier Nachschub kaufen (Packung = +15). Dein Vorrat und der Team-Vorrat sind getrennt.',en:'Each ingredient lasts 15 servings. When empty, restock here (pack = +15). Your stock and the team stock are separate.'},
+  buy_all:{de:'🛒 Deinen Vorrat auffüllen',en:'🛒 Refill your stock'},buy_team:{de:'👥 Team-Vorrat auffüllen',en:'👥 Refill team stock'},
+  staff_h:{de:'👔 Team',en:'👔 Staff'},staff_p:{de:'Mitarbeiter bedienen wartende Kunden autonom – kosten aber Tageslohn.',en:'Staff serve waiting customers autonomously – but cost a daily wage.'},staff_close:{de:'Weiter arbeiten →',en:'Keep working →'},
+  reg_reset:{de:'↺ Zurück',en:'↺ Reset'},reg_confirm:{de:'✅ Rückgeld geben',en:'✅ Give change'},reg_dl1:{de:'Kassenlade — Rückgeld zusammenklicken:',en:'Cash drawer — click to make change:'},reg_dl2:{de:'Herausgegeben (Klick entfernt):',en:'Given out (click to remove):'},
+  day_next:{de:'Nächste Schicht →',en:'Next shift →'},over_h:{de:'Bude dicht! 😞',en:'Shop closed! 😞'},over_restart:{de:'Neues Spiel',en:'New game'},
+  load_sub:{de:'Deine Dönerbude wird vorbereitet…',en:'Preparing your döner shop…'}
+};
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n')];if(v)e.textContent=v[lang];});
+  document.querySelectorAll('[data-i18n-html]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n-html')];if(v)e.innerHTML=v[lang];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(e=>{const v=TXT[e.getAttribute('data-i18n-ph')];if(v)e.placeholder=v[lang];});
+  document.documentElement.lang=lang;
+  if($('#setLang'))updateSettingLabels();
+}
+const PHRASES=['Anzeige ist raus!','Ups, war keine Absicht!','Passiert den Besten!','Sorry Chef!','War der Salat schuld!','Hab kurz nicht aufgepasst!','Das war die Zwiebel!','Mist, verschnitten!','Nächster wird besser!','Boah, sorry!','Nicht mein Tag heute…','Ey, das zählt nicht!'];
+const PHRASES_EN=['My bad!','Oops, not on purpose!','Happens to the best!','Sorry boss!','Blame the salad!','Wasn\'t paying attention!','It was the onion!','Dang, sliced wrong!','Next one\'s better!','Whoa, sorry!','Not my day today…','Hey, that doesn\'t count!'];
+function phrase(){return pick(lang==='en'?PHRASES_EN:PHRASES);}
+const BRANCH_CITIES=['Berlin','Hamburg','Köln','München','Frankfurt','Bremen','Essen','Dortmund','Hannover','Leipzig','Stuttgart','Nürnberg'];
+const STOCK_START=15, PACK=15;
+function ingInfo(id){return vById(id)||sById(id)||dById(id)||xById(id)||(id==='falafel'?{name:'Falafel',emo:'🧆'}:null);}
+function stockOf(id){return state.stock[id]!=null?state.stock[id]:0;}
+function teamStockOf(id){return state.teamStock[id]!=null?state.teamStock[id]:0;}
+function restockCost(id){if(dById(id))return 4;if(xById(id))return 4;if(id==='falafel')return 4;return 3;}
+function autoOn(){return upg('auto')>0;}
+function canUse(id){return stockOf(id)>0 || (autoOn()&&state.money>=restockCost(id));}
+function takeStock(id){
+  if(stockOf(id)<=0){ if(autoOn()&&state.money>=restockCost(id)){state.money-=restockCost(id);state.stock[id]=stockOf(id)+PACK;renderTop();} else return false; }
+  state.stock[id]--;updateStockBadges();return true;}
+function giveStock(id){state.stock[id]=stockOf(id)+1;updateStockBadges();}
+function outOfStock(id){sfx.bad();const it=ingInfo(id);const label=it?it.emo+' '+nm(it):L('Zutat','ingredient');setHint(L(`🧺 ${label} ist leer – im 🧺 Einkauf nachkaufen (oder 📦 Auto-Nachschub kaufen)!`,`🧺 ${label} is empty – restock in 🧺 Supplies (or buy 📦 Auto-restock)!`));}
+function initStock(){[...VEG,...SAUCE,...DRINKS,...SIDES,{id:'falafel'}].forEach(x=>{if(state.stock[x.id]==null)state.stock[x.id]=STOCK_START;if(state.teamStock[x.id]==null)state.teamStock[x.id]=STOCK_START;});}
+/* Mitarbeiter verbrauchen ihren eigenen Team-Vorrat */
+function teamServe(o){
+  const need={};
+  for(const id of o.veg)need[id]=(need[id]||0)+1;
+  for(const id of o.sauce)need[id]=(need[id]||0)+1;
+  if(o.drink)need[o.drink]=(need[o.drink]||0)+1;
+  if(o.side)need[o.side]=(need[o.side]||0)+1;
+  if(o.meat.type==='falafel')need['falafel']=(need['falafel']||0)+1;
+  for(const id in need){
+    while(teamStockOf(id)<need[id]){ if(autoOn()&&state.money>=restockCost(id)){state.money-=restockCost(id);state.teamStock[id]=teamStockOf(id)+PACK;} else return false; }
+  }
+  for(const id in need)state.teamStock[id]-=need[id];
+  return true;}
+const eur=c=>(c/100).toFixed(2).replace('.',',')+' €';
+
+/* ===== State ===== */
+let state, currentMeat='kalb';
+const unlockedAch=new Set();
+function ordersForDay(day){return 6+(day-1)*3;}
+function newGame(){ state={money:0,day:1,servedTotal:0,rep:5,xp:0,level:1,combo:0,maxCombo:0,vipServed:0,
+  dayEarn:0,dayServed:0,dayGoal:40,ordersLeftToday:6,queueCount:5,customer:null,running:false,phase:'make',
+  shopName:'Döner Haus',event:null,branches:[],branchTimer:0,stock:{},teamStock:{},owned:[],fame:0,prestige:0,
+  build:{base:null,meat:null,veg:[],sauce:[],drink:null,side:null},tray:0,trayType:'kalb',
+  upgrades:{kasse:0,marketing:0,slots:0,grill:0,auto:0},workers:[]}; }
+function prestigeMult(){return 1+(state.fame||0)*0.1;}
+
+/* ===== Freischalt-Helfer ===== */
+function avOK(id,it){return it.buy?state.owned.includes(id):((it.lvl||1)<=state.level);}
+function availBaseKeys(){return Object.keys(BASES).filter(k=>avOK(k,BASES[k]));}
+function availMeatKeys(){return Object.keys(MEATS).filter(k=>avOK(k,MEATS[k]));}
+function availSpit(){return SPIT.filter(k=>avOK(k,MEATS[k]));}
+function availVEG(){return VEG.filter(v=>avOK(v.id,v));}
+function availSAUCE(){return SAUCE.filter(s=>avOK(s.id,s));}
+function availDRINKS(){return DRINKS.filter(d=>avOK(d.id,d));}
+function availSIDES(){return SIDES.filter(s=>avOK(s.id,s));}
+function buyableList(){const out=[];
+  for(const k in BASES)if(BASES[k].buy)out.push({id:k,name:BASES[k].name,en:BASES[k].en,emo:BASES[k].emo,buy:BASES[k].buy,cat:'🍽️ Gericht'});
+  for(const k in MEATS)if(MEATS[k].buy)out.push({id:k,name:MEATS[k].name,en:MEATS[k].en,emo:MEATS[k].emo,buy:MEATS[k].buy,cat:'🥩 Fleisch'});
+  for(const v of VEG)if(v.buy)out.push({id:v.id,name:v.name,en:v.en,emo:v.emo,buy:v.buy,cat:'🥬 Gemüse'});
+  for(const s of SAUCE)if(s.buy)out.push({id:s.id,name:s.name,en:s.en,emo:s.emo,buy:s.buy,cat:'🌶️ Soße'});
+  for(const d of DRINKS)if(d.buy)out.push({id:d.id,name:d.name,en:d.en,emo:d.emo,buy:d.buy,cat:'🧊 Getränk'});
+  for(const s of SIDES)if(s.buy)out.push({id:s.id,name:s.name,en:s.en,emo:s.emo,buy:s.buy,cat:'🍟 Beilage'});
+  return out;}
+function recipeCost(id){for(const k in BASES)if(k===id&&BASES[k].buy)return BASES[k].buy;for(const k in MEATS)if(k===id&&MEATS[k].buy)return MEATS[k].buy;
+  const a=[...VEG,...SAUCE,...DRINKS,...SIDES].find(x=>x.id===id);return a&&a.buy?a.buy:0;}
+function itemsAtLevel(lvl){const out=[];
+  for(const k in BASES)if(BASES[k].lvl===lvl)out.push(BASES[k].emo+' '+nm(BASES[k]));
+  for(const k in MEATS)if(MEATS[k].lvl===lvl)out.push(MEATS[k].emo+' '+nm(MEATS[k]));
+  for(const v of VEG)if(v.lvl===lvl)out.push(v.emo+' '+nm(v));
+  for(const s of SAUCE)if(s.lvl===lvl)out.push(s.emo+' '+nm(s));
+  for(const d of DRINKS)if(d.lvl===lvl)out.push(d.emo+' '+nm(d));
+  for(const s of SIDES)if(s.lvl===lvl)out.push(s.emo+' '+nm(s));
+  return out;}
+
+/* ===== Upgrade-Effekte ===== */
+function upg(k){return state.upgrades[k]||0;}
+function slicesPerCut(){return 1;}
+function staffSlots(){return 2+upg('slots');}
+function tipUpgMult(){return 1+0.25*upg('kasse');}
+function grillSpeedFactor(){return Math.pow(0.88,upg('grill'));}
+function customerBonus(){return 3*upg('marketing');}
+function eventCust(){return state.event?state.event.cust:1;}
+function eventTip(){return state.event?state.event.tip:1;}
+
+/* ===== XP / Level ===== */
+function xpNeed(){return state.level*120;}
+function gainXP(n){state.xp+=n;let leveled=false;
+  while(state.xp>=xpNeed()){state.xp-=xpNeed();state.level++;leveled=true;onLevelUp();}
+  renderTop();return leveled;}
+function onLevelUp(){sfx.great();initStock();buildStations();buildMeatToggle();
+  const items=itemsAtLevel(state.level);
+  toast(`⭐ Level ${state.level}!`);
+  if(items.length)toast(L('🔓 Neu: ','🔓 New: ')+items.join(', '));
+  checkAch();}
+
+/* ===== Speichern ===== */
+const SAVE_KEY='doenerSim_v3';
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||{};}catch(e){return {};}}
+function writeSave(o){try{localStorage.setItem(SAVE_KEY,JSON.stringify(o));}catch(e){}}
+function persist(keepRun){const s=loadSave();
+  if(keepRun!==false)s.run={money:state.money,day:state.day,shopName:state.shopName,xp:state.xp,level:state.level,
+    rep:state.rep,servedTotal:state.servedTotal,maxCombo:state.maxCombo,vipServed:state.vipServed,branches:state.branches,stock:state.stock,teamStock:state.teamStock,
+    owned:state.owned,fame:state.fame,prestige:state.prestige,
+    upgrades:state.upgrades,workers:state.workers.map(w=>w.type)};
+  else s.run=null;
+  s.best=s.best||{money:0,day:0};
+  if(state.money>s.best.money)s.best.money=state.money;
+  if(state.day>s.best.day)s.best.day=state.day;
+  s.ach=Array.from(unlockedAch); s.lastName=state.shopName;
+  writeSave(s);}
+
+/* ===== Sound ===== */
+let audioCtx=null,muted=false,noiseBuf=null,musicWanted=true;
+function ensureAudio(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
+function beep(f,d=.09,t='sine',v=.2){if(muted||!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d);}catch(e){}}
+function sliceSnd(){if(muted||!audioCtx)return;try{if(!noiseBuf){noiseBuf=audioCtx.createBuffer(1,audioCtx.sampleRate*.2,audioCtx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);}const s=audioCtx.createBufferSource();s.buffer=noiseBuf;const g=audioCtx.createGain(),f=audioCtx.createBiquadFilter();f.type='bandpass';f.frequency.value=3200;g.gain.value=.35;s.connect(f);f.connect(g);g.connect(audioCtx.destination);s.start();}catch(e){}}
+const sfx={click:()=>beep(520,.05,'square',.12),grab:()=>beep(300,.05,'square',.15),drop:()=>beep(440,.06,'triangle',.15),pop:()=>beep(720,.05,'sine',.15),
+  good:()=>{beep(660,.08);setTimeout(()=>beep(880,.12),90);},great:()=>{beep(660,.08);setTimeout(()=>beep(880,.08),80);setTimeout(()=>beep(1180,.16),160);},
+  bad:()=>beep(200,.18,'sawtooth',.2),cash:()=>{beep(1000,.05,'square',.15);setTimeout(()=>beep(1300,.06,'square',.15),60);setTimeout(()=>beep(1600,.08,'square',.12),130);}};
+
+/* ===== Arabische Musik (Hijaz-Maqam, synthetisiert) ===== */
+const music={on:false,timer:null,step:0,gain:null};
+const HIJAZ=[293.66,311.13,369.99,392.0,440.0,466.16,554.37,587.33]; // D-Hijaz: D Eb F# G A Bb C# D
+const MELODY=[0,-1,2,3,2,0,-1,1, 3,-1,4,3,2,-1,1,0];               // -1 = Pause
+const DUM=[0,6,8,14], TEK=[3,4,10,11,12,15];
+function noteFreq(i){if(i<0)return 0;return HIJAZ[i%HIJAZ.length]*Math.pow(2,Math.floor(i/HIJAZ.length));}
+function mTone(freq,t,dur,vol){if(!audioCtx||freq<=0)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain(),f=audioCtx.createBiquadFilter();
+  o.type='sawtooth';o.frequency.value=freq;f.type='lowpass';f.frequency.value=1500;o.connect(f);f.connect(g);g.connect(music.gain);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.02);g.gain.exponentialRampToValueAtTime(0.001,t+dur);o.start(t);o.stop(t+dur+0.05);}
+function mDrum(t,low){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  if(low){o.type='sine';o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(55,t+0.12);g.gain.setValueAtTime(0.5,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.16);}
+  else{o.type='triangle';o.frequency.setValueAtTime(760,t);g.gain.setValueAtTime(0.22,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.06);}
+  o.connect(g);g.connect(music.gain);o.start(t);o.stop(t+0.2);}
+function musicStep(){if(!music.on||!audioCtx)return;const t=audioCtx.currentTime+0.03,s=music.step;
+  const m=MELODY[s];if(m>=0)mTone(noteFreq(m),t,0.28,0.05);
+  if(DUM.indexOf(s)>=0)mDrum(t,true); if(TEK.indexOf(s)>=0)mDrum(t,false);
+  music.step=(s+1)%16;}
+function startMusic(){ensureAudio();if(!audioCtx)return;if(!music.gain){music.gain=audioCtx.createGain();music.gain.gain.value=0.5;music.gain.connect(audioCtx.destination);}
+  music.on=true;music.step=0;if(music.timer)clearInterval(music.timer);music.timer=setInterval(musicStep,155);}
+function stopMusic(){music.on=false;if(music.timer){clearInterval(music.timer);music.timer=null;}}
+
+/* ===== DOM ===== */
+const $=s=>document.querySelector(s);
+const el={money:$('#money'),day:$('#day'),served:$('#served'),rep:$('#rep'),level:$('#level'),xpFill:$('#xpFill'),combo:$('#combo'),
+  face:$('#custFace'),name:$('#custName'),card:$('#customerCard'),orderList:$('#orderList'),queueFaces:$('#queueFaces'),
+  board:$('#board'),hint:$('#hint'),game:$('#game'),baseRow:$('#baseRow'),vegRow:$('#vegRow'),sauceRow:$('#sauceRow'),drinkRow:$('#drinkRow'),sideRow:$('#sideRow'),crew:$('#crew'),
+  meatToggle:$('#meatToggle'),cutStation:$('#cutStation'),spit:$('#spit'),knife:$('#knife'),cutFlash:$('#cutFlash'),spitLabel:$('#spitLabel'),
+  tray:$('#tray'),pile:$('#pile'),sliceCount:$('#sliceCount'),hand:$('#hand'),eventChip:$('#eventChip')};
+function setHint(t){el.hint.textContent=t;}
+
+/* ===== Stationen ===== */
+function buildStations(){
+  el.baseRow.innerHTML='';el.vegRow.innerHTML='';el.sauceRow.innerHTML='';el.drinkRow.innerHTML='';
+  for(const id of availBaseKeys()){const b=BASES[id],d=document.createElement('div');d.className='gn base';d.dataset.base=id;
+    d.innerHTML=`<div class="food">${b.emo}</div><div class="nm">${nm(b)}</div>`;d.onclick=()=>chooseBase(id);el.baseRow.appendChild(d);}
+  for(const v of availVEG()){const d=document.createElement('div');d.className='gn';d.dataset.id=v.id;d.dataset.kind='veg';
+    d.innerHTML=`<div class="stockb"></div><div class="food">${v.emo}${v.emo}</div><div class="nm">${nm(v)}</div>`;
+    d.addEventListener('pointerdown',e=>startGrab(e,'veg',v.id,v.emo));el.vegRow.appendChild(d);}
+  for(const s of availSAUCE()){const d=document.createElement('div');d.className='gn sauce';d.dataset.id=s.id;d.dataset.kind='sauce';
+    d.innerHTML=`<div class="stockb"></div><div class="food">${s.emo}</div><div class="nm">${nm(s)}</div>`;
+    d.addEventListener('pointerdown',e=>startGrab(e,'sauce',s.id,s.emo));el.sauceRow.appendChild(d);}
+  const f=document.createElement('div');f.className='gn';f.dataset.id='falafel';f.dataset.kind='falafel';
+  f.innerHTML=`<div class="stockb"></div><div class="food">🧆🧆</div><div class="nm">Falafel</div>`;
+  f.addEventListener('pointerdown',e=>startGrab(e,'falafel','falafel','🧆'));el.vegRow.appendChild(f);
+  for(const dr of availDRINKS()){const d=document.createElement('div');d.className='gn drink';d.dataset.drink=dr.id;d.dataset.id=dr.id;d.dataset.kind='drink';
+    d.innerHTML=`<div class="stockb"></div><div class="food">${dr.emo}</div><div class="nm">${nm(dr)}</div>`;d.onclick=()=>chooseDrink(dr.id);el.drinkRow.appendChild(d);}
+  el.sideRow.innerHTML='';
+  for(const si of availSIDES()){const d=document.createElement('div');d.className='gn drink';d.dataset.side=si.id;d.dataset.id=si.id;d.dataset.kind='side';
+    d.innerHTML=`<div class="stockb"></div><div class="food">${si.emo}</div><div class="nm">${nm(si)}</div>`;d.onclick=()=>chooseSide(si.id);el.sideRow.appendChild(d);}
+  $('#mbSign').textContent='🥙 '+(state?state.shopName:'DÖNER HAUS').toUpperCase();
+  if(state){markSelections();updateStockBadges();}
+}
+function updateStockBadges(){
+  document.querySelectorAll('.gn[data-id]').forEach(c=>{const id=c.dataset.id,n=stockOf(id),b=c.querySelector('.stockb');
+    if(b)b.textContent=n;
+    const busy=c.classList.contains('cooking')||c.classList.contains('ready');
+    c.classList.toggle('empty',n<=0&&!busy&&!canUse(id));});
+}
+function buildMeatToggle(){el.meatToggle.innerHTML='';
+  for(const k of availSpit()){const b=document.createElement('button');b.dataset.meat=k;const t=(lang==='en'?nm(MEATS[k]):MEATS[k].name.split('fleisch')[0]);b.textContent=MEATS[k].emo+' '+t.slice(0,8);
+    if(k===currentMeat)b.classList.add('on');el.meatToggle.appendChild(b);}}
+function markSelections(){
+  [...el.baseRow.children].forEach(c=>c.classList.toggle('sel',c.dataset.base===state.build.base));
+  [...el.drinkRow.children].forEach(c=>c.classList.toggle('sel',c.dataset.drink===state.build.drink));
+  updateSideRow();updateStockBadges();
+}
+function chooseBase(id){if(!state.running||state.phase!=='make')return;state.build.base=id;sfx.click();renderBoard();setHint(L('Basis bereit! Fleisch schneiden 🔪 und aufs Gericht klicken.','Base ready! Slice meat 🔪 and click the dish.'));}
+function chooseDrink(id){if(!state.running||state.phase!=='make')return;
+  if(state.build.drink===id){giveStock(id);state.build.drink=null;sfx.pop();renderBoard();return;}
+  if(!canUse(id)){outOfStock(id);return;}
+  if(state.build.drink)giveStock(state.build.drink);
+  takeStock(id);state.build.drink=id;sfx.pop();renderBoard();}
+let frying=null; // {id, ready}
+function chooseSide(id){
+  if(!state.running||state.phase!=='make')return;
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));sfx.bad();return;}
+  const s=xById(id);
+  if(!s.cook){ // Salat: direkt
+    if(state.build.side===id){giveStock(id);state.build.side=null;sfx.click();renderBoard();return;}
+    if(!canUse(id)){outOfStock(id);return;}
+    if(state.build.side)giveStock(state.build.side);
+    takeStock(id);state.build.side=id;sfx.pop();renderBoard();return;}
+  // frittierbare Beilage
+  if(state.build.side===id){giveStock(id);state.build.side=null;sfx.click();renderBoard();return;} // schon im Gericht → raus
+  if(frying&&frying.id===id&&frying.ready){ // fertig → rausnehmen & rein
+    if(state.build.side)giveStock(state.build.side);
+    frying=null;state.build.side=id;sfx.good();renderBoard();setHint(L('🍟 In die Tüte! Lecker.','🍟 Into the bag! Yum.'));return;}
+  if(frying){setHint(L('Fritteuse ist besetzt – warte, bis sie fertig ist! 🛢️','Fryer is busy – wait until it\'s done! 🛢️'));sfx.bad();return;}
+  if(!canUse(id)){outOfStock(id);return;}
+  takeStock(id); // rohe Zutat verbraucht
+  frying={id,ready:false};sliceSnd();setHint(L(`${s.emo} brutzelt in der Fritteuse… gleich fertig!`,`${s.emo} sizzling in the fryer… almost done!`));updateSideRow();
+  setTimeout(()=>{if(frying&&frying.id===id&&!frying.ready){frying.ready=true;sfx.good();updateSideRow();setHint(L('🍟 Fertig frittiert! Nochmal tippen zum Rausnehmen.','🍟 Fried and ready! Tap again to take it out.'));}},1800);
+}
+function updateSideRow(){
+  if(!el.sideRow)return;
+  [...el.sideRow.children].forEach(c=>{const id=c.dataset.side,s=xById(id);if(!s)return;
+    const food=c.querySelector('.food'),nmEl=c.querySelector('.nm');
+    const cooking=frying&&frying.id===id&&!frying.ready, ready=frying&&frying.id===id&&frying.ready;
+    c.classList.toggle('cooking',!!cooking);c.classList.toggle('ready',!!ready);
+    c.classList.toggle('sel',state.build.side===id);
+    if(food&&nmEl){if(cooking){food.textContent='🛢️';nmEl.textContent=L('brutzelt…','frying…');}
+      else if(ready){food.textContent='🍟';nmEl.textContent=L('fertig! ✔','ready! ✔');}
+      else{food.textContent=s.emo;nmEl.textContent=nm(s);}}
+  });
+}
+
+/* ===== Zange / Drag ===== */
+let held=null;
+function startGrab(e,kind,id,emo){
+  if(!state.running||state.phase!=='make')return;
+  if(e.preventDefault)e.preventDefault();
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));sfx.bad();return;}
+  if(kind==='meat'&&state.tray===0){setHint(L('Erst Fleisch am Grill schneiden 🔪','Slice meat at the grill first 🔪'));return;}
+  if(kind==='veg'||kind==='sauce'||kind==='falafel'){const sid=kind==='falafel'?'falafel':id;if(!canUse(sid)){outOfStock(sid);return;}}
+  held={kind,id,emo,sx:e.clientX,sy:e.clientY};sfx.grab();
+  el.hand.style.display='block';el.hand.innerHTML=`🤏<span class="held">${emo}</span>`;moveHand(e);
+  try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}
+}
+function moveHand(e){const r=el.game.getBoundingClientRect();el.hand.style.left=(e.clientX-r.left)+'px';el.hand.style.top=(e.clientY-r.top)+'px';}
+function overBoard(e){const r=el.board.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;}
+function applyHeld(h){
+  if(h.kind==='veg'||h.kind==='sauce'||h.kind==='falafel'){
+    const sid=h.kind==='falafel'?'falafel':h.id;
+    if(!takeStock(sid)){outOfStock(sid);return;}
+    if(h.kind==='veg')state.build.veg.push(h.id);
+    else if(h.kind==='sauce')state.build.sauce.push(h.id);
+    else state.build.meat={type:'falafel',slices:6};
+  }
+  else if(h.kind==='meat')putMeat();
+  sfx.drop();renderBoard();setHint(L('Drin! Noch was drauf? Sonst → 🧾 Zur Kasse.','In it goes! Anything else? Otherwise → 🧾 register.'));
+}
+window.addEventListener('pointermove',e=>{if(held){moveHand(e);el.board.classList.toggle('droptarget',overBoard(e));}});
+window.addEventListener('pointerup',e=>{
+  cutting=false;
+  if(!held)return;
+  const moved=Math.hypot(e.clientX-held.sx,e.clientY-held.sy);
+  const dropped=overBoard(e)||moved<8;
+  el.board.classList.remove('droptarget');
+  if(dropped)applyHeld(held);
+  held=null;el.hand.style.display='none';
+});
+
+/* ===== Fleisch ins Gericht ===== */
+function putMeat(){if(state.tray===0)return false;state.build.meat={type:state.trayType,slices:state.tray};state.tray=0;renderTray();return true;}
+el.board.addEventListener('click',e=>{
+  if(!state.running||state.phase!=='make')return;
+  if(e.target.closest('.li'))return;
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));sfx.bad();return;}
+  if(state.tray>0){putMeat();sfx.drop();renderBoard();setHint(L('Fleisch drin! Jetzt Gemüse & Soße 🤏','Meat is in! Now veg & sauce 🤏'));}
+  else setHint(L('Erst Fleisch am Grill schneiden 🔪 – dann hier klicken.','Slice meat at the grill first 🔪 – then click here.'));
+});
+
+/* ===== Spieß schneiden ===== */
+let cutting=false,lastCutY=0;
+function meatCls(){return state.trayType==='haehnchen'?'haehnchen':'';}
+el.cutStation.addEventListener('pointerdown',e=>{if(!state.running||state.phase!=='make')return;cutting=true;lastCutY=e.clientY;knifeAt(e);try{el.cutStation.setPointerCapture(e.pointerId);}catch(_){}});
+el.cutStation.addEventListener('pointermove',e=>{knifeAt(e);if(!cutting||state.phase!=='make')return;
+  const r=el.cutStation.getBoundingClientRect(),x=e.clientX-r.left;if(e.clientY-lastCutY>26&&x>r.width/2-42&&x<r.width/2+42){doSlice(e.clientX-r.left,e.clientY-r.top);lastCutY=e.clientY;}});
+function knifeAt(e){const r=el.cutStation.getBoundingClientRect();el.knife.style.left=(e.clientX-r.left)+'px';el.knife.style.top=(e.clientY-r.top)+'px';}
+function doSlice(x,y){
+  if(!state.build.base){setHint(L('⚠️ Erst eine Basis wählen!','⚠️ Pick a base first!'));return;}
+  if(state.tray>=6){setHint(L('Schale voll — klick aufs Gericht, um das Fleisch reinzulegen!','Tray full — click the dish to drop the meat in!'));return;}
+  sliceSnd();
+  el.cutFlash.style.top=y+'px';el.cutFlash.style.opacity='1';setTimeout(()=>el.cutFlash.style.opacity='0',80);
+  el.knife.style.transform='translate(-50%,-60%) rotate(55deg)';setTimeout(()=>el.knife.style.transform='translate(-50%,-60%) rotate(35deg)',70);
+  state.trayType=currentMeat;
+  const n=Math.min(slicesPerCut(),6-state.tray);
+  const gr=el.game.getBoundingClientRect(),sr=el.cutStation.getBoundingClientRect(),tr=el.tray.getBoundingClientRect();
+  for(let i=0;i<n;i++){
+    const fly=document.createElement('div');fly.className='flying';
+    fly.style.background=currentMeat==='haehnchen'?'linear-gradient(90deg,#c79a55,#f0d492)':'linear-gradient(90deg,#8a4f22,#b9743a)';
+    fly.style.left=(sr.left-gr.left+x)+'px';fly.style.top=(sr.top-gr.top+y+i*6)+'px';el.game.appendChild(fly);
+    requestAnimationFrame(()=>{fly.style.transform=`translate(${tr.left-gr.left-(sr.left-gr.left+x)+30}px,${tr.top-gr.top-(sr.top-gr.top+y)+8}px)`;fly.style.opacity='.2';});
+    setTimeout(()=>fly.remove(),460);
+    state.tray++;
+  }
+  renderTray();
+  if(state.tray>=1)setHint(L('Genug Fleisch? Dann aufs Gericht klicken 🥩','Enough meat? Then click the dish 🥩'));
+}
+function renderTray(){el.sliceCount.textContent=state.tray;el.pile.innerHTML='';
+  for(let i=0;i<state.tray;i++){const s=document.createElement('div');s.className='sliver '+meatCls();el.pile.appendChild(s);}
+  el.tray.classList.toggle('has',state.tray>0);}
+el.tray.addEventListener('pointerdown',e=>{if(state.tray>0)startGrab(e,'meat',null,MEATS[state.trayType].emo);else setHint(L('Erst Fleisch am Grill schneiden 🔪','Slice meat at the grill first 🔪'));});
+el.meatToggle.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;currentMeat=b.dataset.meat;
+  [...el.meatToggle.children].forEach(x=>x.classList.toggle('on',x===b));
+  el.spit.className='spit'+(currentMeat==='haehnchen'?' haehnchen':'');el.spitLabel.textContent=nm(MEATS[currentMeat]);
+  if(state.tray>0&&state.trayType!==currentMeat){state.tray=0;renderTray();setHint(L('Anderes Fleisch – Schale geleert.','Different meat – tray emptied.'));}});
+
+/* ===== Bestellung / Kunde ===== */
+function makeOrder(){
+  if(Math.random()<0.16){return{mitAlles:true,base:'fladen',meat:{type:'kalb',need:4},veg:availVEG().map(v=>v.id),sauce:availSAUCE().map(s=>s.id),drink:(Math.random()<.5?pick(availDRINKS()).id:null),side:(Math.random()<.5?pick(availSIDES()).id:null)};}
+  const veg=sample(availVEG(),1+Math.floor(Math.random()*(2+Math.min(state.level,4)))).map(v=>v.id);
+  const sauce=sample(availSAUCE(),1+(Math.random()<.4?1:0)).map(s=>s.id);
+  const meatType=pick(availMeatKeys());
+  const need=meatType==='falafel'?6:pick([2,4,6]);
+  const drink=Math.random()<0.45?pick(availDRINKS()).id:null;
+  const side=Math.random()<0.4?pick(availSIDES()).id:null;
+  return{base:pick(availBaseKeys()),meat:{type:meatType,need},veg,sauce,drink,side};}
+function spawnCustomer(){
+  const vip=Math.random()<0.07;
+  const c=vip?{name:'VIP-Gast',face:'🤩'}:pick(CUSTOMERS);
+  const o=makeOrder();o.vip=vip;
+  state.customer={face:c.face,name:c.name,order:o};
+  state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;state.phase='make';frying=null;
+  el.card.classList.toggle('vip',vip);
+  renderTray();renderCustomer();renderBoard();
+  setHint(vip?L('💎 VIP-Kunde! Perfekt arbeiten = fettes Trinkgeld.','💎 VIP customer! Perfect work = big tip.'):L('Neue Bestellung! Erst Basis wählen 👇','New order! Pick a base first 👇'));}
+
+/* ===== Render ===== */
+function renderTop(){el.money.textContent=state.money+' €';el.day.textContent='Tag '+state.day;el.served.textContent=state.servedTotal;
+  el.level.textContent='Lv '+state.level;el.xpFill.style.width=Math.min(100,state.xp/xpNeed()*100)+'%';
+  const f=Math.max(0,Math.round(state.rep));el.rep.innerHTML='★'.repeat(f)+'<span style="opacity:.25">'+'★'.repeat(5-f)+'</span>';renderCombo();}
+function renderCombo(){if(state.combo>1){el.combo.textContent='🔥 x'+state.combo;el.combo.classList.add('show');}else el.combo.classList.remove('show');}
+function renderEventChip(){if(state.event){el.eventChip.textContent=L(state.event.name,state.event.nameEn||state.event.name);el.eventChip.classList.remove('hide');}else el.eventChip.classList.add('hide');}
+function renderCustomer(){const c=state.customer;if(!c)return;el.face.textContent=c.face;el.name.textContent=c.name;const o=c.order;el.orderList.innerHTML='';
+  $('#custSay').textContent=o.vip?L('„VIP – mach was Gutes!" 💎','"VIP – make it good!" 💎'):(o.mitAlles?L('„Einen Döner mit alles!"','"One döner with everything!"'):L('„Einmal, bitte:"','"One, please:"'));
+  addChip(BASES[o.base].emo,nm(BASES[o.base]));
+  addChip(MEATS[o.meat.type].emo,nm(MEATS[o.meat.type])+' ('+amountTxt(o.meat.need)+')',true);
+  for(const[id,n]of countMap(o.veg))addChip(vById(id).emo,nm(vById(id))+(n>1?' ×'+n:''));
+  for(const[id,n]of countMap(o.sauce))addChip(sById(id).emo,nm(sById(id))+(n>1?' ×'+n:''));
+  if(o.drink)addChip(dById(o.drink).emo,nm(dById(o.drink)),false,true);
+  if(o.side)addChip(xById(o.side).emo,nm(xById(o.side)),false,true);
+  updateQueueFaces();}
+function addChip(emo,txt,hl,drink){const c=document.createElement('div');c.className='chip'+(hl?' hl':'')+(drink?' drink':'');c.innerHTML=`<span>${emo}</span>${txt}`;el.orderList.appendChild(c);}
+function renderBoard(){const b=state.build;el.board.innerHTML='';
+  if(!b.base){el.board.innerHTML=`<div class="bread-empty">${L('👉 Wähle unten eine Basis…','👉 Choose a base below…')}</div>`;markSelections();return;}
+  const base=BASES[b.base];
+  const head=document.createElement('div');head.className='bread-head';
+  head.innerHTML=`<span class="b-emo">${base.emo}</span>${nm(base)} <span style="color:#8a6b45;font-size:12px;font-weight:600">${L('(vorbereiten)','(prepare)')}</span>`;
+  if(b.meat===null&&state.tray>0)head.innerHTML+=`<span class="meathint">${L('👆 klick zum Fleisch reinlegen','👆 click to add the meat')}</span>`;
+  el.board.appendChild(head);
+  const ml=document.createElement('div');ml.className='layer';ml.innerHTML=`<span class="lab">${L('Fleisch','Meat')}</span>`;
+  if(b.meat){const w=document.createElement('div');w.className='li';
+    if(b.meat.type==='falafel')w.innerHTML='🧆 Falafel';
+    else w.innerHTML=`${MEATS[b.meat.type].emo} ${nm(MEATS[b.meat.type])} <div class="meatfill">${Array.from({length:b.meat.slices},()=>`<div class="sliver ${b.meat.type==='haehnchen'?'haehnchen':''}"></div>`).join('')}</div> ×${b.meat.slices}`;
+    w.title=L('Klick: entfernen','Click to remove');w.onclick=(ev)=>{ev.stopPropagation();if(state.build.meat&&state.build.meat.type==='falafel')giveStock('falafel');state.build.meat=null;sfx.click();renderBoard();};ml.appendChild(w);}
+  else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent=L('— noch kein Fleisch —','— no meat yet —');ml.appendChild(e);}
+  el.board.appendChild(ml);
+  el.board.appendChild(makeLayer(L('Gemüse','Veg'),b.veg,vById,'veg'));
+  el.board.appendChild(makeLayer(L('Soße','Sauce'),b.sauce,sById,'sauce'));
+  const dl=document.createElement('div');dl.className='layer';dl.innerHTML=`<span class="lab">${L('Getränk','Drink')}</span>`;
+  if(b.drink){const it=dById(b.drink),d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${nm(it)}`;d.title=L('Klick: entfernen','Click to remove');d.onclick=(ev)=>{ev.stopPropagation();giveStock(b.drink);state.build.drink=null;sfx.click();renderBoard();};dl.appendChild(d);}
+  else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='—';dl.appendChild(e);}
+  el.board.appendChild(dl);
+  const xl=document.createElement('div');xl.className='layer';xl.innerHTML=`<span class="lab">${L('Beilage','Side')}</span>`;
+  if(b.side){const it=xById(b.side),d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${nm(it)}`;d.title=L('Klick: entfernen','Click to remove');d.onclick=(ev)=>{ev.stopPropagation();giveStock(b.side);state.build.side=null;sfx.click();renderBoard();};xl.appendChild(d);}
+  else{const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='—';xl.appendChild(e);}
+  el.board.appendChild(xl);markSelections();}
+function makeLayer(label,arr,res,kind){const l=document.createElement('div');l.className='layer';l.innerHTML=`<span class="lab">${label}</span>`;
+  if(arr.length===0){const e=document.createElement('span');e.style.cssText='color:#9a7c55;font-size:12px';e.textContent='—';l.appendChild(e);return l;}
+  for(const[id,n]of countMap(arr)){const it=res(id);const d=document.createElement('div');d.className='li';d.innerHTML=`<span>${it.emo}</span>${nm(it)}${n>1?' ×'+n:''}`;d.title=L('Klick: entfernen','Click to remove');
+    d.onclick=(ev)=>{ev.stopPropagation();const i=state.build[kind].lastIndexOf(id);if(i>=0){state.build[kind].splice(i,1);giveStock(id);sfx.click();renderBoard();}};l.appendChild(d);}
+  return l;}
+
+/* ===== Fertig: einwickeln, dann Kasse ===== */
+function attemptCheckout(){
+  if(!state.running||state.phase!=='make')return;
+  const b=state.build;
+  if(!b.base){setHint(L('⚠️ Du hast noch keine Basis!','⚠️ You have no base yet!'));sfx.bad();return;}
+  if(!b.meat){setHint(L('⚠️ Es fehlt noch das Fleisch!','⚠️ The meat is still missing!'));sfx.bad();return;}
+  state.phase='wrap';wrapDoener(()=>toRegister());
+}
+function wrapDoener(done){
+  const base=BASES[state.build.base], box=base.wrap==='box';
+  const foil=document.createElement('div');foil.className='foil';
+  foil.innerHTML=`<span class="wrapped-emo">${base.emo}</span> ${box?'…in die Box…':'…einwickeln…'}`;
+  el.board.appendChild(foil);sliceSnd();
+  requestAnimationFrame(()=>{requestAnimationFrame(()=>foil.classList.add('on'));});
+  setTimeout(()=>{foil.innerHTML=`<span class="wrapped-emo">${box?'📦':'🌯'}</span> ${box?'verpackt!':'eingewickelt!'}`;},560);
+  setTimeout(()=>{if(foil.parentNode)foil.parentNode.removeChild(foil);done();},1050);
+}
+
+/* ===== Kasse ===== */
+let reg=null;
+function priceOf(base,veg,sauce,meatBig,drink,side){let p=BASES[base].price+veg*50+Math.max(0,sauce-1)*50+(meatBig?100:0)+(drink?dById(drink).price:0)+(side?xById(side).price:0);return Math.round(p/50)*50;}
+function toRegister(){
+  const b=state.build,o=state.customer.order;
+  const checks={base:b.base===o.base,meatType:b.meat&&b.meat.type===o.meat.type,
+    meatAmount:b.meat&&(b.meat.type==='falafel'||b.meat.slices>=o.meat.need),
+    veg:multisetEq(b.veg,o.veg),sauce:multisetEq(b.sauce,o.sauce),
+    drink:(b.drink||null)===(o.drink||null),side:(b.side||null)===(o.side||null)};
+  const total=Object.keys(checks).length,okCount=Object.values(checks).filter(Boolean).length,perfect=okCount===total;
+  const price=priceOf(b.base,b.veg.length,b.sauce.length,b.meat&&b.meat.slices>=6,b.drink,b.side);
+  const paid=[500,1000,2000,5000].find(n=>n>price)||price;
+  state.phase='pay';
+  reg={price,paid,changeDue:paid-price,perfect,okCount,total,vip:o.vip,given:0,tokens:[]};
+  openRegister();
+}
+function openRegister(){
+  $('#regFace').textContent=state.customer.face;
+  $('#regSay').textContent=reg.perfect?(reg.vip?L('"Wow, genau richtig! 💎"','"Wow, spot on! 💎"'):L('"Sieht perfekt aus, danke!"','"Looks perfect, thanks!"')):L('"Hm, das war nicht ganz meine Bestellung…"','"Hmm, that wasn\'t quite my order…"');
+  const q=$('#regQuality');q.className='quality '+(reg.perfect?'good':'bad');
+  q.textContent=reg.perfect?L('⭐ Perfekt zubereitet – Trinkgeld möglich!','⭐ Made perfectly – tip possible!'):L(`⚠️ ${reg.total-reg.okCount} Fehler – kein Trinkgeld, Ruf leidet.`,`⚠️ ${reg.total-reg.okCount} mistakes – no tip, reputation suffers.`);
+  $('#regDisplay').innerHTML=`<div class="line"><span>${L('Gericht','Dish')}</span><span>${eur(reg.price)}</span></div>
+    <div class="line"><span>${L('Kunde zahlt','Customer pays')}</span><span>${eur(reg.paid)}</span></div>
+    <div class="line change"><span>${L('Rückgeld','Change')}</span><span>${eur(reg.changeDue)}</span></div>
+    <div class="total">${L('Noch offen','Remaining')}: <span id="regRemain">${eur(reg.changeDue-reg.given)}</span></div>`;
+  buildCashRow();renderGiven();$('#register').classList.remove('hidden');
+}
+function buildCashRow(){const row=$('#cashRow');row.innerHTML='';
+  for(const d of DENOMS){const b=document.createElement('button');b.className='cash '+(d>=500?'note':'coin');
+    b.textContent=eur(d);b.onclick=()=>{reg.given+=d;reg.tokens.push(d);sfx.click();renderGiven();};row.appendChild(b);}}
+function renderGiven(){const box=$('#givenBox');box.innerHTML='';
+  if(reg.tokens.length===0)box.innerHTML='<span class="empty">'+L('noch nichts','nothing yet')+'</span>';
+  else reg.tokens.forEach((d,i)=>{const t=document.createElement('span');t.className='tok';t.textContent=eur(d);
+    t.onclick=()=>{reg.given-=reg.tokens[i];reg.tokens.splice(i,1);sfx.click();renderGiven();};box.appendChild(t);});
+  const r=$('#regRemain');if(r)r.textContent=eur(reg.changeDue-reg.given);}
+$('#regReset').onclick=()=>{reg.given=0;reg.tokens=[];sfx.click();renderGiven();};
+$('#regConfirm').onclick=()=>finishSale();
+function finishSale(){
+  const diff=reg.given-reg.changeDue, changeOk=diff===0, perfect=reg.perfect;
+  let earn=reg.price/100, msg, color;
+  if(perfect&&changeOk){
+    state.combo++;state.maxCombo=Math.max(state.maxCombo,state.combo);
+    let tip=2+Math.floor(Math.random()*3)+Math.min(state.combo,10);
+    tip=Math.round(tip*tipUpgMult()*eventTip());
+    if(reg.vip){tip+=10;state.vipServed++;}
+    earn+=tip;changeRep(+(reg.vip?0.5:0.25)+(state.event&&state.event.critic?0.3:0));
+    sfx.great();msg=`+${Math.round(earn)}€ · Tip ${tip}€${state.combo>1?' 🔥x'+state.combo:''}${reg.vip?' 💎':''}`;color=col('green');
+    gainXP(reg.vip?40:20);
+  } else if(!changeOk){
+    state.combo=0;const loss=Math.abs(diff);earn-=loss/100;changeRep(diff>0?-0.3:-0.5);sfx.bad();
+    msg=(diff>0?L(`Zu viel Rückgeld! −${eur(loss)}`,`Too much change! −${eur(loss)}`):L('Zu wenig Rückgeld!','Not enough change!'));color=col('red');gainXP(4);
+  } else {
+    state.combo=0;changeRep(-0.4-(state.event&&state.event.critic?0.3:0));sfx.bad();
+    msg=`+${Math.round(earn)}€ `+L('(Pfusch)','(botched)');color=col('red');gainXP(6);
+  }
+  earn=Math.round(earn*prestigeMult());state.money+=earn;state.dayEarn+=earn;state.servedTotal++;state.dayServed++;
+  sfx.cash();renderTop();$('#register').classList.add('hidden');floatText(msg,color);checkAch();nextCustomerOrEndDay();
+}
+
+/* ===== Autonome Mitarbeiter ===== */
+function autoServe(type){
+  const w=STAFF[type], o=makeOrder();
+  if(!teamServe(o)){if(Math.random()<0.12)toast(L('🧺 Team-Vorrat leer – „👥 Team auffüllen" im 🧺 Einkauf!','🧺 Team stock empty – "👥 Refill team" in 🧺 Supplies!'));return;}
+  let earn=priceOf(o.base,o.veg.length,o.sauce.length,o.meat.need>=6,o.drink,o.side)/100, patz=false;
+  if(Math.random()<w.err){earn=Math.round(earn*0.5);changeRep(-0.2);patz=true;}
+  else{let tip=Math.round((1+Math.floor(Math.random()*2))*eventTip());earn=Math.round(earn+tip);}
+  earn=Math.round(earn*prestigeMult());
+  state.money+=earn;state.dayEarn+=earn;state.servedTotal++;state.dayServed++;
+  state.ordersLeftToday--;state.queueCount=Math.max(0,state.ordersLeftToday-1);
+  gainXP(5);renderTop();updateQueueFaces();
+  if(patz)sayAvatar(type,phrase()); else toast(`${w.emo} +${earn}€`);
+  checkAch();
+}
+function updateQueueFaces(){const q=el.queueFaces;if(q)q.textContent=state.queueCount>0?Array.from({length:Math.min(state.queueCount,5)},()=>pick(FACES)).join(''):'— (letzter)';}
+function toast(t){const box=$('#toasts');const d=document.createElement('div');d.className='toast';d.textContent=t;box.appendChild(d);
+  setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),300);},1400);
+  while(box.children.length>4)box.removeChild(box.firstChild);}
+let _lastTs=0;
+function loop(ts){const dt=_lastTs?(ts-_lastTs)/1000:0;_lastTs=ts;
+  if(state&&state.running){
+    for(const wk of state.workers){
+      if(state.ordersLeftToday>1){wk.timer+=dt;
+        if(wk.timer>=STAFF[wk.type].speed*grillSpeedFactor()){wk.timer=0;autoServe(wk.type);}}
+      else wk.timer=0;
+    }
+    if(state.branches.length){state.branchTimer+=dt;
+      if(state.branchTimer>=4){state.branchTimer=0;let sum=0;
+        for(const b of state.branches)sum+=b.lvl*3+Math.floor(Math.random()*(b.lvl*2+3));
+        sum=Math.round(sum*prestigeMult());
+        state.money+=sum;state.dayEarn+=sum;state.servedTotal+=state.branches.length;renderTop();toast(`🏪 ${L('Filialen','Branches')} +${sum}€`);checkAch();}}
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ===== Erfolge ===== */
+function checkAch(){for(const a of ACH){if(!unlockedAch.has(a.id)&&a.test(state)){unlockedAch.add(a.id);toast(`🏆 ${L('Erfolg','Achievement')}: ${a.emo} ${achName(a)}`);sfx.good();persist();}}}
+
+/* ===== Personal ===== */
+function wageTotal(){return state.workers.reduce((s,w)=>s+STAFF[w.type].wage,0);}
+function countType(t){return state.workers.filter(w=>w.type===t).length;}
+function openStaff(){renderStaff();$('#staffOverlay').classList.remove('hidden');}
+function renderStaff(){
+  $('#slotInfo').textContent=L(`Slots belegt: ${state.workers.length} / ${staffSlots()}  (mehr Slots im 🛒 Laden)`,`Slots used: ${state.workers.length} / ${staffSlots()}  (more slots in 🛒 Shop)`);
+  const list=$('#staffList');list.innerHTML='';
+  for(const k of Object.keys(STAFF)){const s=STAFF[k],cnt=countType(k);
+    const row=document.createElement('div');row.className='staffrow';
+    row.innerHTML=`<div class="st-emo">${s.emo}</div><div class="st-info"><b>${L(s.name,s.nameEn)}</b><div>${L(s.desc,s.descEn)}</div></div><div style="text-align:right"><div class="st-wage" style="color:#b5651d;font-weight:800;font-size:13px">${s.wage}€/${L('Tag','day')}</div></div>`;
+    const step=document.createElement('div');step.className='stepper';
+    const minus=document.createElement('button');minus.textContent='−';minus.disabled=cnt===0;
+    minus.onclick=()=>{const i=state.workers.map(w=>w.type).lastIndexOf(k);if(i>=0){state.workers.splice(i,1);sfx.click();renderStaff();renderTop();persist();}};
+    const c=document.createElement('span');c.className='cnt';c.textContent=cnt;
+    const plus=document.createElement('button');plus.textContent='+';plus.disabled=state.workers.length>=staffSlots();
+    plus.onclick=()=>{if(state.workers.length<staffSlots()){state.workers.push({type:k,timer:0});sfx.click();renderStaff();renderTop();checkAch();persist();}};
+    step.appendChild(minus);step.appendChild(c);step.appendChild(plus);row.appendChild(step);list.appendChild(row);}
+  $('#wageInfo').innerHTML=L(`Lohnkosten gesamt: <b>${wageTotal()} €/Tag</b> · werden am Tagesende abgezogen.`,`Total wages: <b>${wageTotal()} €/day</b> · deducted at end of day.`);
+  renderCrew();
+}
+function renderCrew(){
+  if(!state||state.workers.length===0){el.crew.classList.add('hide');el.crew.innerHTML='';return;}
+  el.crew.classList.remove('hide');el.crew.innerHTML='<span class="crew-lbl">Team:</span>';
+  state.workers.forEach(w=>{const a=document.createElement('div');a.className='avatar';a.dataset.type=w.type;
+    a.innerHTML=`<div class="av-face">${STAFF[w.type].emo}</div><div class="av-nm">${STAFF[w.type].name.split(' (')[0]}</div>`;el.crew.appendChild(a);});
+}
+function sayAvatar(type,text){
+  const list=[...el.crew.querySelectorAll('.avatar')].filter(a=>a.dataset.type===type);
+  if(!list.length){toast(`${STAFF[type].emo} „${text}"`);return;}
+  const a=pick(list),gr=el.game.getBoundingClientRect(),r=a.getBoundingClientRect();
+  const b=document.createElement('div');b.className='saybubble';b.textContent=text;
+  b.style.left=(r.left-gr.left+r.width/2)+'px';b.style.top=(r.top-gr.top-4)+'px';
+  el.game.appendChild(b);
+  setTimeout(()=>{b.classList.add('out');setTimeout(()=>b.remove(),300);},1700);}
+$('#staffBtn').onclick=openStaff;
+$('#staffClose').onclick=()=>$('#staffOverlay').classList.add('hidden');
+
+/* ===== Laden / Upgrades ===== */
+function openShop(){renderShop();showTab('upg');$('#shopOverlay').classList.remove('hidden');}
+function showTab(t){
+  $('#tabUpg').classList.toggle('on',t==='upg');$('#tabMenu').classList.toggle('on',t==='menu');$('#tabFame').classList.toggle('on',t==='fame');$('#tabAch').classList.toggle('on',t==='ach');
+  $('#shopUpg').classList.toggle('hidden',t!=='upg');$('#shopMenu').classList.toggle('hidden',t!=='menu');$('#shopFame').classList.toggle('hidden',t!=='fame');$('#shopAch').classList.toggle('hidden',t!=='ach');
+  if(t==='menu')renderMenuShop();if(t==='fame')renderFame();if(t==='ach')renderAch();}
+$('#tabUpg').onclick=()=>showTab('upg');$('#tabMenu').onclick=()=>showTab('menu');$('#tabFame').onclick=()=>showTab('fame');$('#tabAch').onclick=()=>showTab('ach');
+/* Sortiment: neue Zutaten & Gerichte kaufen */
+const CAT_EN={'🍽️ Gericht':'🍽️ Dish','🥩 Fleisch':'🥩 Meat','🥬 Gemüse':'🥬 Veg','🌶️ Soße':'🌶️ Sauce','🧊 Getränk':'🧊 Drink','🍟 Beilage':'🍟 Side'};
+function renderMenuShop(){const box=$('#shopMenu');box.innerHTML=`<div class="best">${L('Kasse','Cash')}: ${state.money} € · ${L('freischalten bleibt dauerhaft (auch nach Franchise!)','unlocks stay forever (even after franchise!)')}</div>`;
+  let cat='';
+  for(const it of buyableList()){
+    if(it.cat!==cat){cat=it.cat;const t=document.createElement('div');t.className='drawer-label';t.textContent=L(cat,CAT_EN[cat]||cat);box.appendChild(t);}
+    const owned=state.owned.includes(it.id);
+    const row=document.createElement('div');row.className='shoprow';
+    row.innerHTML=`<div class="sh-emo">${it.emo}</div><div class="sh-info"><b>${nm(it)}</b><div>${owned?L('im Sortiment','on the menu'):L('einmalig freischalten','one-time unlock')}</div></div>`;
+    if(owned){const m=document.createElement('span');m.className='maxed';m.textContent='✓';row.appendChild(m);}
+    else{const btn=document.createElement('button');btn.className='buy';btn.textContent=L(`${it.buy} € kaufen`,`Buy ${it.buy} €`);btn.disabled=state.money<it.buy;btn.onclick=()=>buyRecipe(it.id,it.buy);row.appendChild(btn);}
+    box.appendChild(row);}
+}
+function buyRecipe(id,cost){if(state.owned.includes(id)||state.money<cost)return;state.money-=cost;state.owned.push(id);initStock();buildStations();buildMeatToggle();sfx.great();renderTop();renderMenuShop();toast(L(`🍽️ Neu im Sortiment: ${ingInfo(id)?ingInfo(id).emo:''} freigeschaltet!`,`🍽️ Added to menu: ${ingInfo(id)?ingInfo(id).emo:''} unlocked!`));checkAch();persist();}
+/* Franchise / Prestige */
+function prestigeGain(){return Math.max(0,state.level-2);}
+function renderFame(){const box=$('#shopFame');const g=prestigeGain();const ok=state.level>=5;
+  box.innerHTML=`<div class="branchcard"><div class="bc-emo">🌟</div><div class="bc-info"><b>${L('Ruhm','Fame')}: ${state.fame||0} ⭐</b><div class="sub">${L('Aktueller Bonus','Current bonus')}: <b>+${Math.round(((prestigeMult()-1)*100))}%</b> ${L('auf alle Einnahmen · Franchises eröffnet','on all income · Franchises opened')}: ${state.prestige||0}</div></div></div>
+    <p style="font-size:13px;color:#5a4a3a;margin:8px 0;">${L('Beim <b>Franchise-Expandieren</b> startest du Tag&nbsp;1 mit Level&nbsp;1 neu – behältst aber dein <b>Sortiment</b>, deine Erfolge und sammelst dauerhaft <b>Ruhm</b> für mehr Einkommen. Ideal für lange Läufe!','When you <b>expand your franchise</b> you restart at Day&nbsp;1, Level&nbsp;1 – but keep your <b>menu</b> and achievements and gain permanent <b>Fame</b> for more income. Great for long runs!')}</p>`;
+  const btn=document.createElement('button');btn.className='go';btn.style.width='100%';
+  if(ok){btn.textContent=L(`🌟 Franchise expandieren (+${g} Ruhm)`,`🌟 Expand franchise (+${g} Fame)`);btn.onclick=doPrestige;}
+  else{btn.textContent=L(`Ab Level 5 möglich (aktuell Lv ${state.level})`,`Available from Level 5 (currently Lv ${state.level})`);btn.disabled=true;btn.style.opacity=.6;}
+  box.appendChild(btn);
+}
+function doPrestige(){const g=prestigeGain();if(state.level<5)return;
+  state.fame=(state.fame||0)+g;state.prestige=(state.prestige||0)+1;
+  // Lauf zurücksetzen, Sortiment/Ruhm/Erfolge behalten
+  state.money=0;state.day=1;state.level=1;state.xp=0;state.combo=0;state.rep=5;
+  state.upgrades={kasse:0,marketing:0,slots:0,grill:0,auto:0};state.workers=[];state.branches=[];state.stock={};state.teamStock={};
+  $('#shopOverlay').classList.add('hidden');
+  toast(L(`🌟 Franchise Nr. ${state.prestige}! +${g} Ruhm · +${Math.round((prestigeMult()-1)*100)}% Einnahmen`,`🌟 Franchise #${state.prestige}! +${g} Fame · +${Math.round((prestigeMult()-1)*100)}% income`));
+  persist();beginDay();
+}
+/* ===== Filialen-Verwaltung ===== */
+function newBranchCost(){return 1500*Math.pow(2,state.branches.length);}
+function branchUpCost(b){return 600*b.lvl;}
+function branchIncomeAvg(b){return b.lvl*4+Math.round(b.lvl+1);}
+function openBranches(){renderBranches();$('#branchOverlay').classList.remove('hidden');}
+function renderBranches(){
+  $('#branchMoney').textContent=`${L('Kasse','Cash')}: ${state.money} €`;
+  const list=$('#branchList');list.innerHTML='';
+  const main=document.createElement('div');main.className='branchcard';
+  main.innerHTML=`<div class="bc-emo">🏠</div><div class="bc-info"><b>${state.shopName}</b> <span style="color:#3fa350;font-weight:800">${L('Hauptfiliale','Main branch')}</span><div class="sub">${L('Die bedienst du selbst an der Theke.','You run this one yourself at the counter.')}</div></div>`;
+  list.appendChild(main);
+  state.branches.forEach((b,i)=>{const card=document.createElement('div');card.className='branchcard';
+    card.innerHTML=`<div class="bc-emo">🏪</div><div class="bc-info"><b>${b.name}</b> <span style="color:#b08a5a;font-weight:700">${L('Stufe','Lvl')} ${b.lvl}</span><div class="sub">${L('Passives Einkommen','Passive income')}: ~${branchIncomeAvg(b)} €/${L('Runde','round')}</div></div>`;
+    const uc=branchUpCost(b);const btn=document.createElement('button');btn.className='buy';btn.textContent=L(`Ausbauen · ${uc} €`,`Upgrade · ${uc} €`);btn.disabled=state.money<uc;
+    btn.onclick=()=>upgradeBranch(i);card.appendChild(btn);list.appendChild(card);});
+  const cost=newBranchCost();const bb=$('#branchBuy');bb.textContent=L(`➕ Neue Filiale eröffnen – ${cost} €`,`➕ Open new branch – ${cost} €`);bb.disabled=state.money<cost;
+  const total=state.branches.reduce((s,b)=>s+branchIncomeAvg(b),0);
+  $('#branchTotal').textContent=state.branches.length?L(`Passives Einkommen gesamt: ca. ${total} € alle 4 Sek.`,`Total passive income: ~${total} € every 4 sec.`):L('Noch keine Zweigstelle – eröffne deine erste Filiale!','No branches yet – open your first one!');
+}
+function upgradeBranch(i){const b=state.branches[i];const c=branchUpCost(b);if(state.money<c)return;state.money-=c;b.lvl++;sfx.cash();renderTop();renderBranches();toast(L(`🏪 ${b.name} → Stufe ${b.lvl}!`,`🏪 ${b.name} → Lvl ${b.lvl}!`));persist();}
+function buyBranch(){const c=newBranchCost();if(state.money<c)return;state.money-=c;const city=BRANCH_CITIES[state.branches.length%BRANCH_CITIES.length];state.branches.push({name:`${L('Filiale','Branch')} ${city}`,lvl:1});sfx.cash();renderTop();renderBranches();toast(L(`🏪 Neue Filiale in ${city} eröffnet!`,`🏪 New branch opened in ${city}!`));checkAch();persist();}
+$('#branchBtn').onclick=openBranches;$('#branchClose').onclick=()=>$('#branchOverlay').classList.add('hidden');$('#branchBuy').onclick=buyBranch;
+/* ===== Einkaufsladen ===== */
+function allIngIds(){return [...availVEG(),...availSAUCE(),...availDRINKS(),...availSIDES(),{id:'falafel'}].map(x=>x.id);}
+function openBuy(){renderBuy();$('#buyOverlay').classList.remove('hidden');}
+function renderBuy(){$('#buyMoney').innerHTML=`${L('Kasse','Cash')}: ${state.money} €  ·  ${autoOn()?L('📦 <b>Auto-Nachschub aktiv</b>','📦 <b>Auto-restock active</b>'):L('📦 Auto-Nachschub: im 🛒 Laden erhältlich','📦 Auto-restock: available in 🛒 Shop')}`;
+  const box=$('#buyList');box.innerHTML='';
+  const groups=[[L('Gemüse & Käse','Veg & cheese'),availVEG()],[L('Soßen','Sauces'),availSAUCE()],[L('Getränke','Drinks'),availDRINKS()],[L('Beilagen','Sides'),availSIDES()],[L('Extra','Extra'),[{id:'falafel',name:'Falafel',emo:'🧆'}]]];
+  for(const g of groups){const t=document.createElement('div');t.className='drawer-label';t.textContent=g[0];box.appendChild(t);
+    for(const it of g[1]){const id=it.id,cost=restockCost(id),n=stockOf(id),tn=teamStockOf(id);
+      const row=document.createElement('div');row.className='shoprow';
+      row.innerHTML=`<div class="sh-emo">${it.emo}</div><div class="sh-info"><b>${nm(it)}</b><div>${L('Dein Vorrat','Your stock')}: ${n} · 👥 ${L('Team','Team')}: ${tn}</div></div>`;
+      const btn=document.createElement('button');btn.className='buy';btn.textContent=`+${PACK} · ${cost} €`;btn.disabled=state.money<cost;
+      btn.onclick=()=>buyStock(id);row.appendChild(btn);box.appendChild(row);}}
+}
+function buyStock(id){const cost=restockCost(id);if(state.money<cost)return;state.money-=cost;state.stock[id]=stockOf(id)+PACK;sfx.cash();renderTop();renderBuy();updateStockBadges();persist();}
+function buyAll(){let spent=0;for(const id of allIngIds()){if(stockOf(id)<STOCK_START&&state.money>=restockCost(id)){state.money-=restockCost(id);state.stock[id]=stockOf(id)+PACK;spent+=restockCost(id);}}
+  sfx.cash();renderTop();renderBuy();updateStockBadges();persist();if(spent>0)toast(L(`🧺 Dein Vorrat aufgefüllt für ${spent} €`,`🧺 Your stock refilled for ${spent} €`));}
+function buyTeam(){let spent=0;for(const id of allIngIds()){if(teamStockOf(id)<STOCK_START&&state.money>=restockCost(id)){state.money-=restockCost(id);state.teamStock[id]=teamStockOf(id)+PACK;spent+=restockCost(id);}}
+  sfx.cash();renderTop();renderBuy();persist();if(spent>0)toast(L(`👥 Team-Vorrat aufgefüllt für ${spent} €`,`👥 Team stock refilled for ${spent} €`));}
+$('#buyBtn').onclick=openBuy;$('#buyClose').onclick=()=>$('#buyOverlay').classList.add('hidden');$('#buyAll').onclick=buyAll;$('#buyTeam').onclick=buyTeam;
+function renderShop(){$('#shopMoney').textContent=`${L('Kasse','Cash')}: ${state.money} €`;
+  const box=$('#shopUpg');box.innerHTML='';
+  for(const k of Object.keys(UPG)){const u=UPG[k],lvl=upg(k),maxed=lvl>=u.max,cost=u.cost(lvl);
+    const row=document.createElement('div');row.className='shoprow';
+    row.innerHTML=`<div class="sh-emo">${u.emo}</div><div class="sh-info"><b>${L(u.name,u.nameEn)}</b> <span style="color:#b08a5a;font-weight:700">${L('Stufe','Lvl')} ${lvl}/${u.max}</span><div>${L(u.desc,u.descEn)}</div></div>`;
+    if(maxed){const m=document.createElement('span');m.className='maxed';m.textContent='MAX';row.appendChild(m);}
+    else{const btn=document.createElement('button');btn.className='buy';btn.textContent=L(`${cost} € kaufen`,`Buy ${cost} €`);btn.disabled=state.money<cost;
+      btn.onclick=()=>buyUpg(k);row.appendChild(btn);}
+    box.appendChild(row);}
+}
+function buyUpg(k){const u=UPG[k],lvl=upg(k);if(lvl>=u.max)return;const cost=u.cost(lvl);if(state.money<cost)return;
+  state.money-=cost;state.upgrades[k]=lvl+1;sfx.cash();renderTop();renderShop();toast(`${u.emo} ${L(u.name,u.nameEn)} ${L('Stufe','Lvl')} ${lvl+1}!`);persist();}
+function renderAch(){const g=$('#achGrid');g.innerHTML='';
+  for(const a of ACH){const d=document.createElement('div');d.className='achitem'+(unlockedAch.has(a.id)?' on':'');
+    d.innerHTML=`<div class="ai-emo">${a.emo}</div>${achName(a)}`;g.appendChild(d);}}
+$('#shopBtn').onclick=openShop;
+$('#shopClose').onclick=()=>$('#shopOverlay').classList.add('hidden');
+
+/* ===== Ablauf ===== */
+function nextCustomerOrEndDay(){state.phase='make';state.ordersLeftToday--;state.queueCount=Math.max(0,state.ordersLeftToday-1);
+  if(state.rep<=0)return gameOver();if(state.ordersLeftToday<=0)return endDay();
+  setTimeout(()=>{if(state.running)spawnCustomer();},350);}
+function changeRep(d){state.rep=Math.max(0,Math.min(5,state.rep+d));renderTop();}
+function col(c){return c==='green'?'#3fa350':'#d24b4b';}
+function rollEvent(){state.event=(Math.random()<0.55)?pick(EVENTS):null;renderEventChip();}
+function beginDay(){
+  rollEvent();
+  if(state.day%7===0){state.event={id:'weekend',name:'📅 Wochenend-Andrang',desc:'Volle Bude & Extra-Trinkgeld!',cust:1.7,tip:1.5};renderEventChip();}
+  state.ordersLeftToday=Math.max(3,Math.round((ordersForDay(state.day)+customerBonus())*eventCust()));
+  state.queueCount=state.ordersLeftToday-1;state.dayEarn=0;state.dayServed=0;state.combo=0;
+  state.dayGoal=Math.round(40*Math.pow(1.35,state.day-1));
+  state.running=true;initStock();buildStations();buildMeatToggle();
+  currentMeat='kalb';el.spit.className='spit';el.spitLabel.textContent=nm(MEATS.kalb);
+  renderTop();renderEventChip();renderCrew();spawnCustomer();
+}
+function dayComment(net,day,rep){
+  const bench=Math.round(40*Math.pow(1.35,day-1)); const r=bench>0?net/bench:1;
+  if(r>=1.6)return{t:L('Wahnsinn! 🤩','Amazing! 🤩'),s:L('Beste Schicht aller Zeiten – die Bude brummt!','Best shift ever – business is booming!')};
+  if(r>=1.2)return{t:L('Sehr gut! ⭐','Very good! ⭐'),s:L('Die Kasse klingelt, weiter so!','The till is ringing, keep it up!')};
+  if(r>=0.9)return{t:L('Gut gemacht! 👍','Well done! 👍'),s:L('Solide Arbeit an der Theke.','Solid work at the counter.')};
+  if(r>=0.6)return{t:L('Ganz ordentlich 🙂','Not bad 🙂'),s:L('Da geht bestimmt noch mehr.','There is surely more in it.')};
+  if(net>0)  return{t:L('Naja… 😅','Meh… 😅'),s:L('Zäher Tag. Morgen läuft es besser!','Tough day. Tomorrow will be better!')};
+  return{t:L('Autsch 😬','Ouch 😬'),s:L('Roter Tag – vielleicht weniger Personal einplanen?','A day in the red – maybe hire less staff?')};
+}
+function endDay(){state.running=false;
+  const wages=wageTotal();state.money-=wages;const net=state.dayEarn-wages;
+  const c=dayComment(net,state.day,state.rep);
+  $('#dayTitle').textContent=L(`Feierabend – Tag ${state.day} 🌙`,`End of day – Day ${state.day} 🌙`);
+  $('#dayEarn').textContent=(net>=0?'+':'')+net+' €';
+  $('#daySummary').innerHTML=L(`Einnahmen: <b>+${state.dayEarn} €</b>${wages>0?` · Löhne: <b>−${wages} €</b>`:''}<br>${state.dayServed} Kunden · Ruf ${'★'.repeat(Math.round(state.rep))} · Level ${state.level}`,`Revenue: <b>+${state.dayEarn} €</b>${wages>0?` · Wages: <b>−${wages} €</b>`:''}<br>${state.dayServed} customers · Rep ${'★'.repeat(Math.round(state.rep))} · Level ${state.level}`);
+  persist();checkAch();
+  $('#nextEvent').innerHTML=`<b>${c.t}</b><br>${c.s}`;
+  $('#nextGoal').textContent=L(`Bereit für Tag ${state.day+1}? 🛒 Laden & 👔 Team nicht vergessen!`,`Ready for day ${state.day+1}? Don't forget 🛒 Shop & 👔 Staff!`);
+  state.day++;
+  $('#dayOverlay').classList.remove('hidden');}
+function nextDay(){$('#dayOverlay').classList.add('hidden');beginDay();}
+function gameOver(){state.running=false;persist(false);
+  $('#overSummary').innerHTML=L(`Dein Ruf ist auf null. Du kamst bis <b>Tag ${state.day}</b>, Level <b>${state.level}</b>, mit <b>${state.money} €</b> (${state.servedTotal} Kunden).`,`Your reputation hit zero. You reached <b>Day ${state.day}</b>, Level <b>${state.level}</b>, with <b>${state.money} €</b> (${state.servedTotal} customers).`);
+  $('#overOverlay').classList.remove('hidden');}
+
+/* ===== Helfer ===== */
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function sample(a,n){const c=[...a],o=[];while(n-->0&&c.length)o.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);return o;}
+function countMap(a){const m=new Map();for(const x of a)m.set(x,(m.get(x)||0)+1);return m;}
+function multisetEq(a,b){if(a.length!==b.length)return false;const m=countMap(a),n=countMap(b);if(m.size!==n.size)return false;for(const[k,v]of m)if(n.get(k)!==v)return false;return true;}
+function floatText(t,c){const f=document.createElement('div');f.className='float';f.textContent=t;f.style.color=c;f.style.left='26%';f.style.top='34%';el.game.appendChild(f);setTimeout(()=>f.remove(),1100);}
+
+/* ===== Start / Steuerung ===== */
+function saveSettings(){const s=loadSave();s.settings={music:musicWanted,sound:!muted,lang};writeSave(s);}
+function updateSettingLabels(){
+  $('#setLang').textContent='🌐 '+(lang==='en'?'English':'Deutsch');
+  $('#setMusic').textContent=L('🎵 Musik: ','🎵 Music: ')+(musicWanted?L('An','On'):L('Aus','Off'));
+  $('#setSound').textContent=muted?L('🔇 Sound: Aus','🔇 Sound: Off'):L('🔊 Sound: An','🔊 Sound: On');
+  $('#setHowto').textContent=L('❓ Anleitung','❓ How to play');
+  $('#setReset').textContent=L('🗑️ Spielstand löschen','🗑️ Delete save');
+}
+function initStart(){const s=loadSave();
+  (s.ach||[]).forEach(a=>unlockedAch.add(a));
+  if(s.lastName)$('#shopName').value=s.lastName;
+  if(s.settings){musicWanted=s.settings.music!==false;muted=s.settings.sound===false;if(s.settings.lang)lang=s.settings.lang;}
+  const best=s.best||{money:0,day:0};
+  $('#bestLine').textContent=(best.money||best.day)?L(`🏆 Rekord: ${best.money||0} € · Tag ${best.day||0}`,`🏆 Best: ${best.money||0} € · Day ${best.day||0}`):L('Erstes Spiel – willkommen!','First game – welcome!');
+  $('#continueBtn').style.display=s.run?'inline-block':'none';
+  $('#ssVersion').textContent=`Kempter Interactive · ${VERSION}`;
+  $('#muteBtn').textContent=muted?'🔇':'🔊';
+  applyLang();
+}
+$('#setLang').onclick=()=>{lang=(lang==='en'?'de':'en');saveSettings();initStart();};
+$('#setMusic').onclick=()=>{musicWanted=!musicWanted;if(!musicWanted)stopMusic();else if(audioCtx)startMusic();$('#musicBtn').textContent=musicWanted?'🎵':'🔈';updateSettingLabels();saveSettings();};
+$('#setSound').onclick=()=>{muted=!muted;$('#muteBtn').textContent=muted?'🔇':'🔊';updateSettingLabels();saveSettings();};
+$('#setHowto').onclick=()=>{$('#howtoCard').classList.toggle('hidden');};
+$('#setReset').onclick=()=>{if(confirm(L('Wirklich den gesamten Spielstand und Rekord löschen?','Really delete all progress and best score?'))){try{localStorage.removeItem(SAVE_KEY);}catch(e){}unlockedAch.clear();musicWanted=true;muted=false;$('#shopName').value='Döner Haus';initStart();alert(L('Spielstand gelöscht.','Save deleted.'));}};
+function startNew(){newGame();
+  const nmv=($('#shopName').value||'').trim();state.shopName=nmv||'Döner Haus';
+  document.title='🥙 '+state.shopName;
+  ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
+  beginDay();}
+function continueRun(){const s=loadSave();if(!s.run)return startNew();newGame();
+  const r=s.run;Object.assign(state,{money:r.money,day:r.day,shopName:r.shopName,xp:r.xp,level:r.level,rep:r.rep!=null?r.rep:5,
+    servedTotal:r.servedTotal||0,maxCombo:r.maxCombo||0,vipServed:r.vipServed||0,
+    branches:Array.isArray(r.branches)?r.branches:[],stock:r.stock||{},teamStock:r.teamStock||{},
+    owned:r.owned||[],fame:r.fame||0,prestige:r.prestige||0,upgrades:Object.assign(state.upgrades,r.upgrades||{}),
+    workers:(r.workers||[]).map(t=>({type:t,timer:0}))});
+  document.title='🥙 '+state.shopName;
+  ['startOverlay','overOverlay','dayOverlay','register','staffOverlay','shopOverlay','branchOverlay','buyOverlay'].forEach(id=>$('#'+id).classList.add('hidden'));
+  beginDay();}
+$('#startBtn').onclick=()=>{ensureAudio();if(musicWanted){startMusic();$('#musicBtn').textContent='🎵';}else{$('#musicBtn').textContent='🔈';}startNew();};
+$('#continueBtn').onclick=()=>{ensureAudio();if(musicWanted){startMusic();$('#musicBtn').textContent='🎵';}else{$('#musicBtn').textContent='🔈';}continueRun();};
+$('#musicBtn').onclick=e=>{if(music.on){stopMusic();e.target.textContent='🔈';}else{startMusic();e.target.textContent='🎵';}};
+$('#restartBtn').onclick=()=>{$('#overOverlay').classList.add('hidden');$('#startOverlay').classList.remove('hidden');initStart();};
+$('#nextDayBtn').onclick=nextDay;
+$('#serveBtn').onclick=attemptCheckout;
+function refundBuild(){const b=state.build;b.veg.forEach(giveStock);b.sauce.forEach(giveStock);if(b.drink)giveStock(b.drink);if(b.side)giveStock(b.side);if(b.meat&&b.meat.type==='falafel')giveStock('falafel');if(frying)giveStock(frying.id);}
+$('#trashBtn').onclick=()=>{if(state&&state.running&&state.phase==='make'){refundBuild();state.build={base:null,meat:null,veg:[],sauce:[],drink:null,side:null};state.tray=0;frying=null;renderTray();renderBoard();updateStockBadges();sfx.bad();setHint(L('Alles neu. Basis wählen 👇','Fresh start. Pick a base 👇'));}};
+$('#muteBtn').onclick=e=>{muted=!muted;e.target.textContent=muted?'🔇':'🔊';};
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(state&&state.phase==='make')attemptCheckout();else if(state&&state.phase==='pay')finishSale();}});
+function runLoading(){
+  const tips=lang==='en'?['Heating the grill…','Chopping the onions…','Polishing the counter…','Mixing the sauces…','Pouring the ayran…','Warming the flatbread…','Opening up…']:['Heize den Grill vor…','Schneide die Zwiebeln…','Poliere die Theke…','Rühre die Soßen an…','Zapfe den Ayran…','Wärme das Fladenbrot…','Öffne die Bude…'];
+  const tipEl=$('#loadTip'),fill=$('#loadFill'),L=$('#loading');let i=0;
+  const iv=setInterval(()=>{i=(i+1)%tips.length;tipEl.textContent=tips[i];},430);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width='100%';}));
+  setTimeout(()=>{clearInterval(iv);L.classList.add('gone');setTimeout(()=>{L.style.display='none';},600);},2100);
+}
+initStart();
+runLoading();
+</script>
+</body>
+</html>
